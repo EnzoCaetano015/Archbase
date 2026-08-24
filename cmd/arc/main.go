@@ -1,0 +1,12 @@
+package main
+
+import (
+	"os"
+
+	"github.com/EnzoCaetano015/Archbase/internal/cli"
+	"github.com/EnzoCaetano015/Archbase/internal/version"
+)
+
+func main() {
+	os.Exit(cli.Execute(os.Args[1:], os.Stdout, os.Stderr, version.Value))
+}

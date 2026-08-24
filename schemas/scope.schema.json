@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://archbase.dev/schemas/v1/scope.schema.json",
+  "title": "Archbase scope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "scope", "pattern", "behavior"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "scope": { "type": "object", "additionalProperties": false, "required": ["path"], "properties": { "path": { "type": "string", "minLength": 1 } } },
+    "pattern": {
+      "type": "object", "additionalProperties": false, "required": ["id", "source"],
+      "properties": {
+        "id": { "$ref": "#/$defs/patternId" },
+        "source": { "enum": ["local", "registry"] },
+        "root": { "type": "string", "minLength": 1 }
+      }
+    },
+    "origin": {
+      "type": "object", "additionalProperties": false, "required": ["registry", "id", "version"],
+      "properties": {
+        "registry": { "type": "string", "minLength": 1 },
+        "id": { "$ref": "#/$defs/patternId" },
+        "version": { "$ref": "#/$defs/semver" }
+      }
+    },
+    "behavior": {
+      "type": "object", "additionalProperties": false, "required": ["nearestScopeWins", "allowLocalCustomization"],
+      "properties": {
+        "nearestScopeWins": { "const": true },
+        "allowLocalCustomization": { "type": "boolean" }
+      }
+    },
+    "metadata": { "type": "object", "additionalProperties": true }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "pattern": { "properties": { "source": { "const": "local" } }, "required": ["source"] } } },
+      "then": { "properties": { "pattern": { "required": ["root"] } } }
+    }
+  ],
+  "$defs": {
+    "patternId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*/[a-z0-9][a-z0-9._-]*@[a-z0-9][a-z0-9._-]*$" },
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$" }
+  }
+}

@@ -1,0 +1,6 @@
+schemaVersion: 1
+patterns:
+  - id: next/page@1234
+    version: 1.0.0
+    path: next/page/1234
+    description: Minimal structural page bundle used to validate the registry core.
