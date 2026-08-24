@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: next/component@4821
+name: Typed presentational component
+description: Domain-neutral React component with explicit props and named export.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: Example.tsx
+      destination: "{{Name}}/{{Name}}.tsx"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - types
+  - rendered-content
+preserve:
+  - props-before-component
+  - named-export
+  - presentation-only

@@ -1,0 +1,22 @@
+schemaVersion: 1
+id: dotnet/service@1172
+name: Application service with repository delegation
+description: Domain-neutral application service with constructor-injected persistence contract.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: ExampleService.cs
+      destination: "{{Name}}/{{Name}}Service.cs"
+      required: true
+allowedChanges:
+  - identifiers
+  - namespaces
+  - types
+  - application-logic
+preserve:
+  - sealed-service
+  - constructor-injection
+  - repository-delegation
+  - cancellation-token

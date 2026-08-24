@@ -1,0 +1,20 @@
+schemaVersion: 1
+id: next/util@3378
+name: Pure typed utility
+description: Domain-neutral pure transformation with explicit input and output types.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: Example.utils.ts
+      destination: "{{Name}}/{{Name}}.utils.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - types
+  - transformation-logic
+preserve:
+  - types-before-function
+  - named-export
+  - pure-function

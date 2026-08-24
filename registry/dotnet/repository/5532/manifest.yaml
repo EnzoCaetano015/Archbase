@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: dotnet/repository@5532
+name: Asynchronous repository contract
+description: Domain-neutral repository interface with task-based operations and cancellation.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: IExampleRepository.cs
+      destination: "{{Name}}/I{{Name}}Repository.cs"
+      required: true
+allowedChanges:
+  - identifiers
+  - namespaces
+  - entity-types
+  - query-methods
+preserve:
+  - interface-contract
+  - asynchronous-operations
+  - cancellation-token

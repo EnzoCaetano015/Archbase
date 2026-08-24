@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: next/hook@9214
+name: Custom hook with explicit result
+description: Domain-neutral custom React hook with a stable public return shape.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: Example.hook.ts
+      destination: "{{Name}}/{{Name}}.hook.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - types
+  - state-logic
+preserve:
+  - result-type-before-hook
+  - named-export
+  - state-responsibility

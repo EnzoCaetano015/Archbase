@@ -7,10 +7,13 @@
 - The nearest `.archbase` scope will win when scope resolution is implemented.
 - Local customization will take precedence over registry content.
 
-## Foundation boundaries
+## Current milestone boundaries
 
-- The current milestone implements TASK-001 through TASK-004 only.
+- The current milestone implements TASK-001 through TASK-008.
 - Keep Go packages under `internal/` until a public Go API is intentionally designed.
-- Do not add network registry fetching, pattern installation, scope resolution, rule exporters, or MCP in this milestone.
+- Public Git registries may be cloned by the registry core; authentication remains out of scope.
+- Do not add pattern installation, local pattern creation, scope resolution, rule exporters, or MCP in this milestone.
 - Existing files must never be overwritten unless the caller explicitly opts in.
 - Changes to public YAML contracts require matching schema, tests, and documentation updates.
+- Registry entries must remain sorted by ID and every declared required file must pass bundle validation.
+- When TASK-010 is implemented, names such as `pages-standard` map to canonical local IDs such as `local/pages-standard@1`.

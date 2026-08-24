@@ -1,6 +1,30 @@
 schemaVersion: 1
 patterns:
+  - id: dotnet/controller@7743
+    version: 1.0.0
+    path: dotnet/controller/7743
+    description: ASP.NET Core controller with explicit service delegation.
+  - id: dotnet/repository@5532
+    version: 1.0.0
+    path: dotnet/repository/5532
+    description: Asynchronous repository contract with cancellation support.
+  - id: dotnet/service@1172
+    version: 1.0.0
+    path: dotnet/service/1172
+    description: Application service with constructor-injected repository.
+  - id: next/component@4821
+    version: 1.0.0
+    path: next/component/4821
+    description: Typed presentational React component.
+  - id: next/hook@9214
+    version: 1.0.0
+    path: next/hook/9214
+    description: Custom React hook with explicit public return shape.
   - id: next/page@1234
     version: 1.0.0
     path: next/page/1234
-    description: Minimal structural page bundle used to validate the registry core.
+    description: Next page bundle separating view, state, and pure transformations.
+  - id: next/util@3378
+    version: 1.0.0
+    path: next/util/3378
+    description: Pure typed utility function.

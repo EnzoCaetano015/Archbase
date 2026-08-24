@@ -1,35 +1,59 @@
 package registry
 
 import (
+	"context"
 	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
+
+	registrydata "github.com/EnzoCaetano015/Archbase/registry"
 )
 
-func TestEmbeddedSourceResolvesFoundationPattern(t *testing.T) {
+func TestEmbeddedSourceContainsAllFoundationPatterns(t *testing.T) {
 	source, err := NewEmbeddedSource()
 	if err != nil {
 		t.Fatal(err)
 	}
-	id, err := ParsePatternID("next/page@1234")
+	listed, err := source.List(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
-	pattern, err := source.Lookup(id)
-	if err != nil {
-		t.Fatal(err)
+	expected := []string{
+		"dotnet/controller@7743",
+		"dotnet/repository@5532",
+		"dotnet/service@1172",
+		"next/component@4821",
+		"next/hook@9214",
+		"next/page@1234",
+		"next/util@3378",
 	}
-	if pattern.Manifest.Type != "pattern-bundle" || len(pattern.Manifest.Structure.Files) != 3 {
-		t.Fatalf("unexpected manifest: %#v", pattern.Manifest)
+	if len(listed.Entries) != len(expected) {
+		t.Fatalf("expected %d entries, got %#v", len(expected), listed.Entries)
 	}
-	if _, err := fs.ReadFile(pattern.Files, "Example/Example.tsx"); err != nil {
-		t.Fatalf("pattern files are not available: %v", err)
-	}
-	if entries := source.List(); len(entries) != 1 || entries[0].ID != id {
-		t.Fatalf("unexpected entries: %#v", entries)
+	for index, rawID := range expected {
+		if listed.Entries[index].ID.String() != rawID {
+			t.Fatalf("entry %d is %q, expected %q", index, listed.Entries[index].ID, rawID)
+		}
+		result, err := source.Lookup(context.Background(), listed.Entries[index].ID)
+		if err != nil {
+			t.Fatalf("lookup %s: %v", rawID, err)
+		}
+		if result.Pattern.Bundle.Manifest.ID != rawID {
+			t.Fatalf("manifest mismatch for %s", rawID)
+		}
+		for _, file := range result.Pattern.Bundle.Files {
+			if file.Spec.Required && !file.Present {
+				t.Fatalf("required file %s is absent from %s", file.Spec.Source, rawID)
+			}
+		}
+		readme := filepath.ToSlash(filepath.Join(listed.Entries[index].Path, "README.md"))
+		if _, err := fs.ReadFile(registrydata.FS, readme); err != nil {
+			t.Fatalf("README missing for %s: %v", rawID, err)
+		}
 	}
 }
 
@@ -39,68 +63,86 @@ func TestLookupMissingPattern(t *testing.T) {
 		t.Fatal(err)
 	}
 	id, _ := ParsePatternID("next/page@9999")
-	if _, err := source.Lookup(id); !errors.Is(err, ErrPatternNotFound) {
+	if _, err := source.Lookup(context.Background(), id); !errors.Is(err, ErrPatternNotFound) {
 		t.Fatalf("expected not found, got %v", err)
 	}
 }
 
 func TestDirectorySource(t *testing.T) {
-	root := createRegistry(t, "test/item@1", "test/item/1")
+	root := createRegistry(t, "test/item@1", "test/item/1", "first")
 	source, err := NewDirectorySource(root)
 	if err != nil {
 		t.Fatal(err)
 	}
 	id, _ := ParsePatternID("test/item@1")
-	pattern, err := source.Lookup(id)
-	if err != nil || !strings.HasPrefix(pattern.Source, "directory:") {
-		t.Fatalf("unexpected directory lookup: %#v, %v", pattern, err)
+	result, err := source.Lookup(context.Background(), id)
+	if err != nil || !strings.HasPrefix(result.Pattern.Source, "directory:") {
+		t.Fatalf("unexpected directory lookup: %#v, %v", result, err)
+	}
+	if string(result.Pattern.Bundle.Files[0].Content) != "first" {
+		t.Fatalf("unexpected bundle content: %#v", result.Pattern.Bundle.Files)
 	}
 }
 
-func TestRegistryRejectsDuplicateIDsAndTraversal(t *testing.T) {
+func TestRegistryRejectsDuplicateUnsortedTraversalAndCorruption(t *testing.T) {
 	t.Run("duplicate", func(t *testing.T) {
-		root := createRegistry(t, "test/item@1", "test/item/1")
-		indexPath := filepath.Join(root, "index.yaml")
-		content, err := os.ReadFile(indexPath)
-		if err != nil {
-			t.Fatal(err)
-		}
-		content = append(content, []byte("  - id: test/item@1\n    version: 1.0.0\n    path: test/item/1\n")...)
-		if err := os.WriteFile(indexPath, content, 0o600); err != nil {
-			t.Fatal(err)
-		}
+		root := createRegistry(t, "test/item@1", "test/item/1", "example")
+		appendIndex(t, root, "  - id: test/item@1\n    version: 1.0.0\n    path: test/item/1\n")
 		if _, err := NewDirectorySource(root); err == nil || !strings.Contains(err.Error(), "duplicate") {
 			t.Fatalf("expected duplicate error, got %v", err)
 		}
 	})
+	t.Run("unsorted", func(t *testing.T) {
+		root := createRegistry(t, "test/zeta@1", "test/zeta/1", "zeta")
+		secondRoot := filepath.Join(root, "test", "alpha", "1")
+		writePattern(t, secondRoot, "test/alpha@1", "alpha")
+		appendIndex(t, root, "  - id: test/alpha@1\n    version: 1.0.0\n    path: test/alpha/1\n")
+		if _, err := NewDirectorySource(root); err == nil || !strings.Contains(err.Error(), "sorted") {
+			t.Fatalf("expected sorted-index error, got %v", err)
+		}
+	})
 	t.Run("traversal", func(t *testing.T) {
 		root := t.TempDir()
-		index := "schemaVersion: 1\npatterns:\n  - id: test/item@1\n    version: 1.0.0\n    path: ../outside\n"
-		if err := os.WriteFile(filepath.Join(root, "index.yaml"), []byte(index), 0o600); err != nil {
-			t.Fatal(err)
-		}
+		writeFile(t, filepath.Join(root, "index.yaml"), "schemaVersion: 1\npatterns:\n  - id: test/item@1\n    version: 1.0.0\n    path: ../outside\n")
 		if _, err := NewDirectorySource(root); err == nil || !strings.Contains(err.Error(), "escapes") {
 			t.Fatalf("expected traversal error, got %v", err)
 		}
 	})
+	t.Run("missing required file", func(t *testing.T) {
+		root := createRegistry(t, "test/item@1", "test/item/1", "example")
+		if err := os.Remove(filepath.Join(root, "test", "item", "1", "Example.txt")); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := NewDirectorySource(root); err == nil || !strings.Contains(err.Error(), "required pattern file") {
+			t.Fatalf("expected required-file error, got %v", err)
+		}
+	})
 }
 
-func TestGitSourceConfig(t *testing.T) {
-	checkout, err := filepath.Abs(t.TempDir())
+func TestSourceHonorsCanceledContext(t *testing.T) {
+	source, err := NewEmbeddedSource()
 	if err != nil {
 		t.Fatal(err)
 	}
-	config := GitSourceConfig{
-		URL: "https://github.com/example/registry.git", Ref: "main",
-		Subdirectory: "registry", CheckoutPath: checkout,
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	id, _ := ParsePatternID("next/page@1234")
+	if _, err := source.Lookup(ctx, id); !errors.Is(err, context.Canceled) {
+		t.Fatalf("expected cancellation, got %v", err)
 	}
-	root, err := config.DirectoryRoot()
-	if err != nil || root != filepath.Join(checkout, "registry") {
-		t.Fatalf("unexpected directory root: %q, %v", root, err)
+}
+
+func TestDirectorySourceRejectsSymlinkRoot(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("creating symlinks on Windows may require Developer Mode")
 	}
-	config.Subdirectory = "../outside"
-	if err := config.Validate(); err == nil {
-		t.Fatal("expected invalid subdirectory")
+	root := createRegistry(t, "test/item@1", "test/item/1", "example")
+	link := filepath.Join(t.TempDir(), "registry-link")
+	if err := os.Symlink(root, link); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := NewDirectorySource(link); err == nil || !strings.Contains(err.Error(), "not a directory") {
+		t.Fatalf("expected symlink root rejection, got %v", err)
 	}
 }
 
@@ -112,17 +154,17 @@ func TestPatternIDIsStrictAndCaseSensitive(t *testing.T) {
 	}
 }
 
-func createRegistry(t *testing.T, id, registryPath string) string {
+func createRegistry(t *testing.T, id, registryPath, content string) string {
 	t.Helper()
 	root := t.TempDir()
 	index := "schemaVersion: 1\npatterns:\n  - id: " + id + "\n    version: 1.0.0\n    path: " + registryPath + "\n"
-	if err := os.WriteFile(filepath.Join(root, "index.yaml"), []byte(index), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	patternRoot := filepath.Join(root, filepath.FromSlash(registryPath))
-	if err := os.MkdirAll(patternRoot, 0o755); err != nil {
-		t.Fatal(err)
-	}
+	writeFile(t, filepath.Join(root, "index.yaml"), index)
+	writePattern(t, filepath.Join(root, filepath.FromSlash(registryPath)), id, content)
+	return root
+}
+
+func writePattern(t *testing.T, root, id, content string) {
+	t.Helper()
 	manifest := "schemaVersion: 1\nid: " + id + `
 name: Test item
 type: pattern
@@ -136,11 +178,30 @@ structure:
 allowedChanges: [content]
 preserve: [file-type]
 `
-	if err := os.WriteFile(filepath.Join(patternRoot, "manifest.yaml"), []byte(manifest), 0o600); err != nil {
+	writeFile(t, filepath.Join(root, "manifest.yaml"), manifest)
+	writeFile(t, filepath.Join(root, "Example.txt"), content)
+	writeFile(t, filepath.Join(root, "README.md"), "# Test pattern\n")
+}
+
+func writeFile(t *testing.T, path, content string) {
+	t.Helper()
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(patternRoot, "Example.txt"), []byte("example"), 0o600); err != nil {
+	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	return root
+}
+
+func appendIndex(t *testing.T, root, content string) {
+	t.Helper()
+	path := filepath.Join(root, "index.yaml")
+	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0o600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+	if _, err := file.WriteString(content); err != nil {
+		t.Fatal(err)
+	}
 }

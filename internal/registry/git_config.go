@@ -1,19 +1,26 @@
 package registry
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"net/url"
 	"path/filepath"
+	"regexp"
 	"strings"
+	"time"
 )
 
-// GitSourceConfig describes a prepared Git checkout. Network and cache
-// operations intentionally belong to the later registry resolution milestone.
+const DefaultGitCacheTTL = 15 * time.Minute
+
+var gitRefExpression = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._/-]*$`)
+
 type GitSourceConfig struct {
 	URL          string
 	Ref          string
 	Subdirectory string
-	CheckoutPath string
+	CacheRoot    string
+	TTL          time.Duration
 }
 
 func (config GitSourceConfig) Validate() error {
@@ -21,19 +28,32 @@ func (config GitSourceConfig) Validate() error {
 		return fmt.Errorf("git registry URL is required")
 	}
 	parsed, err := url.Parse(config.URL)
-	if err != nil || parsed.Scheme == "" || parsed.Host == "" {
-		return fmt.Errorf("git registry URL must be an absolute URL: %q", config.URL)
+	if err != nil || parsed.Scheme == "" {
+		return fmt.Errorf("git registry URL must use https, git, or file: %q", config.URL)
+	}
+	if parsed.User != nil {
+		return fmt.Errorf("git registry URL must not contain credentials")
 	}
 	switch parsed.Scheme {
-	case "https", "ssh", "git":
+	case "https", "git":
+		if parsed.Host == "" {
+			return fmt.Errorf("git registry URL must include a host: %q", config.URL)
+		}
+	case "file":
+		if parsed.Path == "" || !strings.HasPrefix(parsed.Path, "/") {
+			return fmt.Errorf("file registry URL must include an absolute path")
+		}
 	default:
 		return fmt.Errorf("unsupported git registry URL scheme %q", parsed.Scheme)
 	}
-	if config.Ref == "" {
-		return fmt.Errorf("git registry ref is required")
+	if !gitRefExpression.MatchString(config.Ref) || strings.Contains(config.Ref, "..") || strings.HasSuffix(config.Ref, "/") {
+		return fmt.Errorf("invalid git registry ref %q", config.Ref)
 	}
-	if config.CheckoutPath == "" || !filepath.IsAbs(config.CheckoutPath) {
-		return fmt.Errorf("git registry checkout path must be absolute")
+	if config.CacheRoot == "" || !filepath.IsAbs(config.CacheRoot) {
+		return fmt.Errorf("git registry cache root must be absolute")
+	}
+	if config.TTL < 0 {
+		return fmt.Errorf("git registry TTL must not be negative")
 	}
 	if config.Subdirectory != "" {
 		normalized := strings.ReplaceAll(config.Subdirectory, "\\", "/")
@@ -44,12 +64,26 @@ func (config GitSourceConfig) Validate() error {
 	return nil
 }
 
-func (config GitSourceConfig) DirectoryRoot() (string, error) {
-	if err := config.Validate(); err != nil {
-		return "", err
+func (config GitSourceConfig) cacheTTL() time.Duration {
+	if config.TTL == 0 {
+		return DefaultGitCacheTTL
 	}
+	return config.TTL
+}
+
+func (config GitSourceConfig) cacheKey() string {
+	hash := sha256.Sum256([]byte(config.URL + "\x00" + config.Ref))
+	return hex.EncodeToString(hash[:])
+}
+
+func (config GitSourceConfig) checkoutPath() string {
+	return filepath.Join(config.CacheRoot, config.cacheKey(), "checkout")
+}
+
+func (config GitSourceConfig) registryPath() string {
+	root := config.checkoutPath()
 	if config.Subdirectory == "" {
-		return filepath.Clean(config.CheckoutPath), nil
+		return root
 	}
-	return filepath.Join(config.CheckoutPath, filepath.FromSlash(config.Subdirectory)), nil
+	return filepath.Join(root, filepath.FromSlash(config.Subdirectory))
 }

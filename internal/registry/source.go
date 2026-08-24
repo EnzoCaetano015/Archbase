@@ -1,6 +1,7 @@
 package registry
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -8,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/EnzoCaetano015/Archbase/internal/contracts"
+	"github.com/EnzoCaetano015/Archbase/internal/patterns"
 	"github.com/goccy/go-yaml"
 )
 
@@ -22,16 +23,27 @@ type Entry struct {
 }
 
 type Pattern struct {
-	Entry    Entry
-	Manifest contracts.Manifest
-	Files    fs.FS
-	Source   string
+	Entry  Entry
+	Bundle patterns.Bundle
+	Source string
+}
+
+type LookupResult struct {
+	Pattern Pattern
+	Stale   bool
+	Warning error
+}
+
+type ListResult struct {
+	Entries []Entry
+	Stale   bool
+	Warning error
 }
 
 type Source interface {
 	Name() string
-	Lookup(PatternID) (Pattern, error)
-	List() []Entry
+	Lookup(context.Context, PatternID) (LookupResult, error)
+	List(context.Context) (ListResult, error)
 }
 
 type indexDocument struct {
@@ -65,6 +77,7 @@ func newCatalogSource(name string, fsys fs.FS) (*catalogSource, error) {
 		return nil, fmt.Errorf("registry %s: unsupported schemaVersion %d", name, index.SchemaVersion)
 	}
 	entries := make(map[PatternID]Entry, len(index.Patterns))
+	previousID := PatternID("")
 	for position, raw := range index.Patterns {
 		id, err := ParsePatternID(raw.ID)
 		if err != nil {
@@ -73,15 +86,19 @@ func newCatalogSource(name string, fsys fs.FS) (*catalogSource, error) {
 		if _, exists := entries[id]; exists {
 			return nil, fmt.Errorf("registry %s: duplicate pattern ID %q", name, id)
 		}
+		if previousID != "" && id < previousID {
+			return nil, fmt.Errorf("registry %s: pattern index must be sorted by ID: %q appears after %q", name, id, previousID)
+		}
+		previousID = id
 		cleanPath, err := safeRegistryPath(raw.Path)
 		if err != nil {
 			return nil, fmt.Errorf("registry %s: pattern %q: %w", name, id, err)
 		}
-		manifest, err := contracts.LoadManifestFS(fsys, path.Join(cleanPath, "manifest.yaml"))
+		bundle, err := patterns.Load(fsys, cleanPath)
 		if err != nil {
 			return nil, fmt.Errorf("registry %s: pattern %q: %w", name, id, err)
 		}
-		if manifest.ID != id.String() || manifest.Version != raw.Version {
+		if bundle.Manifest.ID != id.String() || bundle.Manifest.Version != raw.Version {
 			return nil, fmt.Errorf("registry %s: pattern %q metadata does not match its manifest", name, id)
 		}
 		entries[id] = Entry{ID: id, Version: raw.Version, Path: cleanPath, Description: raw.Description}
@@ -91,29 +108,31 @@ func newCatalogSource(name string, fsys fs.FS) (*catalogSource, error) {
 
 func (s *catalogSource) Name() string { return s.name }
 
-func (s *catalogSource) Lookup(id PatternID) (Pattern, error) {
+func (s *catalogSource) Lookup(ctx context.Context, id PatternID) (LookupResult, error) {
+	if err := ctx.Err(); err != nil {
+		return LookupResult{}, err
+	}
 	entry, ok := s.entries[id]
 	if !ok {
-		return Pattern{}, fmt.Errorf("registry %s: %w: %s", s.name, ErrPatternNotFound, id)
+		return LookupResult{}, fmt.Errorf("registry %s: %w: %s", s.name, ErrPatternNotFound, id)
 	}
-	manifest, err := contracts.LoadManifestFS(s.fsys, path.Join(entry.Path, "manifest.yaml"))
+	bundle, err := patterns.Load(s.fsys, entry.Path)
 	if err != nil {
-		return Pattern{}, fmt.Errorf("registry %s: load %s: %w", s.name, id, err)
+		return LookupResult{}, fmt.Errorf("registry %s: load %s: %w", s.name, id, err)
 	}
-	patternFS, err := fs.Sub(s.fsys, entry.Path)
-	if err != nil {
-		return Pattern{}, fmt.Errorf("registry %s: open files for %s: %w", s.name, id, err)
-	}
-	return Pattern{Entry: entry, Manifest: manifest, Files: patternFS, Source: s.name}, nil
+	return LookupResult{Pattern: Pattern{Entry: entry, Bundle: bundle, Source: s.name}}, nil
 }
 
-func (s *catalogSource) List() []Entry {
+func (s *catalogSource) List(ctx context.Context) (ListResult, error) {
+	if err := ctx.Err(); err != nil {
+		return ListResult{}, err
+	}
 	result := make([]Entry, 0, len(s.entries))
 	for _, entry := range s.entries {
 		result = append(result, entry)
 	}
 	sort.Slice(result, func(i, j int) bool { return result[i].ID < result[j].ID })
-	return result
+	return ListResult{Entries: result}, nil
 }
 
 func safeRegistryPath(value string) (string, error) {

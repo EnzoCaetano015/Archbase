@@ -1,0 +1,23 @@
+schemaVersion: 1
+id: dotnet/controller@7743
+name: Controller with service delegation
+description: Domain-neutral ASP.NET Core controller with constructor injection and cancellation.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: ExampleController.cs
+      destination: "{{Name}}/{{Name}}Controller.cs"
+      required: true
+allowedChanges:
+  - identifiers
+  - namespaces
+  - types
+  - route
+  - action-logic
+preserve:
+  - attributes-before-class
+  - constructor-injection
+  - service-delegation
+  - cancellation-token

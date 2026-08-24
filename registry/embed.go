@@ -5,5 +5,5 @@ import "embed"
 
 // FS contains the registry index and its pattern files.
 //
-//go:embed index.yaml next
+//go:embed index.yaml dotnet next
 var FS embed.FS

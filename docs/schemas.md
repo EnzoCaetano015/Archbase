@@ -21,3 +21,5 @@ Pattern IDs use `stack/type@id`, for example `next/page@1234`. All ID segments a
 - `rule.schema.json` is the agent-neutral initial architecture rule model: metadata, path-to-pattern associations, and textual restrictions. Exporter-specific fields do not belong in this contract.
 
 Schemas are strict at every core object level. Only `metadata` accepts arbitrary extension keys.
+
+After schema validation, the pattern loader performs semantic validation that cannot be expressed by the document alone: source and destination uniqueness, root confinement, symlink rejection, regular-file checks, and required-file existence. Optional files remain represented in the loaded bundle with `present: false`.
