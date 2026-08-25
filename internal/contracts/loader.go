@@ -80,6 +80,31 @@ func LoadRule(path string) (Rule, error) {
 	return result, err
 }
 
+// EncodeManifest serializes a manifest and validates the resulting public contract.
+func EncodeManifest(manifest Manifest) ([]byte, error) {
+	if err := validateManifestPaths("manifest.yaml", manifest); err != nil {
+		return nil, err
+	}
+	return encodeAndValidate(ManifestKind, "manifest.yaml", manifest)
+}
+
+// EncodeScope serializes a scope and validates the resulting public contract.
+func EncodeScope(scope Scope) ([]byte, error) {
+	return encodeAndValidate(ScopeKind, "scope.yaml", scope)
+}
+
+func encodeAndValidate(kind Kind, sourcePath string, value any) ([]byte, error) {
+	data, err := yaml.Marshal(value)
+	if err != nil {
+		return nil, &ValidationError{Kind: kind, Path: sourcePath, Cause: fmt.Errorf("encode YAML: %w", err)}
+	}
+	var decoded any
+	if err := decodeAndValidate(kind, sourcePath, data, &decoded); err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 func loadFile(kind Kind, path string, destination any) error {
 	data, err := os.ReadFile(path)
 	if err != nil {

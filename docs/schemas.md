@@ -23,3 +23,5 @@ Pattern IDs use `stack/type@id`, for example `next/page@1234`. All ID segments a
 Schemas are strict at every core object level. Only `metadata` accepts arbitrary extension keys.
 
 After schema validation, the pattern loader performs semantic validation that cannot be expressed by the document alone: source and destination uniqueness, root confinement, symlink rejection, regular-file checks, and required-file existence. Optional files remain represented in the loaded bundle with `present: false`.
+
+Generated local scopes use `scope.path: "."`, relative roots below `.archbase`, and `nearestScopeWins: true`. Resolution begins at the requested file or directory and walks toward the filesystem root. The first `.archbase` directory wins; an invalid nearest scope is reported instead of being hidden by an ancestor.

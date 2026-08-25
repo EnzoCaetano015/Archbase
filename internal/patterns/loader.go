@@ -42,8 +42,9 @@ type File struct {
 }
 
 type Bundle struct {
-	Manifest contracts.Manifest
-	Files    []File
+	Manifest        contracts.Manifest
+	ManifestContent []byte
+	Files           []File
 }
 
 // Load validates and reads a complete pattern rooted at root in fsys.
@@ -64,11 +65,15 @@ func Load(fsys fs.FS, root string) (Bundle, error) {
 		}
 	}
 	manifestDisplayPath := path.Join(cleanRoot, manifestPath)
+	manifestContent, err := fs.ReadFile(patternFS, manifestPath)
+	if err != nil {
+		return Bundle{}, &Error{Manifest: manifestDisplayPath, Path: manifestPath, Err: err}
+	}
 	manifest, err := contracts.LoadManifestFS(patternFS, manifestPath)
 	if err != nil {
 		return Bundle{}, err
 	}
-	result := Bundle{Manifest: manifest, Files: make([]File, 0, len(manifest.Structure.Files))}
+	result := Bundle{Manifest: manifest, ManifestContent: manifestContent, Files: make([]File, 0, len(manifest.Structure.Files))}
 	sources := make(map[string]int, len(manifest.Structure.Files))
 	destinations := make(map[string]int, len(manifest.Structure.Files))
 	for index, spec := range manifest.Structure.Files {

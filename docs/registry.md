@@ -18,7 +18,7 @@ Patterns describe code structure rather than application features. Registry entr
 
 ## Git sources
 
-`GitSourceConfig` is an internal API in the current milestone. It accepts a public `https`, `git`, or absolute `file` URL, a branch or tag, an optional registry subdirectory, an absolute cache root, and an optional TTL.
+`GitSourceConfig` is an internal API. It accepts a public `https`, `git`, or absolute `file` URL, a branch or tag, an optional registry subdirectory, an absolute cache root, and an optional TTL. The CLI exposes the same choices through global `--registry-*` flags.
 
 - URLs containing credentials, insecure HTTP, and SSH are rejected.
 - The default TTL is 15 minutes.
@@ -27,8 +27,12 @@ Patterns describe code structure rather than application features. Registry entr
 - If refresh fails, cached content is used only after complete registry and bundle validation. The result is marked stale and includes a warning.
 - An invalid cache or a canceled context produces an error.
 
-Flags, environment variables, private-registry authentication, and user-facing cache management remain outside TASK-005 through TASK-008.
+Environment variables, private-registry authentication, and user-facing cache management remain outside the first milestone.
 
-## Future local identity
+## Local installation and identity
 
-When `arc create` is implemented, a local name such as `pages-standard` will use the canonical ID `local/pages-standard@1` and start from a minimal valid example unless it derives from a registry pattern.
+`arc add` copies only the validated manifest and declared bundle files into `.archbase/patterns/<type>-<id>`. Registry README files and undeclared extras are not installed.
+
+`arc create pages-standard <scope>` uses the canonical ID `local/pages-standard@1`. It starts from a minimal valid example unless `--from <pattern-id>` derives it from a registry pattern. Derived manifests receive the local identity while `scope.yaml` records the original registry, ID, and version.
+
+One pattern is active per scope. Activating a new pattern preserves previously stored patterns, refuses a directory collision, and rolls back the new directory if the scope update fails.
