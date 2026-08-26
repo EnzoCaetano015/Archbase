@@ -2,7 +2,7 @@
 
 Archbase is an open-source CLI that gives AI coding agents explicit, reusable structural patterns. Patterns describe **how a type of code is written**; architecture rules describe **where code belongs and which relationships are allowed**.
 
-This repository contains the completed core milestone and the initial canonical rules work (TASK-001 through TASK-015):
+This repository contains the completed pattern and rules milestones (TASK-001 through TASK-019):
 
 - the `arc` Go CLI with `help` and `version`;
 - versioned YAML contracts backed by JSON Schema;
@@ -15,9 +15,11 @@ This repository contains the completed core milestone and the initial canonical 
 - nearest-scope resolution for files, directories, and future paths;
 - deterministic pattern resolution and inspection commands;
 - an agent-neutral architecture rule contract and validated rule registry;
-- initial modular Next and layered .NET architecture rules.
+- initial modular Next and layered .NET architecture rules;
+- transactional exporters for Cursor, GitHub Copilot, and hierarchical `AGENTS.md` files;
+- rule listing, inspection, and export commands.
 
-Rules exporters, rules CLI commands, and MCP are intentionally not implemented yet.
+MCP, release automation, and binary installation are intentionally not implemented yet.
 
 ## Requirements
 
@@ -46,10 +48,17 @@ arc add next/page@1234 ./src/pages
 arc create pages-standard ./src/pages --from next/page@1234
 arc resolve ./src/pages/Example.tsx
 arc inspect next/page@1234
+arc rules list
+arc rules inspect architecture/next-modular@1
+arc rules add architecture/next-modular@1 --format cursor
+arc rules add architecture/next-modular@1 --format copilot --destination ./app
+arc rules add architecture/next-modular@1 --format agents --merge
 ```
 
 The official registry is embedded in the binary and therefore works offline. A public Git registry can be placed before it with `--registry-url`, `--registry-ref`, `--registry-subdir`, `--registry-cache-dir`, and `--registry-ttl`. Git access supports public `https`, `git`, and absolute `file` URLs without depending on a system Git executable.
 
 Installed scopes use `.archbase/scope.yaml` and keep local pattern copies under `.archbase/patterns/`. Adding or creating another pattern preserves previous directories and atomically activates the new pattern. Existing pattern directories are never overwritten.
+
+Rule exports are confined to `--destination` (default `.`). Cursor and Copilot files require `--overwrite` on conflict. Existing `AGENTS.md` files require `--merge`, which updates only the RuleID-specific Archbase block and preserves other content.
 
 See [docs/schemas.md](docs/schemas.md) for the public YAML contracts, [docs/registry.md](docs/registry.md) for registry behavior, and [docs/rules.md](docs/rules.md) for the canonical rule model.

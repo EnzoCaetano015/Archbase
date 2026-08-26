@@ -3,12 +3,14 @@ package cli
 import (
 	"bytes"
 	"context"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/EnzoCaetano015/Archbase/internal/registry"
+	archrules "github.com/EnzoCaetano015/Archbase/internal/rules"
 	"github.com/EnzoCaetano015/Archbase/internal/workspace"
 )
 
@@ -116,5 +118,94 @@ func TestWarningsGoToStderr(t *testing.T) {
 	printWarnings(&output, []error{context.DeadlineExceeded})
 	if !strings.Contains(output.String(), "warning: context deadline exceeded") {
 		t.Fatalf("unexpected warning output: %q", output.String())
+	}
+}
+
+func TestRulesListInspectAndAddCommands(t *testing.T) {
+	root := t.TempDir()
+	for _, test := range []struct {
+		args []string
+		want string
+	}{
+		{[]string{"rules", "list"}, "architecture/next-modular@1"},
+		{[]string{"rules", "inspect", "architecture/dotnet-layered@1"}, "Controllers/** -> dotnet/controller@7743"},
+		{[]string{"rules", "add", "architecture/next-modular@1", "--format", "cursor", "--destination", root}, "Format: cursor"},
+	} {
+		var stdout, stderr bytes.Buffer
+		if code := Execute(test.args, &stdout, &stderr, "dev"); code != 0 || !strings.Contains(stdout.String(), test.want) {
+			t.Fatalf("arc %v: code=%d stdout=%q stderr=%q", test.args, code, stdout.String(), stderr.String())
+		}
+	}
+	target := filepath.Join(root, ".cursor", "rules", "architecture-next-modular-1.mdc")
+	if content, err := os.ReadFile(target); err != nil || !strings.Contains(string(content), "alwaysApply: false") {
+		t.Fatalf("unexpected Cursor export: %q err=%v", content, err)
+	}
+}
+
+func TestRulesAddValidatesArgumentsFlagsAndConflicts(t *testing.T) {
+	root := t.TempDir()
+	for _, args := range [][]string{
+		{"rules", "add", "architecture/next-modular@1"},
+		{"rules", "add", "architecture/next-modular@1", "--format", "unknown"},
+		{"rules", "add", "architecture/next-modular@1", "--format", "cursor", "--merge"},
+		{"rules", "add", "architecture/next-modular@1", "--format", "agents", "--overwrite"},
+		{"rules", "inspect", "architecture/missing@1"},
+	} {
+		var stdout, stderr bytes.Buffer
+		if code := Execute(args, &stdout, &stderr, "dev"); code == 0 {
+			t.Fatalf("arc %v unexpectedly succeeded: %s", args, stdout.String())
+		}
+	}
+	args := []string{"rules", "add", "architecture/next-modular@1", "--format", "copilot", "--destination", root}
+	var stdout, stderr bytes.Buffer
+	if code := Execute(args, &stdout, &stderr, "dev"); code != 0 {
+		t.Fatal(stderr.String())
+	}
+	stdout.Reset()
+	stderr.Reset()
+	if code := Execute(args, &stdout, &stderr, "dev"); code == 0 || !strings.Contains(stderr.String(), "already exists") {
+		t.Fatalf("expected conflict: code=%d stderr=%q", code, stderr.String())
+	}
+	args = append(args, "--overwrite")
+	stdout.Reset()
+	stderr.Reset()
+	if code := Execute(args, &stdout, &stderr, "dev"); code != 0 {
+		t.Fatalf("overwrite failed: %s", stderr.String())
+	}
+}
+
+type cliRuleSource struct{}
+
+func (cliRuleSource) Name() string { return "test-remote" }
+func (cliRuleSource) Lookup(context.Context, archrules.RuleID) (archrules.LookupResult, error) {
+	return archrules.LookupResult{}, archrules.ErrRuleNotFound
+}
+func (cliRuleSource) List(context.Context) (archrules.SourceListResult, error) {
+	id, _ := archrules.ParseRuleID("architecture/test@1")
+	return archrules.SourceListResult{
+		Entries: []archrules.Entry{{ID: id, Version: "1.0.0", Source: "test-remote", Description: "Test architecture"}},
+		Stale:   true, Warning: context.DeadlineExceeded,
+	}, nil
+}
+
+func TestRulesCommandsPassRegistryOptionsAndPrintStaleWarnings(t *testing.T) {
+	var captured RegistryOptions
+	dependencies := Dependencies{
+		RuleResolverFactory: func(_ context.Context, options RegistryOptions, patterns *registry.Resolver) (*archrules.Resolver, error) {
+			captured = options
+			return archrules.NewResolver(patterns, cliRuleSource{})
+		},
+	}
+	cache := filepath.Join(t.TempDir(), "rules-cache")
+	args := []string{"--registry-url", "https://example.com/rules.git", "--registry-ref", "v2", "--registry-subdir", "catalog", "--registry-cache-dir", cache, "--registry-ttl", "45m", "rules", "list"}
+	var stdout, stderr bytes.Buffer
+	if code := Execute(args, &stdout, &stderr, "dev", dependencies); code != 0 {
+		t.Fatalf("rules list failed: %s", stderr.String())
+	}
+	if captured.URL != "https://example.com/rules.git" || captured.Ref != "v2" || captured.Subdirectory != "catalog" || captured.CacheRoot != cache || captured.TTL != 45*time.Minute {
+		t.Fatalf("unexpected rule registry options: %#v", captured)
+	}
+	if !strings.Contains(stdout.String(), "architecture/test@1") || !strings.Contains(stderr.String(), "warning: context deadline exceeded") {
+		t.Fatalf("unexpected output: stdout=%q stderr=%q", stdout.String(), stderr.String())
 	}
 }

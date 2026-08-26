@@ -2,15 +2,18 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
+	"text/tabwriter"
 	"time"
 
 	"github.com/EnzoCaetano015/Archbase/internal/contracts"
 	"github.com/EnzoCaetano015/Archbase/internal/registry"
+	archrules "github.com/EnzoCaetano015/Archbase/internal/rules"
 	"github.com/EnzoCaetano015/Archbase/internal/workspace"
 	"github.com/spf13/cobra"
 )
@@ -22,10 +25,10 @@ Available commands:
   arc create     Create a customizable local pattern
   arc resolve    Resolve the active pattern for a path
   arc inspect    Inspect a local or registry pattern
+  arc rules      List, inspect, and export architecture rules
   arc version    Show the CLI version
 
 Planned commands:
-  arc rules      List, inspect, and export architecture rules
   arc mcp serve  Start the MCP server`
 
 type RegistryOptions struct {
@@ -37,12 +40,36 @@ type RegistryOptions struct {
 }
 
 type Dependencies struct {
-	FileSystem      workspace.FileSystem
-	ResolverFactory func(context.Context, RegistryOptions) (*registry.Resolver, error)
+	FileSystem          workspace.FileSystem
+	RuleFileSystem      archrules.ExportFileSystem
+	ResolverFactory     func(context.Context, RegistryOptions) (*registry.Resolver, error)
+	RuleResolverFactory func(context.Context, RegistryOptions, *registry.Resolver) (*archrules.Resolver, error)
 }
 
 func defaultDependencies() Dependencies {
-	return Dependencies{FileSystem: workspace.OSFileSystem{}, ResolverFactory: defaultResolver}
+	return Dependencies{
+		FileSystem: workspace.OSFileSystem{}, RuleFileSystem: archrules.OSExportFileSystem{},
+		ResolverFactory: defaultResolver, RuleResolverFactory: defaultRuleResolver,
+	}
+}
+
+func defaultRuleResolver(_ context.Context, options RegistryOptions, patterns *registry.Resolver) (*archrules.Resolver, error) {
+	embedded, err := archrules.NewEmbeddedSource()
+	if err != nil {
+		return nil, err
+	}
+	sources := []archrules.Source{embedded}
+	if options.URL != "" {
+		remote, err := archrules.NewGitSource(registry.GitSourceConfig{
+			URL: options.URL, Ref: options.Ref, Subdirectory: options.Subdirectory,
+			CacheRoot: options.CacheRoot, TTL: options.TTL,
+		})
+		if err != nil {
+			return nil, err
+		}
+		sources = append([]archrules.Source{remote}, sources...)
+	}
+	return archrules.NewResolver(patterns, sources...)
 }
 
 func defaultResolver(_ context.Context, options RegistryOptions) (*registry.Resolver, error) {
@@ -75,6 +102,12 @@ func NewRootCommand(cliVersion string, supplied ...Dependencies) *cobra.Command 
 		if dependencies.ResolverFactory == nil {
 			dependencies.ResolverFactory = defaultResolver
 		}
+		if dependencies.RuleFileSystem == nil {
+			dependencies.RuleFileSystem = archrules.OSExportFileSystem{}
+		}
+		if dependencies.RuleResolverFactory == nil {
+			dependencies.RuleResolverFactory = defaultRuleResolver
+		}
 	}
 	options := RegistryOptions{Ref: "main", CacheRoot: defaultCacheRoot(), TTL: registry.DefaultGitCacheTTL}
 	root := &cobra.Command{
@@ -89,11 +122,114 @@ func NewRootCommand(cliVersion string, supplied ...Dependencies) *cobra.Command 
 	flags.StringVar(&options.Subdirectory, "registry-subdir", "", "registry subdirectory inside the checkout")
 	flags.StringVar(&options.CacheRoot, "registry-cache-dir", options.CacheRoot, "absolute registry cache directory")
 	flags.DurationVar(&options.TTL, "registry-ttl", registry.DefaultGitCacheTTL, "registry cache time to live")
-	root.AddCommand(newAddCommand(dependencies, &options), newCreateCommand(dependencies, &options), newResolveCommand(dependencies, &options), newInspectCommand(dependencies, &options))
+	root.AddCommand(newAddCommand(dependencies, &options), newCreateCommand(dependencies, &options), newResolveCommand(dependencies, &options), newInspectCommand(dependencies, &options), newRulesCommand(dependencies, &options))
 	root.AddCommand(&cobra.Command{Use: "version", Short: "Show the CLI version", Args: cobra.NoArgs, Run: func(cmd *cobra.Command, _ []string) {
 		fmt.Fprintf(cmd.OutOrStdout(), "arc %s\n", cliVersion)
 	}})
 	return root
+}
+
+func ruleService(ctx context.Context, dependencies Dependencies, options RegistryOptions) (*archrules.Resolver, error) {
+	patterns, err := dependencies.ResolverFactory(ctx, options)
+	if err != nil {
+		return nil, err
+	}
+	return dependencies.RuleResolverFactory(ctx, options, patterns)
+}
+
+func newRulesCommand(dependencies Dependencies, options *RegistryOptions) *cobra.Command {
+	command := &cobra.Command{Use: "rules", Short: "Manage architecture rules", Args: cobra.NoArgs, RunE: func(cmd *cobra.Command, _ []string) error {
+		return cmd.Help()
+	}}
+	command.AddCommand(newRulesListCommand(dependencies, options), newRulesInspectCommand(dependencies, options), newRulesAddCommand(dependencies, options))
+	return command
+}
+
+func newRulesListCommand(dependencies Dependencies, options *RegistryOptions) *cobra.Command {
+	return &cobra.Command{Use: "list", Short: "List available architecture rules", Args: cobra.NoArgs, RunE: func(cmd *cobra.Command, _ []string) error {
+		resolver, err := ruleService(cmd.Context(), dependencies, *options)
+		if err != nil {
+			return err
+		}
+		result, err := resolver.List(cmd.Context())
+		if err != nil {
+			return err
+		}
+		printWarnings(cmd.ErrOrStderr(), result.Warnings)
+		writer := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 2, ' ', 0)
+		fmt.Fprintln(writer, "ID\tVERSION\tSOURCE\tDESCRIPTION")
+		for _, entry := range result.Entries {
+			fmt.Fprintf(writer, "%s\t%s\t%s\t%s\n", entry.ID, entry.Version, entry.Source, entry.Description)
+		}
+		return writer.Flush()
+	}}
+}
+
+func newRulesInspectCommand(dependencies Dependencies, options *RegistryOptions) *cobra.Command {
+	return &cobra.Command{Use: "inspect <rule-id>", Short: "Inspect an architecture rule", Args: cobra.ExactArgs(1), RunE: func(cmd *cobra.Command, args []string) error {
+		resolver, err := ruleService(cmd.Context(), dependencies, *options)
+		if err != nil {
+			return err
+		}
+		resolved, err := resolver.Resolve(cmd.Context(), args[0])
+		if err != nil {
+			return err
+		}
+		printWarnings(cmd.ErrOrStderr(), resolved.Warnings)
+		printRule(cmd.OutOrStdout(), resolved.Rule)
+		return nil
+	}}
+}
+
+func newRulesAddCommand(dependencies Dependencies, options *RegistryOptions) *cobra.Command {
+	var rawFormat, destination string
+	var overwrite, merge bool
+	command := &cobra.Command{Use: "add <rule-id>", Short: "Export an architecture rule", Args: cobra.ExactArgs(1), RunE: func(cmd *cobra.Command, args []string) error {
+		if rawFormat == "" {
+			return errors.New("--format is required")
+		}
+		format, err := archrules.ParseFormat(rawFormat)
+		if err != nil {
+			return err
+		}
+		resolver, err := ruleService(cmd.Context(), dependencies, *options)
+		if err != nil {
+			return err
+		}
+		resolved, err := resolver.Resolve(cmd.Context(), args[0])
+		if err != nil {
+			return err
+		}
+		printWarnings(cmd.ErrOrStderr(), resolved.Warnings)
+		exporter, err := archrules.NewExporter(dependencies.RuleFileSystem)
+		if err != nil {
+			return err
+		}
+		result, err := exporter.Export(resolved.Rule, format, archrules.ExportOptions{Destination: destination, Overwrite: overwrite, Merge: merge})
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(cmd.OutOrStdout(), "Exported: %s\nFormat: %s\nFiles:\n", resolved.Rule.Definition.ID, result.Format)
+		for _, file := range result.Paths {
+			fmt.Fprintf(cmd.OutOrStdout(), "  %s\n", file)
+		}
+		return nil
+	}}
+	command.Flags().StringVar(&rawFormat, "format", "", "export format: cursor, copilot, or agents")
+	command.Flags().StringVar(&destination, "destination", ".", "project root receiving exported files")
+	command.Flags().BoolVar(&overwrite, "overwrite", false, "replace an existing Cursor or Copilot file")
+	command.Flags().BoolVar(&merge, "merge", false, "merge the managed block into an existing AGENTS.md")
+	return command
+}
+
+func printRule(output io.Writer, rule archrules.Rule) {
+	definition := rule.Definition
+	fmt.Fprintf(output, "Rule: %s\nName: %s\nVersion: %s\nSource: %s\nDescription: %s\n", definition.ID, definition.Name, definition.Version, rule.Source, definition.Description)
+	fmt.Fprintln(output, "Scopes:")
+	for _, scope := range definition.Scopes {
+		fmt.Fprintf(output, "  %s -> %s\n", scope.Path, scope.Pattern)
+	}
+	printValues(output, "Rules", definition.Rules)
 }
 
 func defaultCacheRoot() string {

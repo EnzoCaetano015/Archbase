@@ -15,4 +15,22 @@ Rule paths are relative slash-separated globs such as `src/pages/**`. Paths must
 
 The official catalog is embedded and works offline. Directory and public Git registries may provide their own `rules/index.yaml`; configured sources are ordered and the first source containing an ID wins. A resolved rule is usable only when all referenced pattern IDs resolve through the configured pattern sources.
 
-Rule listing, inspection, and exporters remain planned for TASK-016 through TASK-019.
+## CLI
+
+- `arc rules list` lists IDs, versions, sources, and descriptions deterministically.
+- `arc rules inspect <rule-id>` displays identity, source, scopes, pattern IDs, and restrictions.
+- `arc rules add <rule-id> --format cursor|copilot|agents` exports a resolved rule. `--destination` defaults to the current directory.
+
+The global Git registry flags apply to rules and patterns together. A configured Git source is tried before the embedded catalog; only a missing ID permits fallback. Valid stale-cache warnings are printed to stderr.
+
+## Export formats and conflicts
+
+The full RuleID becomes a stable filename component: `architecture/next-modular@1` becomes `architecture-next-modular-1`.
+
+- Cursor writes `.cursor/rules/<normalized-id>.mdc` with `description`, `globs`, and `alwaysApply: false` frontmatter.
+- Copilot writes `.github/instructions/<normalized-id>.instructions.md` with `applyTo` frontmatter.
+- AGENTS writes `AGENTS.md` at every static scope prefix, grouping scopes with the same directory. Each generated section is bounded by RuleID-specific Archbase markers.
+
+Cursor and Copilot refuse existing files unless `--overwrite` is explicit. AGENTS rejects `--overwrite`; an existing file requires `--merge`. Merge replaces one complete matching managed block or appends a missing block while preserving external content. Incomplete, reversed, or duplicate markers are errors.
+
+Every generated path is confined to the destination, and symlinked paths are rejected. Multi-file exports are fully prevalidated and rolled back if any write fails. Exported content contains architecture, restrictions, pattern IDs, and commands for inspecting patterns; it never copies pattern example source code.
