@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -49,6 +50,48 @@ func NewGitSource(config GitSourceConfig) (*GitSource, error) {
 
 func (s *GitSource) Name() string { return s.name }
 
+// CheckoutSnapshot is a validated filesystem view of the configured Git
+// registry checkout. Catalog-specific validation remains the caller's job.
+type CheckoutSnapshot struct {
+	FS      fs.FS
+	Stale   bool
+	Warning error
+}
+
+// CheckoutProvider exposes the shared Git checkout/cache lifecycle to other
+// registry catalogs, such as architecture rules.
+type CheckoutProvider interface {
+	Name() string
+	Snapshot(context.Context) (CheckoutSnapshot, error)
+}
+
+// Snapshot refreshes the checkout when needed and returns a confined view of
+// the configured registry root. A refresh failure may return a stale snapshot;
+// callers must fully validate their own catalog before using it.
+func (s *GitSource) Snapshot(ctx context.Context) (CheckoutSnapshot, error) {
+	refreshErr := s.refresh(ctx)
+	if refreshErr != nil && (errors.Is(refreshErr, context.Canceled) || errors.Is(refreshErr, context.DeadlineExceeded)) {
+		return CheckoutSnapshot{}, refreshErr
+	}
+	root := s.config.registryPath()
+	info, cacheErr := os.Lstat(root)
+	if cacheErr != nil || info.Mode()&os.ModeSymlink != 0 || !info.IsDir() {
+		if cacheErr == nil {
+			cacheErr = errors.New("cached registry root is not a regular directory")
+		}
+		if refreshErr != nil {
+			return CheckoutSnapshot{}, fmt.Errorf("refresh registry and open cache: %w", errors.Join(refreshErr, cacheErr))
+		}
+		return CheckoutSnapshot{}, fmt.Errorf("open registry cache %q: %w", root, cacheErr)
+	}
+	snapshot := CheckoutSnapshot{FS: os.DirFS(root)}
+	if refreshErr != nil {
+		snapshot.Stale = true
+		snapshot.Warning = fmt.Errorf("registry update failed; using validated stale cache: %w", refreshErr)
+	}
+	return snapshot, nil
+}
+
 func (s *GitSource) Lookup(ctx context.Context, id PatternID) (LookupResult, error) {
 	catalog, stale, warning, err := s.catalog(ctx)
 	if err != nil {
@@ -79,26 +122,18 @@ func (s *GitSource) List(ctx context.Context) (ListResult, error) {
 }
 
 func (s *GitSource) catalog(ctx context.Context) (*catalogSource, bool, error, error) {
-	refreshErr := s.refresh(ctx)
-	if refreshErr != nil && (errors.Is(refreshErr, context.Canceled) || errors.Is(refreshErr, context.DeadlineExceeded)) {
-		return nil, false, nil, refreshErr
+	snapshot, err := s.Snapshot(ctx)
+	if err != nil {
+		return nil, false, nil, err
 	}
-	cached, cacheErr := NewDirectorySource(s.config.registryPath())
-	if cacheErr != nil {
-		if refreshErr != nil {
-			return nil, false, nil, fmt.Errorf("refresh registry and open cache: %w", errors.Join(refreshErr, cacheErr))
+	catalog, err := newCatalogSource(s.name, snapshot.FS)
+	if err != nil {
+		if snapshot.Stale {
+			return nil, false, nil, fmt.Errorf("validate stale registry cache: %w", err)
 		}
-		return nil, false, nil, cacheErr
+		return nil, false, nil, err
 	}
-	catalog, ok := cached.(*catalogSource)
-	if !ok {
-		return nil, false, nil, fmt.Errorf("internal error: directory registry has unexpected type %T", cached)
-	}
-	if refreshErr != nil {
-		warning := fmt.Errorf("registry update failed; using validated stale cache: %w", refreshErr)
-		return catalog, true, warning, nil
-	}
-	return catalog, false, nil, nil
+	return catalog, snapshot.Stale, snapshot.Warning, nil
 }
 
 func (s *GitSource) refresh(ctx context.Context) error {

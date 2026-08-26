@@ -2,7 +2,7 @@
 
 Archbase is an open-source CLI that gives AI coding agents explicit, reusable structural patterns. Patterns describe **how a type of code is written**; architecture rules describe **where code belongs and which relationships are allowed**.
 
-This repository contains the completed first milestone (TASK-001 through TASK-013):
+This repository contains the completed core milestone and the initial canonical rules work (TASK-001 through TASK-015):
 
 - the `arc` Go CLI with `help` and `version`;
 - versioned YAML contracts backed by JSON Schema;
@@ -13,9 +13,11 @@ This repository contains the completed first milestone (TASK-001 through TASK-01
 - a concurrency-safe Git cache with a 15-minute TTL and validated stale fallback;
 - transactional installation and creation of customizable local patterns;
 - nearest-scope resolution for files, directories, and future paths;
-- deterministic pattern resolution and inspection commands.
+- deterministic pattern resolution and inspection commands;
+- an agent-neutral architecture rule contract and validated rule registry;
+- initial modular Next and layered .NET architecture rules.
 
-Rules exporters and MCP are intentionally not implemented yet.
+Rules exporters, rules CLI commands, and MCP are intentionally not implemented yet.
 
 ## Requirements
 
@@ -50,4 +52,4 @@ The official registry is embedded in the binary and therefore works offline. A p
 
 Installed scopes use `.archbase/scope.yaml` and keep local pattern copies under `.archbase/patterns/`. Adding or creating another pattern preserves previous directories and atomically activates the new pattern. Existing pattern directories are never overwritten.
 
-See [docs/schemas.md](docs/schemas.md) for the public YAML contracts and [docs/registry.md](docs/registry.md) for registry behavior.
+See [docs/schemas.md](docs/schemas.md) for the public YAML contracts, [docs/registry.md](docs/registry.md) for registry behavior, and [docs/rules.md](docs/rules.md) for the canonical rule model.

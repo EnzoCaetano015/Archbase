@@ -1,0 +1,10 @@
+schemaVersion: 1
+rules:
+  - id: architecture/dotnet-layered@1
+    version: 1.0.0
+    path: architecture/dotnet-layered/1
+    description: Layered .NET architecture with one-way controller, service, and repository dependencies.
+  - id: architecture/next-modular@1
+    version: 1.0.0
+    path: architecture/next-modular/1
+    description: Modular Next architecture separating pages, components, hooks, and utilities.

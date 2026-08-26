@@ -1,0 +1,24 @@
+schemaVersion: 1
+id: architecture/next-modular@1
+name: Modular Next architecture
+description: Separates page composition, reusable presentation, stateful behavior, and pure transformations.
+version: 1.0.0
+scopes:
+  - path: src/components/**
+    pattern: next/component@4821
+  - path: src/hooks/**
+    pattern: next/hook@9214
+  - path: src/pages/**
+    pattern: next/page@1234
+  - path: src/utils/**
+    pattern: next/util@3378
+rules:
+  - Every page must own a dedicated directory and preserve the page bundle responsibilities.
+  - Page-specific state and effects must remain in the page hook rather than the rendered view.
+  - Pure page transformations must remain in utilities and must not acquire stateful responsibilities.
+  - Shared components may be imported by pages, but shared components must not import pages.
+  - Reusable hooks must expose an explicit public return shape and must not render UI.
+  - External API access must be delegated to a service boundary instead of being embedded in views or utilities.
+metadata:
+  stack: next
+  maturity: foundation

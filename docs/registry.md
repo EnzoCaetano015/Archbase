@@ -16,6 +16,8 @@ The binary embeds the initial catalog:
 
 Patterns describe code structure rather than application features. Registry entries are sorted by ID and validated against their manifests and declared files when a source is opened.
 
+The same registry may include an independent `rules/index.yaml` catalog. Rule entries point to directories containing `rule.yaml`; IDs, versions, ordering, path confinement, symlinks, and the complete canonical document are validated. A registry without a `rules/` directory remains a valid pattern-only registry.
+
 ## Git sources
 
 `GitSourceConfig` is an internal API. It accepts a public `https`, `git`, or absolute `file` URL, a branch or tag, an optional registry subdirectory, an absolute cache root, and an optional TTL. The CLI exposes the same choices through global `--registry-*` flags.
@@ -26,6 +28,8 @@ Patterns describe code structure rather than application features. Registry entr
 - Clone promotion is atomic and fetch/reset updates happen under a contextual cross-process lock.
 - If refresh fails, cached content is used only after complete registry and bundle validation. The result is marked stale and includes a warning.
 - An invalid cache or a canceled context produces an error.
+
+Patterns and rules use the same contextual Git checkout, cache key, TTL, lock, and stale fallback. Each catalog validates its own cached content before using a stale snapshot.
 
 Environment variables, private-registry authentication, and user-facing cache management remain outside the first milestone.
 

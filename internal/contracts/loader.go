@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -77,6 +78,22 @@ func LoadScope(path string) (Scope, error) {
 func LoadRule(path string) (Rule, error) {
 	var result Rule
 	err := loadFile(RuleKind, path, &result)
+	if err == nil {
+		err = validateRuleSemantics(path, result)
+	}
+	return result, err
+}
+
+func LoadRuleFS(fsys fs.FS, filePath string) (Rule, error) {
+	var result Rule
+	data, err := fs.ReadFile(fsys, filePath)
+	if err != nil {
+		return result, &ValidationError{Kind: RuleKind, Path: filePath, Cause: err}
+	}
+	err = decodeAndValidate(RuleKind, filePath, data, &result)
+	if err == nil {
+		err = validateRuleSemantics(filePath, result)
+	}
 	return result, err
 }
 
@@ -91,6 +108,14 @@ func EncodeManifest(manifest Manifest) ([]byte, error) {
 // EncodeScope serializes a scope and validates the resulting public contract.
 func EncodeScope(scope Scope) ([]byte, error) {
 	return encodeAndValidate(ScopeKind, "scope.yaml", scope)
+}
+
+// EncodeRule serializes a rule and validates the resulting public contract.
+func EncodeRule(rule Rule) ([]byte, error) {
+	if err := validateRuleSemantics("rule.yaml", rule); err != nil {
+		return nil, err
+	}
+	return encodeAndValidate(RuleKind, "rule.yaml", rule)
 }
 
 func encodeAndValidate(kind Kind, sourcePath string, value any) ([]byte, error) {
@@ -190,6 +215,53 @@ func validateManifestPaths(sourcePath string, manifest Manifest) error {
 		}
 	}
 	return nil
+}
+
+func validateRuleSemantics(sourcePath string, rule Rule) error {
+	associations := make(map[string]int, len(rule.Scopes))
+	for index, scope := range rule.Scopes {
+		if !safeRulePath(scope.Path) {
+			return &ValidationError{
+				Kind:  RuleKind,
+				Path:  sourcePath,
+				Field: fmt.Sprintf("/scopes/%d/path", index),
+				Cause: fmt.Errorf("path must be a normalized slash-separated relative glob: %q", scope.Path),
+			}
+		}
+		key := scope.Path + "\x00" + scope.Pattern
+		if previous, exists := associations[key]; exists {
+			return &ValidationError{
+				Kind:  RuleKind,
+				Path:  sourcePath,
+				Field: fmt.Sprintf("/scopes/%d", index),
+				Cause: fmt.Errorf("duplicate path and pattern association; first declared at index %d", previous),
+			}
+		}
+		associations[key] = index
+	}
+	for index, ruleText := range rule.Rules {
+		if strings.TrimSpace(ruleText) == "" {
+			return &ValidationError{
+				Kind:  RuleKind,
+				Path:  sourcePath,
+				Field: fmt.Sprintf("/rules/%d", index),
+				Cause: errors.New("architectural restriction must contain non-whitespace text"),
+			}
+		}
+	}
+	return nil
+}
+
+func safeRulePath(value string) bool {
+	if value == "" || strings.Contains(value, "\\") || strings.HasPrefix(value, "/") || filepath.IsAbs(value) || filepath.VolumeName(value) != "" {
+		return false
+	}
+	cleaned := path.Clean(value)
+	if cleaned == "." || cleaned == ".." || strings.HasPrefix(cleaned, "../") || cleaned != value {
+		return false
+	}
+	_, err := path.Match(value, "")
+	return err == nil
 }
 
 func safeRelativePath(value string) bool {

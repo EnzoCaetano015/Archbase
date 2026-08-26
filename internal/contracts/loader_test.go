@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"testing/fstest"
 )
 
 const validManifest = `schemaVersion: 1
@@ -103,6 +104,99 @@ rules:
 `
 	if _, err := LoadRule(writeDocument(t, "rule.yaml", rule)); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestRuleFSAndEncoding(t *testing.T) {
+	rule := `schemaVersion: 1
+id: architecture/next-modular@1
+name: Modular Next
+description: Architecture without exporter-specific fields.
+version: 1.0.0
+scopes:
+  - path: src/pages/**
+    pattern: next/page@1234
+rules:
+  - Pages must have their own directory.
+metadata:
+  owner: platform
+`
+	loaded, err := LoadRuleFS(fstest.MapFS{"rule.yaml": &fstest.MapFile{Data: []byte(rule)}}, "rule.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	encoded, err := EncodeRule(loaded)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(encoded) == 0 || loaded.Metadata["owner"] != "platform" {
+		t.Fatalf("unexpected rule round trip: %#v", loaded)
+	}
+}
+
+func TestRuleSemanticValidation(t *testing.T) {
+	valid := `schemaVersion: 1
+id: architecture/example@1
+name: Example
+version: 1.0.0
+scopes:
+  - path: src/pages/**
+    pattern: next/page@1234
+rules:
+  - Keep architecture explicit.
+`
+	tests := []struct {
+		name string
+		from string
+		to   string
+		want string
+	}{
+		{name: "absolute path", from: "src/pages/**", to: "/src/pages/**", want: "/scopes/0/path"},
+		{name: "traversal", from: "src/pages/**", to: "../pages/**", want: "/scopes/0/path"},
+		{name: "backslash", from: "src/pages/**", to: `src\pages\**`, want: "/scopes/0/path"},
+		{name: "not normalized", from: "src/pages/**", to: "src/./pages/**", want: "/scopes/0/path"},
+		{name: "invalid glob", from: "src/pages/**", to: "src/[pages/**", want: "/scopes/0/path"},
+		{name: "whitespace restriction", from: "Keep architecture explicit.", to: "   ", want: "/rules/0"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			_, err := LoadRule(writeDocument(t, "rule.yaml", strings.Replace(valid, test.from, test.to, 1)))
+			assertValidationError(t, err, test.want)
+		})
+	}
+	duplicate := strings.Replace(valid, "rules:", "  - path: src/pages/**\n    pattern: next/page@1234\nrules:", 1)
+	_, err := LoadRule(writeDocument(t, "rule.yaml", duplicate))
+	assertValidationError(t, err, "/scopes/1")
+}
+
+func TestRuleSchemaValidation(t *testing.T) {
+	valid := `schemaVersion: 1
+id: architecture/example@1
+name: Example
+version: 1.0.0
+scopes:
+  - path: src/**
+    pattern: next/page@1234
+rules:
+  - Keep architecture explicit.
+`
+	tests := []struct {
+		name string
+		edit func(string) string
+		want string
+	}{
+		{name: "missing name", edit: func(value string) string { return strings.Replace(value, "name: Example\n", "", 1) }, want: "name"},
+		{name: "invalid ID", edit: func(value string) string {
+			return strings.Replace(value, "architecture/example@1", "Architecture/example@1", 1)
+		}, want: "id"},
+		{name: "invalid SemVer", edit: func(value string) string { return strings.Replace(value, "version: 1.0.0", "version: one", 1) }, want: "version"},
+		{name: "unknown field", edit: func(value string) string { return value + "exporter: cursor\n" }, want: "exporter"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			_, err := LoadRule(writeDocument(t, "rule.yaml", test.edit(valid)))
+			assertValidationError(t, err, test.want)
+		})
 	}
 }
 

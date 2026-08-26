@@ -1,0 +1,22 @@
+schemaVersion: 1
+id: architecture/dotnet-layered@1
+name: Layered .NET architecture
+description: Defines one-way dependencies across HTTP, application, and persistence responsibilities.
+version: 1.0.0
+scopes:
+  - path: src/**/Controllers/**
+    pattern: dotnet/controller@7743
+  - path: src/**/Repositories/**
+    pattern: dotnet/repository@5532
+  - path: src/**/Services/**
+    pattern: dotnet/service@1172
+rules:
+  - Controllers must handle transport concerns and delegate application behavior to services.
+  - Services must own application orchestration and depend on repository contracts through injection.
+  - Repositories must isolate persistence access and must not depend on controllers or services.
+  - Dependencies must flow from Controller to Service to Repository and never in the reverse direction.
+  - Cancellation and asynchronous boundaries must be propagated across all participating layers.
+  - Transport models and persistence details must not become shared business responsibilities between layers.
+metadata:
+  stack: dotnet
+  maturity: foundation
