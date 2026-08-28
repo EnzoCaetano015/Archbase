@@ -1,0 +1,80 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            go-version: "1.26.x"
+          - os: windows-latest
+            go-version: "1.26.x"
+          - os: macos-latest
+            go-version: "1.26.x"
+          - os: ubuntu-latest
+            go-version: "1.27.x"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+      - run: go test ./...
+      - run: go vet ./...
+      - run: go build -trimpath ./cmd/arc
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.27.x"
+          cache: true
+      - name: Validate stable release tag
+        shell: bash
+        run: |
+          if [[ ! "$GITHUB_REF_NAME" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "release tag must match vMAJOR.MINOR.PATCH" >&2
+            exit 1
+          fi
+      - name: Build release twice
+        shell: bash
+        run: |
+          source_epoch="$(git show -s --format=%ct "$GITHUB_SHA")"
+          go run ./internal/release/cmd/package -tag "$GITHUB_REF_NAME" -source-epoch "$source_epoch" -output dist
+          go run ./internal/release/cmd/package -tag "$GITHUB_REF_NAME" -source-epoch "$source_epoch" -output dist-repeat
+      - name: Verify reproducibility, checksums, and injected version
+        shell: bash
+        run: |
+          diff -r dist dist-repeat
+          version="${GITHUB_REF_NAME#v}"
+          checksum="dist/arc_v${version}_SHA256SUMS.txt"
+          (cd dist && sha256sum --check "$(basename "$checksum")")
+          mkdir release-smoke
+          tar -xzf "dist/arc_v${version}_linux_amd64.tar.gz" -C release-smoke
+          test "$(./release-smoke/arc version)" = "arc ${version}"
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: gh release create "$GITHUB_REF_NAME" dist/* --verify-tag --generate-notes --title "Archbase $GITHUB_REF_NAME"

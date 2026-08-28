@@ -9,10 +9,12 @@
 
 ## Current milestone boundaries
 
-- TASK-001 through TASK-021 are implemented.
+- TASK-001 through TASK-023 are implemented; the first public milestone is complete.
 - Keep Go packages under `internal/` until a public Go API is intentionally designed.
 - Public Git registries may be cloned by the registry core; authentication remains out of scope.
-- Releases, binary installation, and the complete public first-flow guide remain outside the current milestone.
+- Stable releases are triggered only by existing `vMAJOR.MINOR.PATCH` tags and must pass the complete verification gate before publication.
+- Release archives and checksums must remain byte-for-byte reproducible for identical source, version, and timestamp inputs.
+- Registry authentication, package-manager distribution, release signing, attestations, and non-stdio MCP transports remain out of scope.
 - Existing files must never be overwritten unless the caller explicitly opts in.
 - Changes to public YAML contracts require matching schema, tests, and documentation updates.
 - Registry entries must remain sorted by ID and every declared required file must pass bundle validation.
