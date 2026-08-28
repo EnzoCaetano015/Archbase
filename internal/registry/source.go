@@ -20,6 +20,7 @@ type Entry struct {
 	Version     string
 	Path        string
 	Description string
+	Source      string
 }
 
 type Pattern struct {

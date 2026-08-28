@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/EnzoCaetano015/Archbase/internal/contracts"
+	archmcp "github.com/EnzoCaetano015/Archbase/internal/mcp"
 	"github.com/EnzoCaetano015/Archbase/internal/registry"
 	archrules "github.com/EnzoCaetano015/Archbase/internal/rules"
 	"github.com/EnzoCaetano015/Archbase/internal/workspace"
@@ -26,10 +27,8 @@ Available commands:
   arc resolve    Resolve the active pattern for a path
   arc inspect    Inspect a local or registry pattern
   arc rules      List, inspect, and export architecture rules
-  arc version    Show the CLI version
-
-Planned commands:
-  arc mcp serve  Start the MCP server`
+  arc mcp serve  Start the project-scoped MCP server over stdio
+  arc version    Show the CLI version`
 
 type RegistryOptions struct {
 	URL          string
@@ -42,14 +41,16 @@ type RegistryOptions struct {
 type Dependencies struct {
 	FileSystem          workspace.FileSystem
 	RuleFileSystem      archrules.ExportFileSystem
+	MCPFileSystem       archmcp.FileSystem
 	ResolverFactory     func(context.Context, RegistryOptions) (*registry.Resolver, error)
 	RuleResolverFactory func(context.Context, RegistryOptions, *registry.Resolver) (*archrules.Resolver, error)
+	MCPRunner           func(context.Context, *archmcp.Service, string) error
 }
 
 func defaultDependencies() Dependencies {
 	return Dependencies{
-		FileSystem: workspace.OSFileSystem{}, RuleFileSystem: archrules.OSExportFileSystem{},
-		ResolverFactory: defaultResolver, RuleResolverFactory: defaultRuleResolver,
+		FileSystem: workspace.OSFileSystem{}, RuleFileSystem: archrules.OSExportFileSystem{}, MCPFileSystem: archmcp.OSFileSystem{},
+		ResolverFactory: defaultResolver, RuleResolverFactory: defaultRuleResolver, MCPRunner: archmcp.RunStdio,
 	}
 }
 
@@ -108,6 +109,12 @@ func NewRootCommand(cliVersion string, supplied ...Dependencies) *cobra.Command 
 		if dependencies.RuleResolverFactory == nil {
 			dependencies.RuleResolverFactory = defaultRuleResolver
 		}
+		if dependencies.MCPFileSystem == nil {
+			dependencies.MCPFileSystem = archmcp.OSFileSystem{}
+		}
+		if dependencies.MCPRunner == nil {
+			dependencies.MCPRunner = archmcp.RunStdio
+		}
 	}
 	options := RegistryOptions{Ref: "main", CacheRoot: defaultCacheRoot(), TTL: registry.DefaultGitCacheTTL}
 	root := &cobra.Command{
@@ -122,11 +129,36 @@ func NewRootCommand(cliVersion string, supplied ...Dependencies) *cobra.Command 
 	flags.StringVar(&options.Subdirectory, "registry-subdir", "", "registry subdirectory inside the checkout")
 	flags.StringVar(&options.CacheRoot, "registry-cache-dir", options.CacheRoot, "absolute registry cache directory")
 	flags.DurationVar(&options.TTL, "registry-ttl", registry.DefaultGitCacheTTL, "registry cache time to live")
-	root.AddCommand(newAddCommand(dependencies, &options), newCreateCommand(dependencies, &options), newResolveCommand(dependencies, &options), newInspectCommand(dependencies, &options), newRulesCommand(dependencies, &options))
+	root.AddCommand(newAddCommand(dependencies, &options), newCreateCommand(dependencies, &options), newResolveCommand(dependencies, &options), newInspectCommand(dependencies, &options), newRulesCommand(dependencies, &options), newMCPCommand(dependencies, &options, cliVersion))
 	root.AddCommand(&cobra.Command{Use: "version", Short: "Show the CLI version", Args: cobra.NoArgs, Run: func(cmd *cobra.Command, _ []string) {
 		fmt.Fprintf(cmd.OutOrStdout(), "arc %s\n", cliVersion)
 	}})
 	return root
+}
+
+func newMCPCommand(dependencies Dependencies, options *RegistryOptions, cliVersion string) *cobra.Command {
+	command := &cobra.Command{Use: "mcp", Short: "Run Model Context Protocol integrations", Args: cobra.NoArgs, RunE: func(cmd *cobra.Command, _ []string) error {
+		return cmd.Help()
+	}}
+	var projectRoot string
+	serve := &cobra.Command{Use: "serve", Short: "Start the project-scoped MCP server over stdio", Args: cobra.NoArgs, RunE: func(cmd *cobra.Command, _ []string) error {
+		workspaceService, patterns, err := service(cmd.Context(), dependencies, *options)
+		if err != nil {
+			return err
+		}
+		rules, err := dependencies.RuleResolverFactory(cmd.Context(), *options, patterns)
+		if err != nil {
+			return err
+		}
+		mcpService, err := archmcp.NewService(projectRoot, patterns, rules, workspaceService, dependencies.MCPFileSystem)
+		if err != nil {
+			return err
+		}
+		return dependencies.MCPRunner(cmd.Context(), mcpService, cliVersion)
+	}}
+	serve.Flags().StringVar(&projectRoot, "project-root", ".", "project root exposed to MCP tools")
+	command.AddCommand(serve)
+	return command
 }
 
 func ruleService(ctx context.Context, dependencies Dependencies, options RegistryOptions) (*archrules.Resolver, error) {

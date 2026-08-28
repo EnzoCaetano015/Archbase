@@ -4,14 +4,17 @@ import (
 	"bytes"
 	"context"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
 	"time"
 
+	archmcp "github.com/EnzoCaetano015/Archbase/internal/mcp"
 	"github.com/EnzoCaetano015/Archbase/internal/registry"
 	archrules "github.com/EnzoCaetano015/Archbase/internal/rules"
 	"github.com/EnzoCaetano015/Archbase/internal/workspace"
+	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 func TestHelpListsCurrentAndPlannedCommands(t *testing.T) {
@@ -208,4 +211,68 @@ func TestRulesCommandsPassRegistryOptionsAndPrintStaleWarnings(t *testing.T) {
 	if !strings.Contains(stdout.String(), "architecture/test@1") || !strings.Contains(stderr.String(), "warning: context deadline exceeded") {
 		t.Fatalf("unexpected output: stdout=%q stderr=%q", stdout.String(), stderr.String())
 	}
+}
+
+func TestMCPServeUsesProjectRootVersionAndNoNormalStdout(t *testing.T) {
+	root := t.TempDir()
+	called := false
+	dependencies := Dependencies{MCPRunner: func(_ context.Context, service *archmcp.Service, version string) error {
+		called = service != nil
+		if version != "1.2.3" {
+			t.Fatalf("unexpected MCP version %q", version)
+		}
+		return nil
+	}}
+	var stdout, stderr bytes.Buffer
+	if code := Execute([]string{"mcp", "serve", "--project-root", root}, &stdout, &stderr, "1.2.3", dependencies); code != 0 {
+		t.Fatalf("mcp serve failed: %s", stderr.String())
+	}
+	if !called || stdout.Len() != 0 {
+		t.Fatalf("runner called=%t stdout=%q", called, stdout.String())
+	}
+}
+
+func TestMCPServeRejectsInvalidProjectRoot(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	missing := filepath.Join(t.TempDir(), "missing")
+	if code := Execute([]string{"mcp", "serve", "--project-root", missing}, &stdout, &stderr, "dev", Dependencies{MCPRunner: func(context.Context, *archmcp.Service, string) error {
+		t.Fatal("runner must not be called")
+		return nil
+	}}); code == 0 || !strings.Contains(stderr.String(), "project root") {
+		t.Fatalf("unexpected result: code=%d stderr=%q", code, stderr.String())
+	}
+}
+
+func TestMCPServeOverStdio(t *testing.T) {
+	root := t.TempDir()
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	command := exec.CommandContext(ctx, os.Args[0], "-test.run=^TestMCPStdioHelper$")
+	command.Env = append(os.Environ(), "ARCHBASE_MCP_HELPER=1", "ARCHBASE_MCP_ROOT="+root)
+	var childStderr bytes.Buffer
+	command.Stderr = &childStderr
+	client := mcpsdk.NewClient(&mcpsdk.Implementation{Name: "cli-stdio-test", Version: "test"}, nil)
+	session, err := client.Connect(ctx, &mcpsdk.CommandTransport{Command: command, TerminateDuration: time.Second}, nil)
+	if err != nil {
+		t.Fatalf("connect stdio MCP: %v: %s", err, childStderr.String())
+	}
+	listed, err := session.ListTools(ctx, nil)
+	if err != nil || len(listed.Tools) != 6 {
+		t.Fatalf("list stdio tools: tools=%d err=%v stderr=%s", len(listed.Tools), err, childStderr.String())
+	}
+	result, err := session.CallTool(ctx, &mcpsdk.CallToolParams{Name: "get_pattern", Arguments: map[string]any{"patternId": "next/page@1234"}})
+	if err != nil || result.IsError {
+		t.Fatalf("call stdio tool: result=%#v err=%v stderr=%s", result, err, childStderr.String())
+	}
+	if err := session.Close(); err != nil {
+		t.Fatalf("close stdio MCP: %v: %s", err, childStderr.String())
+	}
+}
+
+func TestMCPStdioHelper(t *testing.T) {
+	if os.Getenv("ARCHBASE_MCP_HELPER") != "1" {
+		return
+	}
+	code := Execute([]string{"mcp", "serve", "--project-root", os.Getenv("ARCHBASE_MCP_ROOT")}, os.Stdout, os.Stderr, "test")
+	os.Exit(code)
 }

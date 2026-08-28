@@ -11,13 +11,19 @@ import (
 type stubSource struct {
 	name   string
 	lookup func(context.Context, PatternID) (LookupResult, error)
+	list   func(context.Context) (ListResult, error)
 }
 
 func (s stubSource) Name() string { return s.name }
 func (s stubSource) Lookup(ctx context.Context, id PatternID) (LookupResult, error) {
 	return s.lookup(ctx, id)
 }
-func (s stubSource) List(context.Context) (ListResult, error) { return ListResult{}, nil }
+func (s stubSource) List(ctx context.Context) (ListResult, error) {
+	if s.list == nil {
+		return ListResult{}, nil
+	}
+	return s.list(ctx)
+}
 
 func TestResolverUsesFirstMatchingSource(t *testing.T) {
 	id, _ := ParsePatternID("test/item@1")
@@ -101,5 +107,21 @@ func TestResolverValidatesConstructionAndID(t *testing.T) {
 	}})
 	if _, err := resolver.Resolve(context.Background(), "Invalid"); err == nil {
 		t.Fatal("expected invalid ID error")
+	}
+}
+
+func TestResolverListDeduplicatesByPrecedence(t *testing.T) {
+	a, _ := ParsePatternID("test/a@1")
+	b, _ := ParsePatternID("test/b@1")
+	first := stubSource{name: "remote", lookup: nil, list: func(context.Context) (ListResult, error) {
+		return ListResult{Entries: []Entry{{ID: b}, {ID: a}}, Stale: true, Warning: errors.New("offline")}, nil
+	}}
+	second := stubSource{name: "embedded", lookup: nil, list: func(context.Context) (ListResult, error) {
+		return ListResult{Entries: []Entry{{ID: a}}}, nil
+	}}
+	resolver, _ := NewResolver(first, second)
+	result, err := resolver.List(context.Background())
+	if err != nil || len(result.Entries) != 2 || result.Entries[0].ID != a || result.Entries[0].Source != "remote" || !result.Stale || len(result.Warnings) != 1 {
+		t.Fatalf("unexpected list result: %#v, %v", result, err)
 	}
 }

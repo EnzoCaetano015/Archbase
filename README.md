@@ -2,7 +2,7 @@
 
 Archbase is an open-source CLI that gives AI coding agents explicit, reusable structural patterns. Patterns describe **how a type of code is written**; architecture rules describe **where code belongs and which relationships are allowed**.
 
-This repository contains the completed pattern and rules milestones (TASK-001 through TASK-019):
+This repository contains the completed core, rules, MCP, and end-to-end milestones (TASK-001 through TASK-021):
 
 - the `arc` Go CLI with `help` and `version`;
 - versioned YAML contracts backed by JSON Schema;
@@ -17,9 +17,11 @@ This repository contains the completed pattern and rules milestones (TASK-001 th
 - an agent-neutral architecture rule contract and validated rule registry;
 - initial modular Next and layered .NET architecture rules;
 - transactional exporters for Cursor, GitHub Copilot, and hierarchical `AGENTS.md` files;
-- rule listing, inspection, and export commands.
+- rule listing, inspection, and export commands;
+- a project-confined MCP stdio server with typed pattern, scope, file, and rule tools;
+- end-to-end Next and .NET coverage over a local Git registry.
 
-MCP, release automation, and binary installation are intentionally not implemented yet.
+Release automation, binary installation, and the complete first-flow guide remain planned for TASK-022 and TASK-023.
 
 ## Requirements
 
@@ -53,6 +55,7 @@ arc rules inspect architecture/next-modular@1
 arc rules add architecture/next-modular@1 --format cursor
 arc rules add architecture/next-modular@1 --format copilot --destination ./app
 arc rules add architecture/next-modular@1 --format agents --merge
+arc mcp serve --project-root .
 ```
 
 The official registry is embedded in the binary and therefore works offline. A public Git registry can be placed before it with `--registry-url`, `--registry-ref`, `--registry-subdir`, `--registry-cache-dir`, and `--registry-ttl`. Git access supports public `https`, `git`, and absolute `file` URLs without depending on a system Git executable.
@@ -61,4 +64,4 @@ Installed scopes use `.archbase/scope.yaml` and keep local pattern copies under 
 
 Rule exports are confined to `--destination` (default `.`). Cursor and Copilot files require `--overwrite` on conflict. Existing `AGENTS.md` files require `--merge`, which updates only the RuleID-specific Archbase block and preserves other content.
 
-See [docs/schemas.md](docs/schemas.md) for the public YAML contracts, [docs/registry.md](docs/registry.md) for registry behavior, and [docs/rules.md](docs/rules.md) for the canonical rule model.
+See [docs/schemas.md](docs/schemas.md) for the public YAML contracts, [docs/registry.md](docs/registry.md) for registry behavior, [docs/rules.md](docs/rules.md) for the canonical rule model, and [docs/mcp.md](docs/mcp.md) for the MCP tool contract.
