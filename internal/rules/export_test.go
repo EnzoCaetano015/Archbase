@@ -166,6 +166,29 @@ func TestExporterRejectsTraversalAndSymlinks(t *testing.T) {
 	}
 }
 
+func TestExporterAllowsSymlinkedDestinationAncestor(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("creating symlinks commonly requires elevated Windows privileges")
+	}
+	realParent := t.TempDir()
+	linkedParent := filepath.Join(t.TempDir(), "linked-parent")
+	if err := os.Symlink(realParent, linkedParent); err != nil {
+		t.Fatal(err)
+	}
+	root := filepath.Join(linkedParent, "project")
+	exporter, _ := NewExporter(OSExportFileSystem{})
+	result, err := exporter.Export(exportTestRule(), FormatCursor, ExportOptions{Destination: root})
+	if err != nil {
+		t.Fatalf("export through symlinked ancestor: %v", err)
+	}
+	if len(result.Paths) != 1 {
+		t.Fatalf("exported paths=%d, want 1", len(result.Paths))
+	}
+	if _, err := os.Stat(filepath.Join(realParent, "project", ".cursor", "rules", "architecture-example-1.mdc")); err != nil {
+		t.Fatalf("exported file: %v", err)
+	}
+}
+
 type failingExportFS struct {
 	OSExportFileSystem
 	writes int

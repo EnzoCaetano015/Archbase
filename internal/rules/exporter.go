@@ -189,9 +189,6 @@ func (e *Exporter) rollback(written []preparedArtifact) error {
 }
 
 func (e *Exporter) validateRoot(root string) error {
-	if err := e.rejectExistingAncestorSymlinks(root); err != nil {
-		return err
-	}
 	exists, err := e.fs.Exists(root)
 	if err != nil {
 		return err
@@ -210,30 +207,6 @@ func (e *Exporter) validateRoot(root string) error {
 		return &archfs.PathError{Op: "export", Path: root, Err: errors.New("destination is not a directory")}
 	}
 	return nil
-}
-
-func (e *Exporter) rejectExistingAncestorSymlinks(value string) error {
-	current := filepath.Clean(value)
-	for {
-		exists, err := e.fs.Exists(current)
-		if err != nil {
-			return err
-		}
-		if exists {
-			info, err := e.fs.Lstat(current)
-			if err != nil {
-				return err
-			}
-			if info.Mode()&os.ModeSymlink != 0 {
-				return &archfs.PathError{Op: "export", Path: current, Err: archfs.ErrSymlink}
-			}
-		}
-		parent := filepath.Dir(current)
-		if parent == current {
-			return nil
-		}
-		current = parent
-	}
 }
 
 func (e *Exporter) rejectSymlinkPath(root, target string) error {
