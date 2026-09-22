@@ -1,5 +1,9 @@
 schemaVersion: 1
 rules:
+  - id: architecture/astro-content-site@1
+    version: 1.0.0
+    path: architecture/astro-content-site/1
+    description: Content-oriented Astro architecture with file routes, layouts, server-rendered components, collections, and pure utilities.
   - id: architecture/dotnet-layered@1
     version: 1.0.0
     path: architecture/dotnet-layered/1

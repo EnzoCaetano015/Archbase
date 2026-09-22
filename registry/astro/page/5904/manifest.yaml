@@ -1,0 +1,31 @@
+schemaVersion: 1
+id: astro/page@5904
+name: File-routed Astro content page
+description: Domain-neutral Astro page composing a document layout, optimized assets, and a build-time content collection.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: Example.astro
+      destination: "{{Name}}/index.astro"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - metadata
+  - collection-query
+  - rendered-content
+  - semantic-classes
+preserve:
+  - file-based-route
+  - layout-composition
+  - server-frontmatter
+  - build-time-content-query
+  - optimized-assets
+  - zero-client-javascript-default
+metadata:
+  framework: astro
+  styling: tailwind
+  content: collections
+  maturity: foundation-sample

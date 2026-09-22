@@ -1,0 +1,35 @@
+---
+import { Image } from "astro:assets"
+import { getCollection } from "astro:content"
+
+import BaseLayout from "../layouts/BaseLayout.astro"
+
+const examples = await getCollection("examples")
+---
+
+<BaseLayout
+	title="Examples"
+	description="Validated content rendered with Astro"
+>
+	<section class="mx-auto grid w-full max-w-5xl gap-6 px-6 py-10 md:grid-cols-2">
+		<h1 class="col-span-full text-4xl font-bold">Examples</h1>
+		{
+			examples.map(({ data, id }) => (
+				<article class="space-y-3 rounded-xl border border-neutral-200 bg-white p-5">
+					<Image
+						src={data.image}
+						width={640}
+						height={360}
+						alt={data.title}
+						class="aspect-video w-full rounded-lg object-cover"
+					/>
+					<h2 class="text-xl font-semibold">{data.title}</h2>
+					<p class="text-neutral-600">{data.description}</p>
+					<a class="font-medium text-primary hover:underline" href={`/examples/${id}`}>
+						Read more
+					</a>
+				</article>
+			))
+		}
+	</section>
+</BaseLayout>

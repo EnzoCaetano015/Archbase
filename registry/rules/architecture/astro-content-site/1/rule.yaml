@@ -1,0 +1,32 @@
+schemaVersion: 1
+id: architecture/astro-content-site@1
+name: Astro content site architecture
+description: Defines file-routed pages, document layouts, server-rendered components, validated content collections, and pure utilities for an Astro site.
+version: 1.0.0
+scopes:
+  - path: src/components/**
+    pattern: astro/component@3148
+  - path: src/content/**
+    pattern: astro/content-collection@4720
+  - path: src/layouts/**
+    pattern: astro/layout@6813
+  - path: src/lib/**
+    pattern: astro/util@2386
+  - path: src/pages/**
+    pattern: astro/page@5904
+rules:
+  - Pages must follow Astro file-based routing and compose shared layouts rather than duplicating the document shell.
+  - Layouts must own document metadata, global styles, shared shell components, and the page-content slot.
+  - Astro components must keep data preparation in frontmatter and semantic presentation in markup.
+  - Components must remain server-rendered by default and add client-side JavaScript only for behavior that requires it.
+  - Browser globals and DOM listeners must remain inside component scripts and must be initialized according to the active Astro navigation lifecycle.
+  - Content collections must validate entries against explicit schemas and keep data separate from presentation.
+  - Pages should query collections at build or request time and must not move content loading into browser scripts without a runtime requirement.
+  - Images should use Astro asset handling when optimization is applicable and must provide meaningful alternative text unless decorative.
+  - Framework components such as React must use explicit client directives only when hydration is required.
+  - Utilities must remain deterministic, typed, and independent from browser and Astro runtime state.
+metadata:
+  stack: astro
+  styling: tailwind
+  content: collections
+  maturity: foundation

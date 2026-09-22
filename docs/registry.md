@@ -6,6 +6,11 @@ The registry core resolves IDs in `stack/type@id` form without depending on CLI 
 
 The binary embeds the initial catalog:
 
+- `astro/component@3148`
+- `astro/content-collection@4720`
+- `astro/layout@6813`
+- `astro/page@5904`
+- `astro/util@2386`
 - `next/page@1234`
 - `next/component@4821`
 - `next/hook@9214`

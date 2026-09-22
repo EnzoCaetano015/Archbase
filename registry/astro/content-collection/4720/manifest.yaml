@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: astro/content-collection@4720
+name: Typed Astro content collection
+description: Domain-neutral content bundle pairing a collection schema with a validated YAML entry.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: content/config.ts
+      destination: "{{Name}}/config.ts"
+      required: true
+    - source: content/examples/example.yaml
+      destination: "{{Name}}/examples/example.yaml"
+      required: true
+allowedChanges:
+  - collection-name
+  - schema-fields
+  - field-types
+  - validation-rules
+  - entry-values
+preserve:
+  - schema-entry-alignment
+  - explicit-collection-export
+  - build-time-validation
+  - data-content-separation
+metadata:
+  framework: astro
+  content-format: yaml
+  maturity: foundation-sample

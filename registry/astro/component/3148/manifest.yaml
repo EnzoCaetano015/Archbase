@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: astro/component@3148
+name: Typed Astro component
+description: Domain-neutral Astro component separating server frontmatter, typed props, semantic markup, and slot composition.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: Example.astro
+      destination: "{{Name}}/{{Name}}.astro"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - props
+  - rendered-content
+  - semantic-classes
+  - slots
+preserve:
+  - typed-props
+  - frontmatter-markup-boundary
+  - semantic-html
+  - server-rendered-default
+  - named-slots
+metadata:
+  framework: astro
+  styling: tailwind
+  maturity: foundation-sample

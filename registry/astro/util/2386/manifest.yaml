@@ -1,0 +1,25 @@
+schemaVersion: 1
+id: astro/util@2386
+name: Astro Tailwind class utility
+description: Domain-neutral pure typed helper for conditional and conflict-safe Tailwind class composition.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: utils.ts
+      destination: "{{Name}}/{{Name}}.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - types
+  - transformation-logic
+preserve:
+  - pure-function
+  - typed-input
+  - deterministic-output
+  - browser-independent
+metadata:
+  framework: astro
+  styling: tailwind
+  maturity: foundation-sample

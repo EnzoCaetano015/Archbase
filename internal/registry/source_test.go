@@ -23,6 +23,11 @@ func TestEmbeddedSourceContainsAllFoundationPatterns(t *testing.T) {
 		t.Fatal(err)
 	}
 	expected := []string{
+		"astro/component@3148",
+		"astro/content-collection@4720",
+		"astro/layout@6813",
+		"astro/page@5904",
+		"astro/util@2386",
 		"dotnet/controller@7743",
 		"dotnet/repository@5532",
 		"dotnet/service@1172",

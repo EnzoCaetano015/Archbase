@@ -1,5 +1,25 @@
 schemaVersion: 1
 patterns:
+  - id: astro/component@3148
+    version: 1.0.0
+    path: astro/component/3148
+    description: Typed Astro component with server frontmatter, semantic markup, and slots.
+  - id: astro/content-collection@4720
+    version: 1.0.0
+    path: astro/content-collection/4720
+    description: Astro content collection bundle with a schema and validated data entry.
+  - id: astro/layout@6813
+    version: 1.0.0
+    path: astro/layout/6813
+    description: Astro document layout centralizing metadata, global styles, and shared shell components.
+  - id: astro/page@5904
+    version: 1.0.0
+    path: astro/page/5904
+    description: File-routed Astro page composing a layout and build-time content collection.
+  - id: astro/util@2386
+    version: 1.0.0
+    path: astro/util/2386
+    description: Pure typed utility for conflict-safe Tailwind class composition.
   - id: dotnet/controller@7743
     version: 1.0.0
     path: dotnet/controller/7743

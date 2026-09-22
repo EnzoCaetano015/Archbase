@@ -82,6 +82,12 @@ A pattern is a structural example for one type of code.
 Examples:
 
 ```text
+astro/page@5904
+astro/layout@6813
+astro/component@3148
+astro/content-collection@4720
+astro/util@2386
+
 next/page@1234
 next/component@4821
 next/hook@9214
@@ -122,6 +128,7 @@ A rule defines where patterns belong and how the architecture is expected to beh
 Examples included in the current catalog:
 
 ```text
+architecture/astro-content-site@1
 architecture/next-modular@1
 architecture/dotnet-layered@1
 architecture/python-fastapi-modular@1
@@ -391,6 +398,16 @@ The registry layer includes:
 
 ## Current official catalog
 
+### Astro
+
+| Type | Pattern ID |
+| --- | --- |
+| Page | `astro/page@5904` |
+| Layout | `astro/layout@6813` |
+| Component | `astro/component@3148` |
+| Content collection | `astro/content-collection@4720` |
+| Utility | `astro/util@2386` |
+
 ### Next.js
 
 | Type | Pattern ID |
@@ -445,6 +462,7 @@ The registry layer includes:
 
 | Architecture | Rule ID |
 | --- | --- |
+| Astro content site | `architecture/astro-content-site@1` |
 | Modular Next.js | `architecture/next-modular@1` |
 | Layered .NET | `architecture/dotnet-layered@1` |
 | Modular FastAPI | `architecture/python-fastapi-modular@1` |

@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: astro/layout@6813
+name: Astro document layout
+description: Domain-neutral Astro layout centralizing document metadata, global styles, shared shell components, and page slots.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: BaseLayout.astro
+      destination: "{{Name}}/{{Name}}.astro"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - props
+  - metadata
+  - shell-components
+  - document-language
+preserve:
+  - complete-document-shell
+  - typed-metadata-props
+  - global-style-boundary
+  - page-slot
+  - shared-shell-composition
+metadata:
+  framework: astro
+  maturity: foundation-sample

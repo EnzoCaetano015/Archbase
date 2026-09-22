@@ -39,6 +39,11 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 		exported      string
 	}{
 		{
+			name: "astro", fixture: "astro", rootPattern: "astro/page@5904", nested: "src/pages", localName: "pages-standard",
+			customFile: "Example.astro", target: "src/pages/admin/index.astro", outsideTarget: "src/components/Card.astro",
+			ruleID: "architecture/astro-content-site@1", exported: ".cursor/rules/architecture-astro-content-site-1.mdc",
+		},
+		{
 			name: "next", fixture: "next", rootPattern: "next/page@1234", nested: "src/pages", localName: "pages-standard",
 			customFile: "Example/Example.tsx", target: "src/pages/Admin/Page.tsx", outsideTarget: "src/components/Card.tsx",
 			ruleID: "architecture/next-modular@1", exported: ".cursor/rules/architecture-next-modular-1.mdc",
