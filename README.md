@@ -1,39 +1,561 @@
 # Archbase
 
-Archbase is an open-source CLI that gives AI coding agents explicit, reusable structural patterns. Patterns describe **how a type of code is written**; architecture rules describe **where code belongs and which relationships are allowed**.
+<p align="center">
+  <strong>Architecture that AI coding agents can actually follow.</strong>
+</p>
 
-This repository contains the completed first public milestone (TASK-001 through TASK-023):
+<p align="center">
+  Open-source CLI in Go for reusable code patterns, architecture rules, local scopes and AI-agent integrations.
+</p>
 
-- the `arc` Go CLI with `help` and `version`;
-- versioned YAML contracts backed by JSON Schema;
-- safe filesystem primitives;
-- a validated bundle loader for required and optional pattern files;
-- eleven structural Next.js, .NET, and Python patterns;
-- ordered resolution across embedded, directory, and public Git registries;
-- a concurrency-safe Git cache with a 15-minute TTL and validated stale fallback;
-- transactional installation and creation of customizable local patterns;
-- nearest-scope resolution for files, directories, and future paths;
-- deterministic pattern resolution and inspection commands;
-- an agent-neutral architecture rule contract and validated rule registry;
-- modular Next, layered .NET, and modular FastAPI architecture rules;
-- transactional exporters for Cursor, GitHub Copilot, and hierarchical `AGENTS.md` files;
-- rule listing, inspection, and export commands;
-- a project-confined MCP stdio server with typed pattern, scope, file, and rule tools;
-- end-to-end Next and .NET coverage over a local Git registry;
-- reproducible release archives for Linux, macOS, and Windows with SHA-256 checksums;
-- installation and first-flow documentation for the public `v0.1.0` release.
+<p align="center">
+  <img src="https://img.shields.io/badge/Go-1.26%2B-00ADD8?style=for-the-badge&logo=go&logoColor=white" alt="Go 1.26+">
+  <img src="https://img.shields.io/badge/CLI-arc-111827?style=for-the-badge" alt="arc CLI">
+  <img src="https://img.shields.io/badge/MCP-supported-7C3AED?style=for-the-badge" alt="MCP">
+  <img src="https://img.shields.io/badge/Next.js-patterns-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js">
+  <img src="https://img.shields.io/badge/.NET-patterns-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET">
+  <img src="https://img.shields.io/badge/Open%20Source-contributions%20welcome-22C55E?style=for-the-badge" alt="Open Source">
+</p>
 
-## Installation
+---
 
-Download the archive for your operating system and architecture from [GitHub Releases](https://github.com/EnzoCaetano015/Archbase/releases/tag/v0.1.0), verify it against `arc_v0.1.0_SHA256SUMS.txt`, and place `arc` or `arc.exe` in your `PATH`.
+## What is Archbase?
 
-See [docs/installation.md](docs/installation.md) for Linux, macOS, and Windows instructions. After installation, follow [docs/getting-started.md](docs/getting-started.md) for the complete Next workflow.
+**Archbase** is an open-source CLI designed to make software architecture explicit, reusable and understandable by both developers and AI coding agents.
 
-## Source requirements
+Instead of relying only on prompts such as _"follow the project pattern"_ or _"create this file like the others"_, Archbase lets a project define concrete structural references that an agent can inspect and reuse.
 
-- Go 1.26 or newer
+The core idea is simple:
 
-## Build and test
+- **Patterns** define **how a type of code is structured**.
+- **Rules** define **where code belongs and which relationships are allowed**.
+- **Scopes** define **which pattern applies to a specific part of a project**.
+- **Registries** distribute reusable patterns and architecture rules.
+- **MCP** exposes that context directly to compatible AI agents.
+
+The goal is not to generate an entire application from a template. The goal is to give developers and coding agents a reliable architectural reference while the project evolves.
+
+---
+
+## Why Archbase?
+
+AI coding tools are very good at generating code, but they often have one recurring problem:
+
+> they understand the task, but not always the exact way your project expects that code to be organized.
+
+A repository may already have conventions for pages, hooks, controllers, repositories, services or utilities, but those conventions are usually implicit.
+
+Archbase turns those conventions into something that can be:
+
+- versioned;
+- inspected;
+- reused;
+- customized locally;
+- exported to different coding agents;
+- resolved automatically by project path;
+- exposed through MCP.
+
+```mermaid
+flowchart LR
+    DEV[Developer] --> ARC[Archbase / arc]
+    AGENT[AI Coding Agent] --> ARC
+
+    ARC --> PAT[Patterns]
+    ARC --> RULE[Architecture Rules]
+    ARC --> SCOPE[Project Scopes]
+    ARC --> REG[Registry]
+
+    PAT --> CODE[Consistent Code]
+    RULE --> CODE
+    SCOPE --> CODE
+    REG --> CODE
+```
+
+---
+
+## Mental model
+
+### Pattern
+
+A pattern is a structural example for one type of code.
+
+Examples:
+
+```text
+next/page@1234
+next/component@4821
+next/hook@9214
+next/util@3378
+
+dotnet/controller@7743
+dotnet/service@1172
+dotnet/repository@5532
+```
+
+A pattern does **not** describe a business feature. It describes the expected structure of that kind of code.
+
+### Architecture Rule
+
+A rule defines where patterns belong and how the architecture is expected to behave.
+
+Examples included in the current catalog:
+
+```text
+architecture/next-modular@1
+architecture/dotnet-layered@1
+```
+
+A rule can define things such as:
+
+- which pattern belongs under `src/pages/**`;
+- which pattern belongs under `src/components/**`;
+- Controller → Service → Repository responsibilities;
+- forbidden dependency directions;
+- architectural restrictions for a specific scope.
+
+### Scope
+
+Archbase stores project-level configuration inside `.archbase`.
+
+A project can have multiple nested scopes.
+
+```text
+project/
+├── .archbase/
+│   └── scope.yaml
+│
+└── src/
+    └── pages/
+        └── admin/
+            └── .archbase/
+                └── scope.yaml
+```
+
+When Archbase resolves a file, the **nearest valid scope wins**.
+
+This makes it possible to use one global project convention while keeping more specialized conventions in specific directories.
+
+---
+
+## Main CLI
+
+The executable is called:
+
+```bash
+arc
+```
+
+Main commands currently available:
+
+```bash
+arc help
+arc version
+
+arc add <pattern-id> <scope>
+arc create <local-name> <scope> --from <pattern-id>
+
+arc resolve <path>
+arc inspect <pattern-id-or-path>
+
+arc rules list
+arc rules inspect <rule-id>
+arc rules add <rule-id> --format cursor|copilot|agents
+
+arc mcp serve --project-root .
+```
+
+---
+
+## Quick start
+
+### 1. Install Archbase
+
+Download the archive for your operating system from the GitHub Releases page.
+
+The project publishes builds for Linux, macOS and Windows with SHA-256 checksums.
+
+After extracting the binary, place `arc` or `arc.exe` somewhere available in your `PATH`.
+
+Check the installation:
+
+```bash
+arc version
+```
+
+### 2. Add a pattern to a project
+
+Example using the Next.js page pattern:
+
+```bash
+arc add next/page@1234 .
+```
+
+Archbase creates a local `.archbase` scope and stores the validated pattern bundle.
+
+You can then resolve a file even if that file does not exist yet:
+
+```bash
+arc resolve src/pages/Home.tsx
+```
+
+### 3. Inspect the pattern
+
+```bash
+arc inspect next/page@1234
+```
+
+This allows developers and agents to inspect the canonical structure before generating new code.
+
+---
+
+## Create your own customized pattern
+
+You are not limited to the official registry.
+
+A local pattern can be created from an existing pattern:
+
+```bash
+arc create pages-standard ./src/pages --from next/page@1234
+```
+
+This creates a project-owned pattern such as:
+
+```text
+local/pages-standard@1
+```
+
+Its files can then be customized directly inside the local `.archbase` directory.
+
+Archbase preserves that local customization instead of replacing it with future registry content.
+
+Example:
+
+```text
+src/pages/
+└── .archbase/
+    ├── scope.yaml
+    └── patterns/
+        └── pages-standard/
+            └── Example/
+                ├── Example.tsx
+                ├── Example.hook.ts
+                └── Example.utils.ts
+```
+
+This makes Archbase useful not only as a public pattern registry, but also as a way to encode the conventions of a specific team or codebase.
+
+---
+
+## Architecture rules for coding agents
+
+Archbase rules are agent-neutral.
+
+The same canonical architecture rule can be exported for different tools.
+
+### Cursor
+
+```bash
+arc rules add architecture/next-modular@1 --format cursor
+```
+
+Generated output:
+
+```text
+.cursor/rules/
+```
+
+### GitHub Copilot
+
+```bash
+arc rules add architecture/next-modular@1 --format copilot
+```
+
+Generated output:
+
+```text
+.github/instructions/
+```
+
+### AGENTS.md
+
+```bash
+arc rules add architecture/next-modular@1 --format agents
+```
+
+For an existing `AGENTS.md`, use the explicit merge mode:
+
+```bash
+arc rules add architecture/next-modular@1 --format agents --merge
+```
+
+Archbase manages only its own RuleID-specific block, preserving unrelated content already present in the file.
+
+---
+
+## MCP support
+
+Archbase can also expose project architecture directly through the **Model Context Protocol**.
+
+Start the MCP server with:
+
+```bash
+arc mcp serve --project-root .
+```
+
+The MCP server is read-only and allows compatible agents to inspect the validated Archbase context.
+
+Available tools include:
+
+```text
+search_patterns
+get_pattern
+resolve_pattern
+get_pattern_files
+get_scope_rules
+list_project_scopes
+```
+
+Example MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "archbase": {
+      "command": "arc",
+      "args": [
+        "mcp",
+        "serve",
+        "--project-root",
+        "/absolute/path/to/project"
+      ]
+    }
+  }
+}
+```
+
+This gives an AI coding agent access to the project's actual patterns and architecture rules instead of requiring those conventions to be repeated manually in every prompt.
+
+---
+
+## Registry
+
+The official catalog is embedded in the `arc` binary, so the built-in patterns can work offline.
+
+Archbase can also use a public Git registry.
+
+A configured Git registry can be given precedence over the embedded catalog using the global registry options:
+
+```text
+--registry-url
+--registry-ref
+--registry-subdir
+--registry-cache-dir
+--registry-ttl
+```
+
+The registry layer includes:
+
+- ordered source resolution;
+- bundle validation;
+- path confinement;
+- concurrency-safe cache;
+- default cache TTL;
+- validated stale-cache fallback;
+- support for public Git and local file registries.
+
+---
+
+## Current official catalog
+
+### Next.js
+
+| Type | Pattern ID |
+| --- | --- |
+| Page | `next/page@1234` |
+| Component | `next/component@4821` |
+| Hook | `next/hook@9214` |
+| Utility | `next/util@3378` |
+
+### .NET
+
+| Type | Pattern ID |
+| --- | --- |
+| Controller | `dotnet/controller@7743` |
+| Service | `dotnet/service@1172` |
+| Repository | `dotnet/repository@5532` |
+
+### Architecture rules
+
+| Architecture | Rule ID |
+| --- | --- |
+| Modular Next.js | `architecture/next-modular@1` |
+| Layered .NET | `architecture/dotnet-layered@1` |
+
+The catalog is intentionally small in the first public version. New languages, stacks and architecture styles can be added incrementally.
+
+---
+
+## How Archbase fits into a development workflow
+
+```mermaid
+flowchart TD
+    A[Project conventions] --> B[Create or choose patterns]
+    B --> C[Install patterns into scopes]
+    C --> D[Define architecture rules]
+    D --> E{How will the agent consume them?}
+
+    E -->|Cursor| F[Export .cursor/rules]
+    E -->|Copilot| G[Export .github/instructions]
+    E -->|AGENTS.md| H[Export hierarchical AGENTS files]
+    E -->|MCP| I[arc mcp serve]
+
+    F --> J[AI generates code with project context]
+    G --> J
+    H --> J
+    I --> J
+
+    J --> K[More consistent codebase]
+```
+
+---
+
+## Build from source
+
+### Requirements
+
+```text
+Go 1.26+
+```
+
+Clone the repository:
+
+```bash
+git clone https://github.com/EnzoCaetano015/Archbase.git
+cd Archbase
+```
+
+Run the test suite:
+
+```bash
+go test ./...
+```
+
+Run static validation:
+
+```bash
+go vet ./...
+```
+
+Build the CLI:
+
+```bash
+go build -trimpath ./cmd/arc
+```
+
+Run the local binary:
+
+```bash
+./arc help
+```
+
+On Windows:
+
+```powershell
+.\arc.exe help
+```
+
+---
+
+## Release build
+
+A release version can be injected during build:
+
+```bash
+go build \
+  -ldflags "-X github.com/EnzoCaetano015/Archbase/internal/version.Value=0.1.0" \
+  ./cmd/arc
+```
+
+Stable releases use semantic tags:
+
+```text
+vMAJOR.MINOR.PATCH
+```
+
+The release pipeline verifies tests, target archives, checksums, reproducibility and embedded CLI version before publication.
+
+---
+
+## Documentation
+
+The repository contains additional technical documentation:
+
+```text
+docs/
+├── installation.md
+├── getting-started.md
+├── schemas.md
+├── registry.md
+├── rules.md
+└── mcp.md
+```
+
+Recommended starting points:
+
+- `docs/installation.md` — installation on supported operating systems.
+- `docs/getting-started.md` — complete first workflow.
+- `docs/registry.md` — registry resolution and cache behavior.
+- `docs/rules.md` — canonical architecture-rule model.
+- `docs/mcp.md` — MCP server and tool contracts.
+
+---
+
+## Open-source roadmap
+
+Archbase is intended to grow through practical architecture patterns rather than becoming a generic code-template dump.
+
+Useful contribution areas include:
+
+- new language patterns;
+- new framework patterns;
+- architecture rules;
+- new agent exporters;
+- improvements to the MCP integration;
+- registry tooling;
+- developer experience;
+- documentation;
+- tests;
+- Windows, Linux and macOS compatibility.
+
+Examples of future catalogs could include:
+
+```text
+react/
+python/
+fastapi/
+laravel/
+flutter/
+spring/
+nestjs/
+```
+
+The important rule is that a contribution should represent a reusable **structural convention**, not a one-off business feature.
+
+---
+
+## Contributing
+
+Contributions are welcome.
+
+A typical contribution flow is:
+
+```bash
+git clone https://github.com/EnzoCaetano015/Archbase.git
+cd Archbase
+git checkout -b feature/my-contribution
+```
+
+Make the change and validate it:
 
 ```bash
 go test ./...
@@ -41,37 +563,72 @@ go vet ./...
 go build -trimpath ./cmd/arc
 ```
 
-Inject a release version with:
+Then open a Pull Request describing:
 
-```bash
-go build -ldflags "-X github.com/EnzoCaetano015/Archbase/internal/version.Value=0.1.0" ./cmd/arc
+- the problem being solved;
+- the proposed behavior;
+- why the change belongs in Archbase;
+- tests added or updated;
+- documentation changes, when applicable.
+
+For changes to public YAML contracts, keep the schema, tests and documentation synchronized.
+
+For new registry entries, preserve deterministic ordering and ensure every declared file passes bundle validation.
+
+---
+
+## Philosophy
+
+Archbase is built around a few principles:
+
+```text
+Architecture should be explicit.
+Patterns should be reusable.
+Local conventions should remain customizable.
+AI agents should inspect context instead of guessing it.
+Generated instructions should come from one canonical source.
+Existing project files should be treated safely.
 ```
 
-## CLI
+The goal is not to remove developer decisions.
 
-```bash
-arc help
-arc version
-arc add next/page@1234 ./src/pages
-arc create pages-standard ./src/pages --from next/page@1234
-arc resolve ./src/pages/Example.tsx
-arc inspect next/page@1234
-arc rules list
-arc rules inspect architecture/next-modular@1
-arc rules add architecture/next-modular@1 --format cursor
-arc rules add architecture/next-modular@1 --format copilot --destination ./app
-arc rules add architecture/next-modular@1 --format agents --merge
-arc mcp serve --project-root .
+The goal is to make those decisions easier to communicate — to humans and to coding agents.
+
+---
+
+## Project status
+
+The first public milestone is complete and includes:
+
+- `arc` CLI;
+- pattern registry;
+- architecture-rule registry;
+- local scopes;
+- local pattern customization;
+- Next.js patterns;
+- .NET patterns;
+- Cursor exporter;
+- GitHub Copilot exporter;
+- `AGENTS.md` exporter;
+- MCP stdio server;
+- cross-platform release archives.
+
+Current public version referenced by the documentation:
+
+```text
+v0.1.0
 ```
 
-The official registry is embedded in the binary and therefore works offline. A public Git registry can be placed before it with `--registry-url`, `--registry-ref`, `--registry-subdir`, `--registry-cache-dir`, and `--registry-ttl`. Git access supports public `https`, `git`, and absolute `file` URLs without depending on a system Git executable.
+---
 
-Installed scopes use `.archbase/scope.yaml` and keep local pattern copies under `.archbase/patterns/`. Adding or creating another pattern preserves previous directories and atomically activates the new pattern. Existing pattern directories are never overwritten.
+## Author
 
-Rule exports are confined to `--destination` (default `.`). Cursor and Copilot files require `--overwrite` on conflict. Existing `AGENTS.md` files require `--merge`, which updates only the RuleID-specific Archbase block and preserves other content.
+Created and maintained by **Enzo Caetano**.
 
-See [docs/schemas.md](docs/schemas.md) for the public YAML contracts, [docs/registry.md](docs/registry.md) for registry behavior, [docs/rules.md](docs/rules.md) for the canonical rule model, and [docs/mcp.md](docs/mcp.md) for the MCP tool contract.
+GitHub: [@EnzoCaetano015](https://github.com/EnzoCaetano015)
 
-## Releases
+---
 
-Stable tags use `vMAJOR.MINOR.PATCH`. A tag is published only after the Go 1.26/1.27 verification matrix succeeds, all six target archives are built twice with identical bytes, their checksums pass, and the embedded CLI version is confirmed. The workflow never creates or moves a tag.
+<p align="center">
+  <strong>Define the architecture once. Let humans and agents follow it.</strong>
+</p>
