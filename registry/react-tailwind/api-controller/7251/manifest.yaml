@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: react-tailwind/api-controller@7251
+name: Endpoint-catalog query controller
+description: Domain-neutral TanStack Query hooks that combine the configured HTTP client, endpoint catalog, and direct API contracts.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: example.ts
+      destination: "{{Name}}/{{Name}}.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - request-types
+  - response-types
+  - query-options
+  - mutation-options
+preserve:
+  - endpoint-catalog-usage
+  - configured-http-client
+  - stable-query-key
+  - typed-payloads
+  - query-mutation-separation
+metadata:
+  framework: react
+  library: tanstack-query
+  styling: tailwind
+  maturity: foundation-sample

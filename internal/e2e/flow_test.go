@@ -53,6 +53,11 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 			customFile: "Example/Example.tsx", target: "src/pages/Admin/Admin.tsx", outsideTarget: "src/components/Card/Card.tsx",
 			ruleID: "architecture/react-vite-modular@1", exported: ".cursor/rules/architecture-react-vite-modular-1.mdc",
 		},
+		{
+			name: "react-tailwind", fixture: "react", rootPattern: "react-tailwind/page@6592", nested: "src/pages", localName: "tailwind-pages-standard",
+			customFile: "Example/Example.tsx", target: "src/pages/Forms/Example.tsx", outsideTarget: "src/components/ui/button.tsx",
+			ruleID: "architecture/react-tailwind-modular@1", exported: ".cursor/rules/architecture-react-tailwind-modular-1.mdc",
+		},
 	} {
 		t.Run(scenario.name, func(t *testing.T) {
 			project := filepath.Join(t.TempDir(), "project")

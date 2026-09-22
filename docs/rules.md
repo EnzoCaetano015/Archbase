@@ -13,6 +13,7 @@ Rule paths are relative slash-separated globs such as `src/pages/**`. Paths must
 - `architecture/next-modular@1` separates pages, components, hooks, and utilities and associates each path with the corresponding Next pattern.
 - `architecture/dotnet-layered@1` defines Controller → Service → Repository responsibilities and prevents reverse dependencies.
 - `architecture/python-fastapi-modular@1` separates FastAPI transport, Pydantic contracts, application orchestration, and PostgreSQL persistence inside feature modules.
+- `architecture/react-tailwind-modular@1` separates Tailwind pages, shadcn-style primitives, domain components, endpoint paths, typed query controllers, and a page registry.
 - `architecture/react-vite-modular@1` separates React pages, reusable UI, typed API access, contracts, shared hooks, utilities, and centralized routes.
 
 The official catalog is embedded and works offline. Directory and public Git registries may provide their own `rules/index.yaml`; configured sources are ordered and the first source containing an ID wins. A resolved rule is usable only when all referenced pattern IDs resolve through the configured pattern sources.

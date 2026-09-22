@@ -1,0 +1,44 @@
+schemaVersion: 1
+id: architecture/react-tailwind-modular@1
+name: Modular React and Tailwind architecture
+description: Separates Tailwind pages, domain components, UI primitives, endpoint paths, transport contracts, query controllers, shared behavior, and routing.
+version: 1.0.0
+scopes:
+  - path: src/api/controllers/**
+    pattern: react-tailwind/api-controller@7251
+  - path: src/api/models/**
+    pattern: react-tailwind/api-model@4380
+  - path: src/api/routes.ts
+    pattern: react-tailwind/api-routes@2648
+  - path: src/components/[A-Z]*/**
+    pattern: react-tailwind/component@5463
+  - path: src/components/ui/**
+    pattern: react-tailwind/ui-primitive@7924
+  - path: src/lib/hooks/**
+    pattern: react/hook@8534
+  - path: src/lib/utils.ts
+    pattern: react/util@3469
+  - path: src/lib/utils/**
+    pattern: react/util@3469
+  - path: src/pages/**
+    pattern: react-tailwind/page@6592
+  - path: src/routes/**
+    pattern: react-tailwind/routes@2159
+rules:
+  - Pages must focus on Tailwind-based rendering and delegate forms, remote state, navigation, and handlers to colocated page hooks.
+  - Page and component hooks may consume query controllers, but TSX files must not call Axios or embed endpoint paths.
+  - Every backend path must come from the centralized API endpoint catalog.
+  - API models must mirror real backend requests and responses without adding UI-only convenience fields.
+  - API controllers must combine the configured HTTP client, endpoint catalog, typed models, and stable TanStack Query keys.
+  - Domain components may compose UI primitives, while primitives under components/ui must remain domain-neutral and accessible.
+  - Shared hooks must own focused reusable stateful behavior, and utilities must remain pure and React-independent.
+  - The page registry must own page imports while the route tree owns paths, layouts, redirects, guards, and route composition.
+  - Optional hooks, schemas, types, and utilities must be introduced only when they own a distinct responsibility.
+  - Remote flows must represent loading, error, empty, success, and pending states when those states are applicable.
+  - Client-side validation and moderation must not be treated as substitutes for server-side security.
+metadata:
+  stack: react
+  build-tool: vite
+  styling: tailwind
+  ui-system: shadcn
+  maturity: foundation

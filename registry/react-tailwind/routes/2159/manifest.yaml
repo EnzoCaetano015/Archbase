@@ -1,0 +1,34 @@
+schemaVersion: 1
+id: react-tailwind/routes@2159
+name: Router with page registry
+description: Domain-neutral React Router bundle separating page imports from the navigation tree.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: routes/index.tsx
+      destination: "{{Name}}/index.tsx"
+      required: true
+    - source: routes/pages.ts
+      destination: "{{Name}}/pages.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - page-registry
+  - paths
+  - layouts
+  - redirects
+  - route-elements
+preserve:
+  - page-registry-separation
+  - centralized-route-tree
+  - declarative-redirects
+  - shared-layout-nesting
+  - router-provider-boundary
+metadata:
+  framework: react
+  library: react-router
+  styling: tailwind
+  maturity: foundation-sample

@@ -17,6 +17,13 @@ The binary embeds the initial catalog:
 - `python/schemas@3950`
 - `python/service@7315`
 - `python/repository@8462`
+- `react-tailwind/api-controller@7251`
+- `react-tailwind/api-model@4380`
+- `react-tailwind/api-routes@2648`
+- `react-tailwind/component@5463`
+- `react-tailwind/page@6592`
+- `react-tailwind/routes@2159`
+- `react-tailwind/ui-primitive@7924`
 - `react/api-controller@6142`
 - `react/api-model@4086`
 - `react/component@5217`

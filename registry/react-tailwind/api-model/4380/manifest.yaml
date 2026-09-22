@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: react-tailwind/api-model@4380
+name: Direct API contracts and query keys
+description: Domain-neutral request and response contracts matching backend payloads without a frontend-defined envelope.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: example.types.ts
+      destination: "{{Name}}/{{Name}}.types.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - fields
+  - field-types
+  - request-contracts
+  - response-contracts
+  - query-keys
+preserve:
+  - backend-contract-fidelity
+  - request-response-separation
+  - stable-query-keys
+  - transport-contract-only
+metadata:
+  framework: react
+  language: typescript
+  maturity: foundation-sample

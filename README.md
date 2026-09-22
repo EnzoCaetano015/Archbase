@@ -103,6 +103,14 @@ react/api-model@4086
 react/hook@8534
 react/routes@1973
 react/util@3469
+
+react-tailwind/page@6592
+react-tailwind/component@5463
+react-tailwind/ui-primitive@7924
+react-tailwind/api-controller@7251
+react-tailwind/api-model@4380
+react-tailwind/api-routes@2648
+react-tailwind/routes@2159
 ```
 
 A pattern does **not** describe a business feature. It describes the expected structure of that kind of code.
@@ -117,6 +125,7 @@ Examples included in the current catalog:
 architecture/next-modular@1
 architecture/dotnet-layered@1
 architecture/python-fastapi-modular@1
+architecture/react-tailwind-modular@1
 architecture/react-vite-modular@1
 ```
 
@@ -420,6 +429,18 @@ The registry layer includes:
 | Routes | `react/routes@1973` |
 | Utility | `react/util@3469` |
 
+### React / Tailwind
+
+| Type | Pattern ID |
+| --- | --- |
+| Page | `react-tailwind/page@6592` |
+| Domain component | `react-tailwind/component@5463` |
+| UI primitive | `react-tailwind/ui-primitive@7924` |
+| API controller | `react-tailwind/api-controller@7251` |
+| API model | `react-tailwind/api-model@4380` |
+| API routes | `react-tailwind/api-routes@2648` |
+| Routes and page registry | `react-tailwind/routes@2159` |
+
 ### Architecture rules
 
 | Architecture | Rule ID |
@@ -427,6 +448,7 @@ The registry layer includes:
 | Modular Next.js | `architecture/next-modular@1` |
 | Layered .NET | `architecture/dotnet-layered@1` |
 | Modular FastAPI | `architecture/python-fastapi-modular@1` |
+| Modular React/Tailwind | `architecture/react-tailwind-modular@1` |
 | Modular React/Vite | `architecture/react-vite-modular@1` |
 
 The catalog is intentionally small in the first public version. New languages, stacks and architecture styles can be added incrementally.

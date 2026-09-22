@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: react-tailwind/ui-primitive@7924
+name: Tailwind UI primitive
+description: Domain-neutral accessible UI primitive with CVA variants, Radix composition, and conflict-safe class merging.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: button.tsx
+      destination: "{{Name}}/{{Name}}.tsx"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - variants
+  - sizes
+  - element-props
+  - loading-content
+preserve:
+  - ref-forwarding
+  - variant-contract
+  - class-merging
+  - disabled-loading-state
+  - primitive-only-responsibility
+metadata:
+  framework: react
+  styling: tailwind
+  composition: radix-slot
+  maturity: foundation-sample

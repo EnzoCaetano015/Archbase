@@ -1,0 +1,40 @@
+schemaVersion: 1
+id: react-tailwind/page@6592
+name: Tailwind page with colocated behavior
+description: Domain-neutral React page bundle separating Tailwind rendering, page orchestration, Zod validation, and pure presentation helpers.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: Example/Example.tsx
+      destination: "{{Name}}/{{Name}}.tsx"
+      required: true
+    - source: Example/Example.hook.ts
+      destination: "{{Name}}/{{Name}}.hook.ts"
+      required: true
+    - source: Example/Example.schema.ts
+      destination: "{{Name}}/{{Name}}.schema.ts"
+      required: false
+    - source: Example/Example.utils.ts
+      destination: "{{Name}}/{{Name}}.utils.ts"
+      required: false
+allowedChanges:
+  - identifiers
+  - imports
+  - rendered-content
+  - page-orchestration
+  - validation-rules
+  - semantic-classes
+  - pure-helpers
+preserve:
+  - thin-page-rendering
+  - colocated-page-hook
+  - ui-primitive-reuse
+  - api-controller-delegation
+  - optional-schema-and-utils
+metadata:
+  framework: react
+  build-tool: vite
+  styling: tailwind
+  maturity: foundation-sample

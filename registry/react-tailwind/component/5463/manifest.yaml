@@ -1,0 +1,39 @@
+schemaVersion: 1
+id: react-tailwind/component@5463
+name: Tailwind domain component
+description: Domain-neutral typed component composed from shared UI primitives and semantic Tailwind tokens.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: Example/Example.tsx
+      destination: "{{Name}}/{{Name}}.tsx"
+      required: true
+    - source: Example/Example.types.ts
+      destination: "{{Name}}/{{Name}}.types.ts"
+      required: true
+    - source: Example/Example.hook.ts
+      destination: "{{Name}}/{{Name}}.hook.ts"
+      required: false
+    - source: Example/Example.utils.ts
+      destination: "{{Name}}/{{Name}}.utils.ts"
+      required: false
+allowedChanges:
+  - identifiers
+  - imports
+  - props
+  - rendered-content
+  - semantic-classes
+  - primitive-composition
+preserve:
+  - typed-props
+  - named-export
+  - semantic-html
+  - shared-primitive-reuse
+  - domain-component-boundary
+metadata:
+  framework: react
+  styling: tailwind
+  ui-system: shadcn
+  maturity: foundation-sample

@@ -1,0 +1,25 @@
+schemaVersion: 1
+id: react-tailwind/api-routes@2648
+name: Central API endpoint catalog
+description: Domain-neutral immutable endpoint tree shared by typed API controllers.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: routes.ts
+      destination: "{{Name}}/routes.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - endpoint-groups
+  - endpoint-paths
+preserve:
+  - centralized-endpoints
+  - immutable-catalog
+  - transport-only-values
+  - controller-consumption
+metadata:
+  framework: react
+  styling: tailwind
+  maturity: foundation-sample

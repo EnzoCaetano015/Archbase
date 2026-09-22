@@ -44,6 +44,34 @@ patterns:
     version: 1.0.0
     path: python/service/7315
     description: Application service with repository injection and a FastAPI dependency factory.
+  - id: react-tailwind/api-controller@7251
+    version: 1.0.0
+    path: react-tailwind/api-controller/7251
+    description: TanStack Query hooks using a centralized endpoint catalog and typed models.
+  - id: react-tailwind/api-model@4380
+    version: 1.0.0
+    path: react-tailwind/api-model/4380
+    description: Direct API request and response contracts with stable query-key identities.
+  - id: react-tailwind/api-routes@2648
+    version: 1.0.0
+    path: react-tailwind/api-routes/2648
+    description: Centralized immutable catalog of backend endpoint paths.
+  - id: react-tailwind/component@5463
+    version: 1.0.0
+    path: react-tailwind/component/5463
+    description: Typed domain component composed from Tailwind UI primitives.
+  - id: react-tailwind/page@6592
+    version: 1.0.0
+    path: react-tailwind/page/6592
+    description: Tailwind page bundle separating rendering, orchestration, validation, and pure helpers.
+  - id: react-tailwind/routes@2159
+    version: 1.0.0
+    path: react-tailwind/routes/2159
+    description: React Router tree separated from a centralized page registry.
+  - id: react-tailwind/ui-primitive@7924
+    version: 1.0.0
+    path: react-tailwind/ui-primitive/7924
+    description: Accessible Tailwind UI primitive with variants, composition, and class merging.
   - id: react/api-controller@6142
     version: 1.0.0
     path: react/api-controller/6142
