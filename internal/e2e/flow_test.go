@@ -49,6 +49,11 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 			ruleID: "architecture/next-modular@1", exported: ".cursor/rules/architecture-next-modular-1.mdc",
 		},
 		{
+			name: "next-feature", fixture: "next-feature", rootPattern: "next-feature/page@1846", nested: "app/(platform)/items", localName: "feature-pages-standard",
+			customFile: "page.tsx", target: "app/(platform)/items/[id]/page.tsx", outsideTarget: "features/catalog/components/item-card.tsx",
+			ruleID: "architecture/next-feature-app-router@1", exported: ".cursor/rules/architecture-next-feature-app-router-1.mdc",
+		},
+		{
 			name: "dotnet", fixture: "dotnet", rootPattern: "dotnet/controller@7743", nested: "src/Controllers", localName: "controllers-standard",
 			customFile: "ExampleController.cs", target: "src/Controllers/AdminController.cs", outsideTarget: "src/Services/ExampleService.cs",
 			ruleID: "architecture/dotnet-layered@1", exported: ".cursor/rules/architecture-dotnet-layered-1.mdc",

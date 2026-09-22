@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: next-feature/route-handler@7318
+name: App Router route handler
+description: HTTP route handler for external consumers that validates transport input and delegates to a feature application service.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: route.ts
+      destination: "{{Name}}/route.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - http-methods
+  - request-parsing
+  - response-mapping
+preserve:
+  - app-router-file-convention
+  - transport-only-responsibility
+  - application-service-delegation
+  - explicit-http-status
+  - no-react-hooks
+metadata:
+  framework: next
+  router: app
+  boundary: http
+  maturity: foundation-sample

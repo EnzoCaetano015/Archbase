@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: next-feature/page@1846
+name: App Router feature page
+description: Thin async App Router page that resolves route input and delegates feature rendering to a server component.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: page.tsx
+      destination: "{{Name}}/page.tsx"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - route-params
+  - metadata
+  - canonicalization
+  - rendered-feature
+preserve:
+  - app-router-file-convention
+  - asynchronous-route-inputs
+  - server-component-default
+  - thin-route-composition
+  - feature-delegation
+metadata:
+  framework: next
+  router: app
+  maturity: foundation-sample

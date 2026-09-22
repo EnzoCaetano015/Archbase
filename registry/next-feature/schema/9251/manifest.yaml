@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: next-feature/schema@9251
+name: Feature validation schema
+description: Runtime validation contracts for untrusted feature input with inferred TypeScript types.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: schema.ts
+      destination: "{{Name}}/{{Name}}.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - fields
+  - validation-rules
+  - messages
+  - inferred-types
+preserve:
+  - runtime-validation
+  - inferred-static-type
+  - unknown-input-boundary
+  - no-io
+  - no-ui-dependency
+metadata:
+  framework: next
+  library: zod
+  layer: schema
+  maturity: foundation-sample

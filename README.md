@@ -93,6 +93,16 @@ next/component@4821
 next/hook@9214
 next/util@3378
 
+next-feature/page@1846
+next-feature/layout@2673
+next-feature/route-handler@7318
+next-feature/server-action@6492
+next-feature/application-service@3527
+next-feature/data-access@8164
+next-feature/model@4739
+next-feature/schema@9251
+next-feature/component@5086
+
 dotnet/controller@7743
 dotnet/service@1172
 dotnet/repository@5532
@@ -129,6 +139,7 @@ Examples included in the current catalog:
 
 ```text
 architecture/astro-content-site@1
+architecture/next-feature-app-router@1
 architecture/next-modular@1
 architecture/dotnet-layered@1
 architecture/python-fastapi-modular@1
@@ -417,6 +428,20 @@ The registry layer includes:
 | Hook | `next/hook@9214` |
 | Utility | `next/util@3378` |
 
+### Next.js App Router / feature-first
+
+| Type | Pattern ID |
+| --- | --- |
+| Page | `next-feature/page@1846` |
+| Layout | `next-feature/layout@2673` |
+| Route Handler | `next-feature/route-handler@7318` |
+| Server Action | `next-feature/server-action@6492` |
+| Application service | `next-feature/application-service@3527` |
+| Data access | `next-feature/data-access@8164` |
+| Model | `next-feature/model@4739` |
+| Schema | `next-feature/schema@9251` |
+| Server/Client components | `next-feature/component@5086` |
+
 ### .NET
 
 | Type | Pattern ID |
@@ -463,6 +488,7 @@ The registry layer includes:
 | Architecture | Rule ID |
 | --- | --- |
 | Astro content site | `architecture/astro-content-site@1` |
+| Feature-oriented Next.js App Router | `architecture/next-feature-app-router@1` |
 | Modular Next.js | `architecture/next-modular@1` |
 | Layered .NET | `architecture/dotnet-layered@1` |
 | Modular FastAPI | `architecture/python-fastapi-modular@1` |

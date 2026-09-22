@@ -1,0 +1,40 @@
+schemaVersion: 1
+id: architecture/next-feature-app-router@1
+name: Feature-oriented Next.js App Router architecture
+description: Organizes App Router boundaries separately from domain modules with actions, application services, components, data access, models, and schemas.
+version: 1.0.0
+scopes:
+  - path: app/**/layout.tsx
+    pattern: next-feature/layout@2673
+  - path: app/**/page.tsx
+    pattern: next-feature/page@1846
+  - path: app/api/**/route.ts
+    pattern: next-feature/route-handler@7318
+  - path: features/*/actions/**
+    pattern: next-feature/server-action@6492
+  - path: features/*/application/**
+    pattern: next-feature/application-service@3527
+  - path: features/*/components/**
+    pattern: next-feature/component@5086
+  - path: features/*/data/**
+    pattern: next-feature/data-access@8164
+  - path: features/*/model/**
+    pattern: next-feature/model@4739
+  - path: features/*/schemas/**
+    pattern: next-feature/schema@9251
+rules:
+  - App Router pages and layouts must remain thin routing and composition boundaries; feature workflows belong under features.
+  - Server Components are the default; use client must be limited to the smallest interactive boundary with serializable props.
+  - Pages and Server Components may read through application queries without an internal HTTP round trip.
+  - UI mutations must cross a Server Action that validates unknown input, establishes authorization, delegates to application code, and revalidates affected content.
+  - Route Handlers are reserved for public APIs, webhooks, and external consumers and must not contain feature persistence logic.
+  - Application modules coordinate use cases and may depend on model and data modules, but not on app routes, React, or HTTP responses.
+  - Data modules are server-only persistence adapters and must not import actions, application orchestration, or UI modules.
+  - Model modules contain framework-independent types and pure domain logic; schema modules own runtime validation for untrusted input.
+  - Tests should be colocated with the feature layer whose behavior they verify.
+metadata:
+  stack: next
+  router: app
+  organization: feature-first
+  reference: devely
+  maturity: foundation

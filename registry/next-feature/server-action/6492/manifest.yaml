@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: next-feature/server-action@6492
+name: Feature Server Action
+description: Server Action boundary that authenticates, validates unknown input, delegates a mutation, and revalidates affected routes.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: actions.ts
+      destination: "{{Name}}/{{Name}}.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - validation
+  - authorization
+  - revalidation
+  - result-types
+preserve:
+  - use-server-boundary
+  - unknown-input-validation
+  - application-service-delegation
+  - serializable-result
+  - no-direct-persistence
+metadata:
+  framework: next
+  boundary: server-action
+  maturity: foundation-sample

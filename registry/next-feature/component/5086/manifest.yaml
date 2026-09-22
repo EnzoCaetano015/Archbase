@@ -1,0 +1,32 @@
+schemaVersion: 1
+id: next-feature/component@5086
+name: Feature Server and Client components
+description: Feature component bundle with a server-owned data view and a minimal client interaction island.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: item-details.tsx
+      destination: "{{Name}}/{{Name}}-details.tsx"
+      required: true
+    - source: item-action-button.tsx
+      destination: "{{Name}}/{{Name}}-action-button.tsx"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - props
+  - rendered-content
+  - interactions
+  - accessibility-labels
+preserve:
+  - server-component-default
+  - minimal-client-boundary
+  - serializable-client-props
+  - typed-props
+  - action-delegation
+metadata:
+  framework: next
+  layer: component
+  maturity: foundation-sample

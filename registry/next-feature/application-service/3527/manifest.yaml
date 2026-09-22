@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: next-feature/application-service@3527
+name: Feature application service
+description: Server-only use case that coordinates domain policy and persistence without depending on HTTP or React.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: application.ts
+      destination: "{{Name}}/{{Name}}.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - use-case-input
+  - workflow
+  - domain-policy
+  - error-mapping
+preserve:
+  - server-only-boundary
+  - framework-independent-workflow
+  - data-access-delegation
+  - domain-model-dependency
+  - no-http-or-react-dependency
+metadata:
+  framework: next
+  layer: application
+  maturity: foundation-sample

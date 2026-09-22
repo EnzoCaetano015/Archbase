@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: next-feature/model@4739
+name: Feature domain model
+description: Framework-independent feature types, constants, and pure domain transformations.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: model.ts
+      destination: "{{Name}}/{{Name}}.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - domain-types
+  - constants
+  - pure-transformations
+  - invariants
+preserve:
+  - framework-independence
+  - pure-domain-logic
+  - no-io
+  - no-react-dependency
+  - no-persistence-dependency
+metadata:
+  framework: next
+  layer: model
+  maturity: foundation-sample

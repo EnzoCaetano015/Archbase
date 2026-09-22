@@ -18,6 +18,15 @@ The binary embeds the initial catalog:
 - `dotnet/controller@7743`
 - `dotnet/repository@5532`
 - `dotnet/service@1172`
+- `next-feature/application-service@3527`
+- `next-feature/component@5086`
+- `next-feature/data-access@8164`
+- `next-feature/layout@2673`
+- `next-feature/model@4739`
+- `next-feature/page@1846`
+- `next-feature/route-handler@7318`
+- `next-feature/schema@9251`
+- `next-feature/server-action@6492`
 - `python/router@2784`
 - `python/schemas@3950`
 - `python/service@7315`

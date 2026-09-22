@@ -8,6 +8,10 @@ rules:
     version: 1.0.0
     path: architecture/dotnet-layered/1
     description: Layered .NET architecture with one-way controller, service, and repository dependencies.
+  - id: architecture/next-feature-app-router@1
+    version: 1.0.0
+    path: architecture/next-feature-app-router/1
+    description: Feature-oriented Next.js App Router architecture with explicit server, client, application, data, model, and validation boundaries.
   - id: architecture/next-modular@1
     version: 1.0.0
     path: architecture/next-modular/1

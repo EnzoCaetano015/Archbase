@@ -32,6 +32,42 @@ patterns:
     version: 1.0.0
     path: dotnet/service/1172
     description: Application service with constructor-injected repository.
+  - id: next-feature/application-service@3527
+    version: 1.0.0
+    path: next-feature/application-service/3527
+    description: Server-only feature use case coordinating domain policy and persistence without HTTP or React dependencies.
+  - id: next-feature/component@5086
+    version: 1.0.0
+    path: next-feature/component/5086
+    description: Feature UI bundle separating a server-rendered data view from a minimal client interaction island.
+  - id: next-feature/data-access@8164
+    version: 1.0.0
+    path: next-feature/data-access/8164
+    description: Server-only persistence adapter with explicit queries and typed model results.
+  - id: next-feature/layout@2673
+    version: 1.0.0
+    path: next-feature/layout/2673
+    description: App Router segment layout composing a shared application shell.
+  - id: next-feature/model@4739
+    version: 1.0.0
+    path: next-feature/model/4739
+    description: Framework-independent feature types and pure domain transformations.
+  - id: next-feature/page@1846
+    version: 1.0.0
+    path: next-feature/page/1846
+    description: Thin async App Router page delegating rendering to a feature Server Component.
+  - id: next-feature/route-handler@7318
+    version: 1.0.0
+    path: next-feature/route-handler/7318
+    description: HTTP boundary for external consumers with validation and application-service delegation.
+  - id: next-feature/schema@9251
+    version: 1.0.0
+    path: next-feature/schema/9251
+    description: Runtime validation contract for untrusted feature input with inferred TypeScript types.
+  - id: next-feature/server-action@6492
+    version: 1.0.0
+    path: next-feature/server-action/6492
+    description: Authenticated and validated Server Action delegating UI mutations to application services.
   - id: next/component@4821
     version: 1.0.0
     path: next/component/4821
