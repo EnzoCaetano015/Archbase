@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: dotnet-multiproject/di-composition@7138
+name: Multi-project dependency registration
+description: ASP.NET Core registration extension that explicitly connects application contracts to infrastructure implementations.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: DependencyInjection.cs
+      destination: "{{Name}}/DependencyInjection.cs"
+      required: true
+allowedChanges:
+  - imports
+  - registrations
+  - lifetimes
+  - configuration
+  - assembly-scanning
+preserve:
+  - composition-root-responsibility
+  - contract-to-implementation-mapping
+  - explicit-provider-lifetimes
+  - configuration-validation
+  - no-business-workflow
+metadata:
+  framework: aspnet-core
+  layer: composition
+  maturity: foundation-sample

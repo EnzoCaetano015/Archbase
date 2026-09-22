@@ -11,6 +11,7 @@ Rule paths are relative slash-separated globs such as `src/pages/**`. Paths must
 ## Official rules
 
 - `architecture/astro-content-site@1` separates Astro file routes, document layouts, server-rendered components, validated content collections, and pure utilities.
+- `architecture/dotnet-multiproject@1` separates ASP.NET Core composition, application contracts and services, persistence, shared contracts, global failures, and scheduled jobs across projects.
 - `architecture/nestjs-prisma-modular@1` separates NestJS feature modules, validated transport contracts, authentication guards, external HTTP adapters, global response policies, and Prisma infrastructure.
 - `architecture/next-feature-app-router@1` separates App Router pages, layouts, and HTTP handlers from feature-owned actions, application services, components, persistence, models, and schemas.
 - `architecture/next-modular@1` separates pages, components, hooks, and utilities and associates each path with the corresponding Next pattern.

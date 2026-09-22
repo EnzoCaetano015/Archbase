@@ -1,0 +1,37 @@
+schemaVersion: 1
+id: dotnet-multiproject/background-job@8094
+name: Contract-driven scheduled job
+description: Background job bundle with an execution contract, declarative schedule metadata, and an application-service-driven implementation.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: IJob.cs
+      destination: "{{Name}}/Interfaces/IJob.cs"
+      required: true
+    - source: JobAttribute.cs
+      destination: "{{Name}}/Attributes/JobAttribute.cs"
+      required: true
+    - source: ExampleJob.cs
+      destination: "{{Name}}/{{Name}}Job.cs"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - schedule
+  - job-id
+  - injected-services
+  - workflow
+  - logging
+preserve:
+  - execution-contract
+  - declarative-schedule
+  - application-service-delegation
+  - structured-logging
+  - no-direct-controller-or-database-dependency
+metadata:
+  framework: dotnet
+  scheduler: hangfire-compatible
+  layer: jobs
+  maturity: foundation-sample

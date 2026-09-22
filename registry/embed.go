@@ -5,5 +5,5 @@ import "embed"
 
 // FS contains the registry index and its pattern files.
 //
-//go:embed index.yaml astro dotnet nestjs next next-feature python react react-tailwind rules
+//go:embed index.yaml astro dotnet dotnet-multiproject nestjs next next-feature python react react-tailwind rules
 var FS embed.FS

@@ -59,6 +59,11 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 			ruleID: "architecture/dotnet-layered@1", exported: ".cursor/rules/architecture-dotnet-layered-1.mdc",
 		},
 		{
+			name: "dotnet-multiproject", fixture: "dotnet-multiproject", rootPattern: "dotnet-multiproject/controller@2947", nested: "src/Example.Api/Controllers", localName: "api-controllers-standard",
+			customFile: "ExampleController.cs", target: "src/Example.Api/Controllers/AdminController.cs", outsideTarget: "src/Example.Application/ItemService.cs",
+			ruleID: "architecture/dotnet-multiproject@1", exported: ".cursor/rules/architecture-dotnet-multiproject-1.mdc",
+		},
+		{
 			name: "nestjs", fixture: "nestjs", rootPattern: "nestjs/controller@2864", nested: "src/features/items", localName: "controllers-standard",
 			customFile: "example.controller.ts", target: "src/features/items/admin.controller.ts", outsideTarget: "src/features/users/users.service.ts",
 			ruleID: "architecture/nestjs-prisma-modular@1", exported: ".cursor/rules/architecture-nestjs-prisma-modular-1.mdc",

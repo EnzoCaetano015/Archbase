@@ -11,6 +11,14 @@ The binary embeds the initial catalog:
 - `astro/layout@6813`
 - `astro/page@5904`
 - `astro/util@2386`
+- `dotnet-multiproject/application-service@5279`
+- `dotnet-multiproject/background-job@8094`
+- `dotnet-multiproject/bootstrap@1624`
+- `dotnet-multiproject/contracts@4716`
+- `dotnet-multiproject/controller@2947`
+- `dotnet-multiproject/di-composition@7138`
+- `dotnet-multiproject/exception-handler@8463`
+- `dotnet-multiproject/repository@6485`
 - `next/page@1234`
 - `next/component@4821`
 - `next/hook@9214`

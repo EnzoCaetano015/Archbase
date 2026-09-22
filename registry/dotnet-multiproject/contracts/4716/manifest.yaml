@@ -1,0 +1,34 @@
+schemaVersion: 1
+id: dotnet-multiproject/contracts@4716
+name: Shared API contracts
+description: Multi-project contract bundle separating domain-shaped models, request input, and generic response envelopes.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: Example.cs
+      destination: "{{Name}}/Models/{{Name}}.cs"
+      required: true
+    - source: CreateExampleRequest.cs
+      destination: "{{Name}}/Requests/Create{{Name}}Request.cs"
+      required: true
+    - source: ResponseEnvelope.cs
+      destination: "{{Name}}/Responses/ResponseEnvelope.cs"
+      required: true
+allowedChanges:
+  - identifiers
+  - namespaces
+  - fields
+  - validation-attributes
+  - serialization-attributes
+  - envelope-shape
+preserve:
+  - model-request-response-separation
+  - nullable-reference-types
+  - transport-neutral-model
+  - no-service-or-persistence-logic
+metadata:
+  framework: dotnet
+  layer: contracts
+  maturity: foundation-sample

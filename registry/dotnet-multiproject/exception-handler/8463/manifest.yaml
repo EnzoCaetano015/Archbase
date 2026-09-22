@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: dotnet-multiproject/exception-handler@8463
+name: ASP.NET Core problem exception handler
+description: Global IExceptionHandler that maps known application and infrastructure failures to safe HTTP envelopes and structured logs.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: ApiExceptionHandler.cs
+      destination: "{{Name}}/{{Name}}ExceptionHandler.cs"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - exception-mapping
+  - status-codes
+  - response-envelope
+  - logging
+preserve:
+  - iexception-handler-contract
+  - known-exception-mapping
+  - safe-unknown-fallback
+  - structured-logging
+  - cancellation-propagation
+metadata:
+  framework: aspnet-core
+  layer: api
+  maturity: foundation-sample

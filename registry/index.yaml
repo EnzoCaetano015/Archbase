@@ -20,6 +20,38 @@ patterns:
     version: 1.0.0
     path: astro/util/2386
     description: Pure typed utility for conflict-safe Tailwind class composition.
+  - id: dotnet-multiproject/application-service@5279
+    version: 1.0.0
+    path: dotnet-multiproject/application-service/5279
+    description: Application service bundle separating a public interface from repository-driven orchestration.
+  - id: dotnet-multiproject/background-job@8094
+    version: 1.0.0
+    path: dotnet-multiproject/background-job/8094
+    description: Scheduled job contract, metadata, and application-service-driven implementation.
+  - id: dotnet-multiproject/bootstrap@1624
+    version: 1.0.0
+    path: dotnet-multiproject/bootstrap/1624
+    description: ASP.NET Core composition root with explicit service registration and middleware ordering.
+  - id: dotnet-multiproject/contracts@4716
+    version: 1.0.0
+    path: dotnet-multiproject/contracts/4716
+    description: Shared model, request, and response contracts for a multi-project .NET solution.
+  - id: dotnet-multiproject/controller@2947
+    version: 1.0.0
+    path: dotnet-multiproject/controller/2947
+    description: Contract-driven ASP.NET Core controller delegating to an application service interface.
+  - id: dotnet-multiproject/di-composition@7138
+    version: 1.0.0
+    path: dotnet-multiproject/di-composition/7138
+    description: Dependency registration boundary mapping application and infrastructure contracts to implementations.
+  - id: dotnet-multiproject/exception-handler@8463
+    version: 1.0.0
+    path: dotnet-multiproject/exception-handler/8463
+    description: Global ASP.NET Core exception handler with safe HTTP mapping and structured logging.
+  - id: dotnet-multiproject/repository@6485
+    version: 1.0.0
+    path: dotnet-multiproject/repository/6485
+    description: Repository interface and PetaPoco/SQLKata implementation isolated in infrastructure.
   - id: dotnet/controller@7743
     version: 1.0.0
     path: dotnet/controller/7743

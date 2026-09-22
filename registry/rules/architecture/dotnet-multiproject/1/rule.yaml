@@ -1,0 +1,40 @@
+schemaVersion: 1
+id: architecture/dotnet-multiproject@1
+name: Multi-project ASP.NET Core API architecture
+description: Separates API composition, application contracts and services, persistence, shared contracts, and scheduled jobs across .NET projects.
+version: 1.0.0
+scopes:
+  - path: src/*.Api/Program.cs
+    pattern: dotnet-multiproject/bootstrap@1624
+  - path: src/*.Api/Controllers/**
+    pattern: dotnet-multiproject/controller@2947
+  - path: src/*.Api/Config/DependencyInjection.cs
+    pattern: dotnet-multiproject/di-composition@7138
+  - path: src/*.Api/Config/*ExceptionHandler.cs
+    pattern: dotnet-multiproject/exception-handler@8463
+  - path: src/*.Application/**
+    pattern: dotnet-multiproject/application-service@5279
+  - path: src/*.Infrastructure/**
+    pattern: dotnet-multiproject/repository@6485
+  - path: src/*.Contracts/**
+    pattern: dotnet-multiproject/contracts@4716
+  - path: src/*.Jobs/**
+    pattern: dotnet-multiproject/background-job@8094
+rules:
+  - The API project is the composition root and may reference application, contracts, jobs, and infrastructure only for startup wiring.
+  - Controllers depend on application interfaces and transport contracts, propagate cancellation, and never execute SQL or instantiate concrete services.
+  - Application services expose interfaces, coordinate use cases, and depend on repository contracts without referencing controllers or HTTP results.
+  - Infrastructure repositories own database access and parameterized queries and must not depend on the API, application implementations, or jobs.
+  - The contracts project contains serializable models, requests, and responses and must not depend on application, infrastructure, API, or jobs projects.
+  - Dependency registration maps interfaces to implementations with explicit lifetimes and must fail visibly for missing configuration or implementations.
+  - Global exception handling maps known failures, logs original exceptions, and returns safe messages for unexpected failures.
+  - Scheduled jobs depend on application interfaces, carry declarative schedule metadata, propagate cancellation, and never call controllers or repositories directly.
+  - Project references must remain acyclic and follow API or Jobs to Application to Infrastructure to Contracts, with Contracts remaining dependency-free.
+metadata:
+  stack: dotnet
+  runtime: net8.0
+  organization: multi-project-layered
+  data-access: petapoco-sqlkata
+  scheduler: hangfire
+  reference: todo-api
+  maturity: foundation

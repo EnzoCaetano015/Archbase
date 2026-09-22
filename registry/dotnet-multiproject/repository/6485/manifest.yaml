@@ -1,0 +1,33 @@
+schemaVersion: 1
+id: dotnet-multiproject/repository@6485
+name: SQLKata repository contract and implementation
+description: Infrastructure bundle separating a repository interface from parameterized SQLKata and PetaPoco persistence.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: IExampleRepository.cs
+      destination: "{{Name}}/Interfaces/I{{Name}}Repository.cs"
+      required: true
+    - source: ExampleRepository.cs
+      destination: "{{Name}}/{{Name}}Repository.cs"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - table-names
+  - queries
+  - mappings
+  - cancellation
+preserve:
+  - interface-implementation-pair
+  - parameterized-query-builder
+  - persistence-only-responsibility
+  - contract-model-results
+  - no-controller-or-service-dependency
+metadata:
+  framework: dotnet
+  data-access: petapoco-sqlkata
+  layer: infrastructure
+  maturity: foundation-sample

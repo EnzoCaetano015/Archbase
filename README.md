@@ -107,6 +107,15 @@ dotnet/controller@7743
 dotnet/service@1172
 dotnet/repository@5532
 
+dotnet-multiproject/bootstrap@1624
+dotnet-multiproject/controller@2947
+dotnet-multiproject/application-service@5279
+dotnet-multiproject/repository@6485
+dotnet-multiproject/contracts@4716
+dotnet-multiproject/di-composition@7138
+dotnet-multiproject/exception-handler@8463
+dotnet-multiproject/background-job@8094
+
 nestjs/bootstrap@1437
 nestjs/module@6419
 nestjs/controller@2864
@@ -149,6 +158,7 @@ Examples included in the current catalog:
 
 ```text
 architecture/astro-content-site@1
+architecture/dotnet-multiproject@1
 architecture/nestjs-prisma-modular@1
 architecture/next-feature-app-router@1
 architecture/next-modular@1
@@ -461,6 +471,19 @@ The registry layer includes:
 | Service | `dotnet/service@1172` |
 | Repository | `dotnet/repository@5532` |
 
+### .NET multi-project
+
+| Type | Pattern ID |
+| --- | --- |
+| API bootstrap | `dotnet-multiproject/bootstrap@1624` |
+| Controller | `dotnet-multiproject/controller@2947` |
+| Application service | `dotnet-multiproject/application-service@5279` |
+| Repository | `dotnet-multiproject/repository@6485` |
+| Shared contracts | `dotnet-multiproject/contracts@4716` |
+| Dependency composition | `dotnet-multiproject/di-composition@7138` |
+| Exception handler | `dotnet-multiproject/exception-handler@8463` |
+| Background job | `dotnet-multiproject/background-job@8094` |
+
 ### NestJS / Prisma
 
 | Type | Pattern ID |
@@ -513,6 +536,7 @@ The registry layer includes:
 | Architecture | Rule ID |
 | --- | --- |
 | Astro content site | `architecture/astro-content-site@1` |
+| Multi-project ASP.NET Core | `architecture/dotnet-multiproject@1` |
 | Modular NestJS/Prisma API | `architecture/nestjs-prisma-modular@1` |
 | Feature-oriented Next.js App Router | `architecture/next-feature-app-router@1` |
 | Modular Next.js | `architecture/next-modular@1` |

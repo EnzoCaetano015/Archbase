@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: dotnet-multiproject/controller@2947
+name: Contract-driven ASP.NET Core controller
+description: Thin authenticated API controller depending on an application service contract and explicit request and response models.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: ExampleController.cs
+      destination: "{{Name}}/{{Name}}Controller.cs"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - routes
+  - authorization
+  - request-contracts
+  - response-contracts
+  - status-codes
+preserve:
+  - api-controller-boundary
+  - primary-constructor-injection
+  - service-contract-delegation
+  - explicit-http-results
+  - no-persistence-logic
+metadata:
+  framework: aspnet-core
+  layer: api
+  maturity: foundation-sample

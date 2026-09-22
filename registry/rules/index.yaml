@@ -8,6 +8,10 @@ rules:
     version: 1.0.0
     path: architecture/dotnet-layered/1
     description: Layered .NET architecture with one-way controller, service, and repository dependencies.
+  - id: architecture/dotnet-multiproject@1
+    version: 1.0.0
+    path: architecture/dotnet-multiproject/1
+    description: Multi-project ASP.NET Core architecture separating API, application, infrastructure, contracts, and scheduled jobs.
   - id: architecture/nestjs-prisma-modular@1
     version: 1.0.0
     path: architecture/nestjs-prisma-modular/1
