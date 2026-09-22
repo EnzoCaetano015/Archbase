@@ -1,0 +1,42 @@
+schemaVersion: 1
+id: architecture/nestjs-prisma-modular@1
+name: Modular NestJS and Prisma API architecture
+description: Organizes a NestJS API into feature modules, validated transport boundaries, authentication guards, external HTTP adapters, shared HTTP policies, and Prisma infrastructure.
+version: 1.0.0
+scopes:
+  - path: src/main.ts
+    pattern: nestjs/bootstrap@1437
+  - path: src/features/*/*.controller.ts
+    pattern: nestjs/controller@2864
+  - path: src/features/*/*.module.ts
+    pattern: nestjs/module@6419
+  - path: src/features/*/*.service.ts
+    pattern: nestjs/service@4793
+  - path: src/features/*/dto/**
+    pattern: nestjs/dto@9175
+  - path: src/auth/*.guard.ts
+    pattern: nestjs/guard@3642
+  - path: src/integrations/*/**
+    pattern: nestjs/http-client@7528
+  - path: src/infrastructure/prisma/**
+    pattern: nestjs/prisma-service@8356
+  - path: src/common/http/**
+    pattern: nestjs/http-envelope@5281
+rules:
+  - The bootstrap entrypoint owns application-wide transport configuration and must not contain feature workflows.
+  - Each feature must expose an explicit NestJS module containing its controllers and providers and exporting only its intentional public services.
+  - Controllers are transport adapters; they validate and map HTTP input before delegating to injected services and must not query Prisma or external APIs directly.
+  - Services coordinate application behavior and injected dependencies without depending on controllers or Express response objects.
+  - DTOs define runtime-validated transport contracts and must not contain persistence or business workflows.
+  - Authentication guards fail closed, honor explicit public-route metadata, delegate credential verification, and attach only verified claims.
+  - External APIs are isolated behind integration modules that configure HttpService and export a typed adapter instead of the raw client.
+  - Prisma infrastructure owns client lifecycle and connection configuration while feature-specific queries remain outside the shared Prisma service.
+  - Global interceptors and filters standardize HTTP envelopes without embedding feature behavior or leaking unexpected exception details.
+  - Configuration and credentials must come from the configuration provider and must never be hard-coded in modules or services.
+metadata:
+  stack: nestjs
+  orm: prisma
+  database: sql-server-compatible
+  organization: feature-modular
+  reference: hubspot-tickets-manager-api
+  maturity: foundation

@@ -18,6 +18,15 @@ The binary embeds the initial catalog:
 - `dotnet/controller@7743`
 - `dotnet/repository@5532`
 - `dotnet/service@1172`
+- `nestjs/bootstrap@1437`
+- `nestjs/controller@2864`
+- `nestjs/dto@9175`
+- `nestjs/guard@3642`
+- `nestjs/http-client@7528`
+- `nestjs/http-envelope@5281`
+- `nestjs/module@6419`
+- `nestjs/prisma-service@8356`
+- `nestjs/service@4793`
 - `next-feature/application-service@3527`
 - `next-feature/component@5086`
 - `next-feature/data-access@8164`

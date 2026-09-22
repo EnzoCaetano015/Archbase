@@ -59,6 +59,11 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 			ruleID: "architecture/dotnet-layered@1", exported: ".cursor/rules/architecture-dotnet-layered-1.mdc",
 		},
 		{
+			name: "nestjs", fixture: "nestjs", rootPattern: "nestjs/controller@2864", nested: "src/features/items", localName: "controllers-standard",
+			customFile: "example.controller.ts", target: "src/features/items/admin.controller.ts", outsideTarget: "src/features/users/users.service.ts",
+			ruleID: "architecture/nestjs-prisma-modular@1", exported: ".cursor/rules/architecture-nestjs-prisma-modular-1.mdc",
+		},
+		{
 			name: "react", fixture: "react", rootPattern: "react/page@6325", nested: "src/pages", localName: "pages-standard",
 			customFile: "Example/Example.tsx", target: "src/pages/Admin/Admin.tsx", outsideTarget: "src/components/Card/Card.tsx",
 			ruleID: "architecture/react-vite-modular@1", exported: ".cursor/rules/architecture-react-vite-modular-1.mdc",

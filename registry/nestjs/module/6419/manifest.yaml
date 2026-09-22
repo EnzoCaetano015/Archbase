@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: nestjs/module@6419
+name: NestJS feature module
+description: Explicit NestJS module boundary declaring its imports, controllers, providers, and public exports.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: example.module.ts
+      destination: "{{Name}}/{{Name}}.module.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - module-imports
+  - controllers
+  - providers
+  - exports
+preserve:
+  - explicit-module-boundary
+  - decorator-metadata
+  - minimal-public-exports
+  - dependency-injection-wiring
+metadata:
+  framework: nestjs
+  layer: composition
+  maturity: foundation-sample

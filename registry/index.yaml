@@ -32,6 +32,42 @@ patterns:
     version: 1.0.0
     path: dotnet/service/1172
     description: Application service with constructor-injected repository.
+  - id: nestjs/bootstrap@1437
+    version: 1.0.0
+    path: nestjs/bootstrap/1437
+    description: NestJS entrypoint centralizing validation, global HTTP policies, documentation, and startup.
+  - id: nestjs/controller@2864
+    version: 1.0.0
+    path: nestjs/controller/2864
+    description: Thin decorator-based HTTP controller with validated input and service delegation.
+  - id: nestjs/dto@9175
+    version: 1.0.0
+    path: nestjs/dto/9175
+    description: Runtime-validated NestJS request contract with Swagger metadata.
+  - id: nestjs/guard@3642
+    version: 1.0.0
+    path: nestjs/guard/3642
+    description: Metadata-aware authentication guard attaching verified claims to requests.
+  - id: nestjs/http-client@7528
+    version: 1.0.0
+    path: nestjs/http-client/7528
+    description: Configured external HTTP integration module exposing a typed injectable adapter.
+  - id: nestjs/http-envelope@5281
+    version: 1.0.0
+    path: nestjs/http-envelope/5281
+    description: Global interceptor and exception filter bundle standardizing HTTP responses.
+  - id: nestjs/module@6419
+    version: 1.0.0
+    path: nestjs/module/6419
+    description: Explicit NestJS feature composition boundary for controllers, providers, imports, and exports.
+  - id: nestjs/prisma-service@8356
+    version: 1.0.0
+    path: nestjs/prisma-service/8356
+    description: Lifecycle-aware Prisma infrastructure provider configured through NestJS dependency injection.
+  - id: nestjs/service@4793
+    version: 1.0.0
+    path: nestjs/service/4793
+    description: Injectable feature service coordinating application behavior through explicit dependencies.
   - id: next-feature/application-service@3527
     version: 1.0.0
     path: next-feature/application-service/3527

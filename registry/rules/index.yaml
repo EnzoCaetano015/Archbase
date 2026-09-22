@@ -8,6 +8,10 @@ rules:
     version: 1.0.0
     path: architecture/dotnet-layered/1
     description: Layered .NET architecture with one-way controller, service, and repository dependencies.
+  - id: architecture/nestjs-prisma-modular@1
+    version: 1.0.0
+    path: architecture/nestjs-prisma-modular/1
+    description: Modular NestJS API architecture with feature boundaries, validated DTOs, guards, HTTP integrations, and Prisma infrastructure.
   - id: architecture/next-feature-app-router@1
     version: 1.0.0
     path: architecture/next-feature-app-router/1

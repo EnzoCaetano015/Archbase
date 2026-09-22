@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: nestjs/guard@3642
+name: Metadata-aware NestJS authentication guard
+description: Global authentication guard honoring public-route metadata and attaching verified claims to the request.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: auth.guard.ts
+      destination: "{{Name}}/{{Name}}.guard.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - metadata-key
+  - credential-source
+  - verification-service
+  - claims-type
+preserve:
+  - can-activate-contract
+  - reflector-based-bypass
+  - credential-verification
+  - request-claims-assignment
+  - unauthorized-failure
+metadata:
+  framework: nestjs
+  concern: authentication
+  maturity: foundation-sample

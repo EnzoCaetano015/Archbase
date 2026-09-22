@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: nestjs/bootstrap@1437
+name: NestJS application bootstrap
+description: NestJS entrypoint centralizing application-wide transport configuration, validation, filters, interceptors, and API documentation.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: main.ts
+      destination: "{{Name}}/main.ts"
+      required: true
+allowedChanges:
+  - imports
+  - cors-policy
+  - global-pipes
+  - global-filters
+  - global-interceptors
+  - api-documentation
+  - listen-configuration
+preserve:
+  - single-bootstrap-entrypoint
+  - centralized-global-configuration
+  - dependency-free-feature-wiring
+  - explicit-startup-error-handling
+metadata:
+  framework: nestjs
+  layer: bootstrap
+  maturity: foundation-sample

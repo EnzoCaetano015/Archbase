@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: nestjs/dto@9175
+name: Validated NestJS DTO
+description: Request contract combining runtime class-validator rules with Swagger metadata.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: example.dto.ts
+      destination: "{{Name}}/{{Name}}.dto.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - fields
+  - validators
+  - messages
+  - api-metadata
+preserve:
+  - runtime-validation
+  - explicit-field-types
+  - transport-contract-responsibility
+  - no-business-logic
+metadata:
+  framework: nestjs
+  libraries: class-validator,swagger
+  layer: contract
+  maturity: foundation-sample

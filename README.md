@@ -107,6 +107,16 @@ dotnet/controller@7743
 dotnet/service@1172
 dotnet/repository@5532
 
+nestjs/bootstrap@1437
+nestjs/module@6419
+nestjs/controller@2864
+nestjs/service@4793
+nestjs/dto@9175
+nestjs/guard@3642
+nestjs/http-client@7528
+nestjs/http-envelope@5281
+nestjs/prisma-service@8356
+
 python/router@2784
 python/service@7315
 python/repository@8462
@@ -139,6 +149,7 @@ Examples included in the current catalog:
 
 ```text
 architecture/astro-content-site@1
+architecture/nestjs-prisma-modular@1
 architecture/next-feature-app-router@1
 architecture/next-modular@1
 architecture/dotnet-layered@1
@@ -450,6 +461,20 @@ The registry layer includes:
 | Service | `dotnet/service@1172` |
 | Repository | `dotnet/repository@5532` |
 
+### NestJS / Prisma
+
+| Type | Pattern ID |
+| --- | --- |
+| Bootstrap | `nestjs/bootstrap@1437` |
+| Feature module | `nestjs/module@6419` |
+| Controller | `nestjs/controller@2864` |
+| Application service | `nestjs/service@4793` |
+| Validated DTO | `nestjs/dto@9175` |
+| Authentication guard | `nestjs/guard@3642` |
+| External HTTP client | `nestjs/http-client@7528` |
+| HTTP response envelope | `nestjs/http-envelope@5281` |
+| Prisma infrastructure | `nestjs/prisma-service@8356` |
+
 ### Python / FastAPI
 
 | Type | Pattern ID |
@@ -488,6 +513,7 @@ The registry layer includes:
 | Architecture | Rule ID |
 | --- | --- |
 | Astro content site | `architecture/astro-content-site@1` |
+| Modular NestJS/Prisma API | `architecture/nestjs-prisma-modular@1` |
 | Feature-oriented Next.js App Router | `architecture/next-feature-app-router@1` |
 | Modular Next.js | `architecture/next-modular@1` |
 | Layered .NET | `architecture/dotnet-layered@1` |

@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: nestjs/service@4793
+name: NestJS application service
+description: Injectable feature service coordinating business behavior through constructor-injected dependencies.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: example.service.ts
+      destination: "{{Name}}/{{Name}}.service.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - injected-dependencies
+  - use-cases
+  - domain-errors
+  - return-types
+preserve:
+  - injectable-provider
+  - constructor-injection
+  - application-orchestration
+  - no-http-response-dependency
+  - no-controller-dependency
+metadata:
+  framework: nestjs
+  layer: application
+  maturity: foundation-sample

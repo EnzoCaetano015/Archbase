@@ -1,0 +1,33 @@
+schemaVersion: 1
+id: nestjs/http-client@7528
+name: NestJS external HTTP client
+description: Injectable integration adapter encapsulating a configured HttpService and mapping remote responses to local contracts.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: example-client.module.ts
+      destination: "{{Name}}/{{Name}}.module.ts"
+      required: true
+    - source: example-client.service.ts
+      destination: "{{Name}}/{{Name}}.service.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - configuration-keys
+  - authentication-headers
+  - remote-paths
+  - response-contracts
+preserve:
+  - dedicated-integration-module
+  - configured-http-client
+  - injectable-adapter
+  - remote-contract-encapsulation
+  - no-controller-dependency
+metadata:
+  framework: nestjs
+  library: nestjs-axios
+  layer: integration
+  maturity: foundation-sample

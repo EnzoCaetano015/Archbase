@@ -1,0 +1,32 @@
+schemaVersion: 1
+id: nestjs/prisma-service@8356
+name: NestJS Prisma infrastructure service
+description: Global NestJS infrastructure module exposing one lifecycle-aware Prisma client configured through dependency injection.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: prisma.module.ts
+      destination: "{{Name}}/prisma.module.ts"
+      required: true
+    - source: prisma.service.ts
+      destination: "{{Name}}/prisma.service.ts"
+      required: true
+allowedChanges:
+  - imports
+  - configuration-key
+  - database-adapter
+  - lifecycle-hooks
+  - module-scope
+preserve:
+  - single-prisma-provider
+  - lifecycle-aware-connection
+  - configuration-injection
+  - exported-infrastructure-service
+  - no-feature-queries
+metadata:
+  framework: nestjs
+  orm: prisma
+  layer: infrastructure
+  maturity: foundation-sample

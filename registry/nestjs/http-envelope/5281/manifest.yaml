@@ -1,0 +1,32 @@
+schemaVersion: 1
+id: nestjs/http-envelope@5281
+name: NestJS global HTTP envelope
+description: Global interceptor and exception filter bundle that standardizes successful and failed HTTP responses.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: response-envelope.interceptor.ts
+      destination: "{{Name}}/response-envelope.interceptor.ts"
+      required: true
+    - source: api-exception.filter.ts
+      destination: "{{Name}}/api-exception.filter.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - success-envelope
+  - error-envelope
+  - exception-mapping
+  - logging
+preserve:
+  - global-cross-cutting-responsibility
+  - typed-success-envelope
+  - unknown-exception-safety
+  - explicit-http-status
+  - no-feature-logic
+metadata:
+  framework: nestjs
+  layer: transport
+  maturity: foundation-sample

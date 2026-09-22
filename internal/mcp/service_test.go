@@ -51,13 +51,13 @@ func newTestService(t *testing.T, root string) (*Service, *workspace.Service) {
 func TestSearchAndGetEmbeddedPatterns(t *testing.T) {
 	service, _ := newTestService(t, t.TempDir())
 	all, err := service.SearchPatterns(context.Background(), SearchPatternsInput{})
-	if err != nil || len(all.Patterns) != 39 {
+	if err != nil || len(all.Patterns) != 48 {
 		t.Fatalf("unexpected search result: %#v, %v", all, err)
 	}
 	if !sort.SliceIsSorted(all.Patterns, func(i, j int) bool { return all.Patterns[i].ID < all.Patterns[j].ID }) {
 		t.Fatal("patterns are not ordered")
 	}
-	filtered, err := service.SearchPatterns(context.Background(), SearchPatternsInput{Query: "SERVICE DELEGATION"})
+	filtered, err := service.SearchPatterns(context.Background(), SearchPatternsInput{Query: "ASP.NET CORE CONTROLLER"})
 	if err != nil || len(filtered.Patterns) != 1 || filtered.Patterns[0].ID != "dotnet/controller@7743" {
 		t.Fatalf("unexpected filtered result: %#v, %v", filtered, err)
 	}

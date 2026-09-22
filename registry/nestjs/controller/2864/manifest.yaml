@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: nestjs/controller@2864
+name: NestJS feature controller
+description: Thin HTTP controller using decorators, validated DTOs, and service delegation.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: example.controller.ts
+      destination: "{{Name}}/{{Name}}.controller.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - route-prefix
+  - http-methods
+  - dto-types
+  - status-codes
+preserve:
+  - decorator-based-routing
+  - constructor-injection
+  - validated-transport-input
+  - service-delegation
+  - no-persistence-logic
+metadata:
+  framework: nestjs
+  layer: transport
+  maturity: foundation-sample
