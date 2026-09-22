@@ -44,3 +44,31 @@ patterns:
     version: 1.0.0
     path: python/service/7315
     description: Application service with repository injection and a FastAPI dependency factory.
+  - id: react/api-controller@6142
+    version: 1.0.0
+    path: react/api-controller/6142
+    description: TanStack Query hooks isolating typed API reads, writes, and cache invalidation.
+  - id: react/api-model@4086
+    version: 1.0.0
+    path: react/api-model/4086
+    description: Typed API requests, responses, entities, and centralized query keys.
+  - id: react/component@5217
+    version: 1.0.0
+    path: react/component/5217
+    description: Reusable typed React component with optional styles and a public entrypoint.
+  - id: react/hook@8534
+    version: 1.0.0
+    path: react/hook/8534
+    description: Shared React hook with a focused responsibility and stable return shape.
+  - id: react/page@6325
+    version: 1.0.0
+    path: react/page/6325
+    description: React page bundle separating rendering, orchestration, validation, and styles.
+  - id: react/routes@1973
+    version: 1.0.0
+    path: react/routes/1973
+    description: Central React Router configuration with declarative redirects and layouts.
+  - id: react/util@3469
+    version: 1.0.0
+    path: react/util/3469
+    description: Pure typed frontend utility without React or browser state.

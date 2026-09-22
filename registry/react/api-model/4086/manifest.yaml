@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: react/api-model@4086
+name: Typed API model
+description: Domain-neutral API entity, request, response, and centralized query-key definitions.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: example.types.ts
+      destination: "{{Name}}/{{Name}}.types.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - fields
+  - field-types
+  - request-contracts
+  - response-contracts
+  - query-keys
+preserve:
+  - explicit-request-response-types
+  - centralized-query-keys
+  - transport-contract-only
+metadata:
+  framework: react
+  language: typescript
+  maturity: foundation-sample

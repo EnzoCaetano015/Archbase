@@ -1,0 +1,35 @@
+schemaVersion: 1
+id: architecture/react-vite-modular@1
+name: Modular React and Vite architecture
+description: Separates rendering, page orchestration, reusable UI, server-state access, transport contracts, shared hooks, utilities, and routes.
+version: 1.0.0
+scopes:
+  - path: src/api/controllers/**
+    pattern: react/api-controller@6142
+  - path: src/api/models/**
+    pattern: react/api-model@4086
+  - path: src/components/**
+    pattern: react/component@5217
+  - path: src/lib/hooks/**
+    pattern: react/hook@8534
+  - path: src/lib/utils/**
+    pattern: react/util@3469
+  - path: src/pages/**
+    pattern: react/page@6325
+  - path: src/routes/**
+    pattern: react/routes@1973
+rules:
+  - Pages must focus on rendering and composition while colocated page hooks own forms, navigation, handlers, and page-specific orchestration.
+  - Pages and reusable components must never perform HTTP requests directly; API access belongs in typed query and mutation controllers.
+  - API models must define transport contracts and centralized query keys without importing controllers, pages, or components.
+  - Reusable components must remain presentation-focused and must not acquire page-specific behavior.
+  - Shared hooks must own reusable stateful behavior with a focused responsibility and must not render UI.
+  - Utilities must remain deterministic and free of React state, browser side effects, and remote data access.
+  - Routes must remain centralized and compose layouts, redirects, guards, and page elements declaratively.
+  - Schema, style, type, utility, and entrypoint files are optional and should exist only when their responsibility improves clarity or reuse.
+  - Server state must use centralized query keys and invalidate only affected queries after mutations.
+  - Authentication credentials must be delegated to the configured HTTP boundary rather than stored or assembled inside UI code.
+metadata:
+  stack: react
+  build-tool: vite
+  maturity: foundation

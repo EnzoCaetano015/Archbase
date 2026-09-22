@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: react/api-controller@6142
+name: TanStack Query API controller
+description: Domain-neutral query and mutation hooks that isolate typed HTTP access and targeted cache invalidation.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: example.ts
+      destination: "{{Name}}/{{Name}}.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - endpoints
+  - request-types
+  - response-types
+  - query-options
+  - mutation-options
+preserve:
+  - typed-http-boundary
+  - centralized-query-keys
+  - query-mutation-separation
+  - targeted-cache-invalidation
+metadata:
+  framework: react
+  library: tanstack-query
+  maturity: foundation-sample

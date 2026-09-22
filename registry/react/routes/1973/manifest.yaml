@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: react/routes@1973
+name: Central React Router configuration
+description: Domain-neutral browser-router configuration with declarative layouts, redirects, and fallback routes.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: index.tsx
+      destination: "{{Name}}/index.tsx"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - paths
+  - layouts
+  - route-elements
+  - redirects
+  - error-elements
+preserve:
+  - centralized-route-tree
+  - declarative-redirects
+  - shared-layout-nesting
+  - router-provider-boundary
+metadata:
+  framework: react
+  library: react-router
+  maturity: foundation-sample

@@ -1,0 +1,25 @@
+schemaVersion: 1
+id: react/util@3469
+name: Pure typed frontend utility
+description: Domain-neutral deterministic frontend transformation without React, browser state, or side effects.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: example.ts
+      destination: "{{Name}}/{{Name}}.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - types
+  - transformation-logic
+preserve:
+  - pure-function
+  - explicit-input-output
+  - side-effect-free
+  - react-independent
+metadata:
+  framework: react
+  language: typescript
+  maturity: foundation-sample

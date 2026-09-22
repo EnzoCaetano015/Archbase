@@ -1,0 +1,38 @@
+schemaVersion: 1
+id: react/component@5217
+name: Reusable typed React component
+description: Domain-neutral reusable component bundle separating rendering, props, styles, and public export.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: Example/Example.tsx
+      destination: "{{Name}}/{{Name}}.tsx"
+      required: true
+    - source: Example/Example.types.ts
+      destination: "{{Name}}/{{Name}}.types.ts"
+      required: true
+    - source: Example/Example.styles.ts
+      destination: "{{Name}}/{{Name}}.styles.ts"
+      required: false
+    - source: Example/index.ts
+      destination: "{{Name}}/index.ts"
+      required: false
+allowedChanges:
+  - identifiers
+  - imports
+  - props
+  - rendered-content
+  - accessibility-labels
+  - styles
+preserve:
+  - typed-props
+  - named-export
+  - presentation-responsibility
+  - theme-token-styles
+  - optional-public-entrypoint
+metadata:
+  framework: react
+  ui-library: material-ui
+  maturity: foundation-sample

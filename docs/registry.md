@@ -17,6 +17,13 @@ The binary embeds the initial catalog:
 - `python/schemas@3950`
 - `python/service@7315`
 - `python/repository@8462`
+- `react/api-controller@6142`
+- `react/api-model@4086`
+- `react/component@5217`
+- `react/hook@8534`
+- `react/page@6325`
+- `react/routes@1973`
+- `react/util@3469`
 
 Patterns describe code structure rather than application features. Registry entries are sorted by ID and validated against their manifests and declared files when a source is opened.
 

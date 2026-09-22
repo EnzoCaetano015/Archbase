@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: react/hook@8534
+name: Focused shared React hook
+description: Domain-neutral shared hook with one stateful responsibility and a stable return shape.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: useExample.ts
+      destination: "{{Name}}/use{{Name}}.ts"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - types
+  - state-logic
+  - callbacks
+preserve:
+  - focused-responsibility
+  - named-export
+  - stable-callbacks
+  - explicit-return-shape
+metadata:
+  framework: react
+  maturity: foundation-sample

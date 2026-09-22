@@ -50,7 +50,7 @@ func TestEmbeddedCatalogResolvesOfficialRulesAndPatterns(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"architecture/dotnet-layered@1", "architecture/next-modular@1", "architecture/python-fastapi-modular@1"}
+	want := []string{"architecture/dotnet-layered@1", "architecture/next-modular@1", "architecture/python-fastapi-modular@1", "architecture/react-vite-modular@1"}
 	if len(listed.Entries) != len(want) {
 		t.Fatalf("unexpected rules: %#v", listed.Entries)
 	}
@@ -89,7 +89,7 @@ func TestOfficialRulesHaveReadmesWithoutPatternSourceCopies(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if readmes != 3 {
+	if readmes != 4 {
 		t.Fatalf("expected one README for each official rule, got %d", readmes)
 	}
 }

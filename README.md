@@ -90,6 +90,19 @@ next/util@3378
 dotnet/controller@7743
 dotnet/service@1172
 dotnet/repository@5532
+
+python/router@2784
+python/service@7315
+python/repository@8462
+python/schemas@3950
+
+react/page@6325
+react/component@5217
+react/api-controller@6142
+react/api-model@4086
+react/hook@8534
+react/routes@1973
+react/util@3469
 ```
 
 A pattern does **not** describe a business feature. It describes the expected structure of that kind of code.
@@ -103,6 +116,8 @@ Examples included in the current catalog:
 ```text
 architecture/next-modular@1
 architecture/dotnet-layered@1
+architecture/python-fastapi-modular@1
+architecture/react-vite-modular@1
 ```
 
 A rule can define things such as:
@@ -384,12 +399,35 @@ The registry layer includes:
 | Service | `dotnet/service@1172` |
 | Repository | `dotnet/repository@5532` |
 
+### Python / FastAPI
+
+| Type | Pattern ID |
+| --- | --- |
+| Router | `python/router@2784` |
+| Schemas | `python/schemas@3950` |
+| Service | `python/service@7315` |
+| Repository | `python/repository@8462` |
+
+### React / Vite
+
+| Type | Pattern ID |
+| --- | --- |
+| Page | `react/page@6325` |
+| Component | `react/component@5217` |
+| API controller | `react/api-controller@6142` |
+| API model | `react/api-model@4086` |
+| Shared hook | `react/hook@8534` |
+| Routes | `react/routes@1973` |
+| Utility | `react/util@3469` |
+
 ### Architecture rules
 
 | Architecture | Rule ID |
 | --- | --- |
 | Modular Next.js | `architecture/next-modular@1` |
 | Layered .NET | `architecture/dotnet-layered@1` |
+| Modular FastAPI | `architecture/python-fastapi-modular@1` |
+| Modular React/Vite | `architecture/react-vite-modular@1` |
 
 The catalog is intentionally small in the first public version. New languages, stacks and architecture styles can be added incrementally.
 

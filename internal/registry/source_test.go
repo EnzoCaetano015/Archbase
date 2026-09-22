@@ -34,6 +34,13 @@ func TestEmbeddedSourceContainsAllFoundationPatterns(t *testing.T) {
 		"python/router@2784",
 		"python/schemas@3950",
 		"python/service@7315",
+		"react/api-controller@6142",
+		"react/api-model@4086",
+		"react/component@5217",
+		"react/hook@8534",
+		"react/page@6325",
+		"react/routes@1973",
+		"react/util@3469",
 	}
 	if len(listed.Entries) != len(expected) {
 		t.Fatalf("expected %d entries, got %#v", len(expected), listed.Entries)

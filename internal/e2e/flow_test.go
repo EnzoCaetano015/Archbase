@@ -24,7 +24,7 @@ import (
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func TestPrimaryFlowNextAndDotnet(t *testing.T) {
+func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 	remote := createGitRegistry(t)
 	for _, scenario := range []struct {
 		name          string
@@ -47,6 +47,11 @@ func TestPrimaryFlowNextAndDotnet(t *testing.T) {
 			name: "dotnet", fixture: "dotnet", rootPattern: "dotnet/controller@7743", nested: "src/Controllers", localName: "controllers-standard",
 			customFile: "ExampleController.cs", target: "src/Controllers/AdminController.cs", outsideTarget: "src/Services/ExampleService.cs",
 			ruleID: "architecture/dotnet-layered@1", exported: ".cursor/rules/architecture-dotnet-layered-1.mdc",
+		},
+		{
+			name: "react", fixture: "react", rootPattern: "react/page@6325", nested: "src/pages", localName: "pages-standard",
+			customFile: "Example/Example.tsx", target: "src/pages/Admin/Admin.tsx", outsideTarget: "src/components/Card/Card.tsx",
+			ruleID: "architecture/react-vite-modular@1", exported: ".cursor/rules/architecture-react-vite-modular-1.mdc",
 		},
 	} {
 		t.Run(scenario.name, func(t *testing.T) {

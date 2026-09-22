@@ -1,0 +1,38 @@
+schemaVersion: 1
+id: react/page@6325
+name: React page with colocated orchestration
+description: Domain-neutral React page bundle separating rendering, page logic, form validation, and theme-aware styles.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: Example/Example.tsx
+      destination: "{{Name}}/{{Name}}.tsx"
+      required: true
+    - source: Example/Example.hook.ts
+      destination: "{{Name}}/{{Name}}.hook.ts"
+      required: true
+    - source: Example/Example.schema.ts
+      destination: "{{Name}}/{{Name}}.schema.ts"
+      required: false
+    - source: Example/Example.styles.ts
+      destination: "{{Name}}/{{Name}}.styles.ts"
+      required: false
+allowedChanges:
+  - identifiers
+  - imports
+  - rendered-content
+  - page-orchestration
+  - validation-rules
+  - styles
+preserve:
+  - thin-page-rendering
+  - colocated-page-hook
+  - api-controller-delegation
+  - derived-state-without-effects
+  - optional-schema-and-styles
+metadata:
+  framework: react
+  build-tool: vite
+  maturity: foundation-sample
