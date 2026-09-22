@@ -28,3 +28,19 @@ patterns:
     version: 1.0.0
     path: next/util/3378
     description: Pure typed utility function.
+  - id: python/repository@8462
+    version: 1.0.0
+    path: python/repository/8462
+    description: Synchronous repository isolating parameterized PostgreSQL access.
+  - id: python/router@2784
+    version: 1.0.0
+    path: python/router/2784
+    description: FastAPI router limited to HTTP transport and service delegation.
+  - id: python/schemas@3950
+    version: 1.0.0
+    path: python/schemas/3950
+    description: Pydantic request and response contracts for a feature module.
+  - id: python/service@7315
+    version: 1.0.0
+    path: python/service/7315
+    description: Application service with repository injection and a FastAPI dependency factory.

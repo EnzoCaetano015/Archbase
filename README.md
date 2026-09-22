@@ -8,14 +8,14 @@ This repository contains the completed first public milestone (TASK-001 through 
 - versioned YAML contracts backed by JSON Schema;
 - safe filesystem primitives;
 - a validated bundle loader for required and optional pattern files;
-- seven structural Next.js and .NET patterns;
+- eleven structural Next.js, .NET, and Python patterns;
 - ordered resolution across embedded, directory, and public Git registries;
 - a concurrency-safe Git cache with a 15-minute TTL and validated stale fallback;
 - transactional installation and creation of customizable local patterns;
 - nearest-scope resolution for files, directories, and future paths;
 - deterministic pattern resolution and inspection commands;
 - an agent-neutral architecture rule contract and validated rule registry;
-- initial modular Next and layered .NET architecture rules;
+- modular Next, layered .NET, and modular FastAPI architecture rules;
 - transactional exporters for Cursor, GitHub Copilot, and hierarchical `AGENTS.md` files;
 - rule listing, inspection, and export commands;
 - a project-confined MCP stdio server with typed pattern, scope, file, and rule tools;

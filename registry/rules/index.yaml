@@ -8,3 +8,7 @@ rules:
     version: 1.0.0
     path: architecture/next-modular/1
     description: Modular Next architecture separating pages, components, hooks, and utilities.
+  - id: architecture/python-fastapi-modular@1
+    version: 1.0.0
+    path: architecture/python-fastapi-modular/1
+    description: Modular FastAPI architecture separating transport, contracts, application logic, and persistence.

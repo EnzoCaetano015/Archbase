@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: python/router@2784
+name: FastAPI transport router
+description: Domain-neutral FastAPI router that validates transport input and delegates application behavior.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: router.py
+      destination: "{{Name}}/router.py"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - route-prefix
+  - tags
+  - http-methods
+  - request-contracts
+  - response-contracts
+preserve:
+  - transport-only-responsibility
+  - dependency-injection
+  - response-model
+  - service-delegation
+metadata:
+  framework: fastapi
+  maturity: foundation-sample

@@ -30,6 +30,10 @@ func TestEmbeddedSourceContainsAllFoundationPatterns(t *testing.T) {
 		"next/hook@9214",
 		"next/page@1234",
 		"next/util@3378",
+		"python/repository@8462",
+		"python/router@2784",
+		"python/schemas@3950",
+		"python/service@7315",
 	}
 	if len(listed.Entries) != len(expected) {
 		t.Fatalf("expected %d entries, got %#v", len(expected), listed.Entries)

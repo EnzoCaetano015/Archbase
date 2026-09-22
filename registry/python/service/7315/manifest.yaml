@@ -1,0 +1,27 @@
+schemaVersion: 1
+id: python/service@7315
+name: FastAPI application service
+description: Domain-neutral application service with repository injection and an explicit dependency factory.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: service.py
+      destination: "{{Name}}/service.py"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - types
+  - application-logic
+  - transformations
+  - dependencies
+preserve:
+  - constructor-injection
+  - repository-delegation
+  - sql-free-service
+  - dependency-factory
+metadata:
+  framework: fastapi
+  maturity: foundation-sample

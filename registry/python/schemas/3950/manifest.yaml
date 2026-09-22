@@ -1,0 +1,27 @@
+schemaVersion: 1
+id: python/schemas@3950
+name: Pydantic module contracts
+description: Domain-neutral Pydantic request and response models for a Python feature module.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: schemas.py
+      destination: "{{Name}}/schemas.py"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - fields
+  - field-types
+  - validation-constraints
+  - model-configuration
+preserve:
+  - request-response-separation
+  - structural-validation-only
+  - persistence-independence
+  - router-independence
+metadata:
+  library: pydantic
+  maturity: foundation-sample

@@ -51,7 +51,7 @@ func newTestService(t *testing.T, root string) (*Service, *workspace.Service) {
 func TestSearchAndGetEmbeddedPatterns(t *testing.T) {
 	service, _ := newTestService(t, t.TempDir())
 	all, err := service.SearchPatterns(context.Background(), SearchPatternsInput{})
-	if err != nil || len(all.Patterns) != 7 {
+	if err != nil || len(all.Patterns) != 11 {
 		t.Fatalf("unexpected search result: %#v, %v", all, err)
 	}
 	if !sort.SliceIsSorted(all.Patterns, func(i, j int) bool { return all.Patterns[i].ID < all.Patterns[j].ID }) {

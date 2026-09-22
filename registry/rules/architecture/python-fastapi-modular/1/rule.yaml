@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: architecture/python-fastapi-modular@1
+name: Modular Python FastAPI architecture
+description: Defines one-way dependencies across transport, contracts, application logic, and PostgreSQL persistence in feature modules.
+version: 1.0.0
+scopes:
+  - path: app/modules/**/repository.py
+    pattern: python/repository@8462
+  - path: app/modules/**/router.py
+    pattern: python/router@2784
+  - path: app/modules/**/schemas.py
+    pattern: python/schemas@3950
+  - path: app/modules/**/service.py
+    pattern: python/service@7315
+rules:
+  - Routers must own HTTP transport concerns and delegate application behavior to services.
+  - Schemas must define structural request and response contracts without depending on routers or persistence.
+  - Services must own application orchestration and transformations while remaining free of SQL.
+  - Repositories must isolate parameterized persistence access and must not own application rules or external HTTP integrations.
+  - Dependencies must flow from Router to Service to Repository and never in the reverse direction.
+  - Feature modules may omit a layer when it has no responsibility, but responsibilities must not be moved into an unrelated layer.
+  - Shared configuration, database providers, and cross-cutting concerns must remain outside feature modules.
+metadata:
+  stack: python
+  framework: fastapi
+  maturity: foundation

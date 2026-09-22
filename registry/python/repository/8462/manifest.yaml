@@ -1,0 +1,27 @@
+schemaVersion: 1
+id: python/repository@8462
+name: PostgreSQL repository
+description: Domain-neutral synchronous repository that confines parameterized SQL and transaction handling.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: repository.py
+      destination: "{{Name}}/repository.py"
+      required: true
+allowedChanges:
+  - identifiers
+  - imports
+  - types
+  - queries
+  - row-mapping
+  - transaction-choice
+preserve:
+  - persistence-only-responsibility
+  - parameterized-queries
+  - database-injection
+  - managed-session-or-transaction
+metadata:
+  database: postgresql
+  maturity: foundation-sample

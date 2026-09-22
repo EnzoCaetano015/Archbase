@@ -13,6 +13,10 @@ The binary embeds the initial catalog:
 - `dotnet/controller@7743`
 - `dotnet/repository@5532`
 - `dotnet/service@1172`
+- `python/router@2784`
+- `python/schemas@3950`
+- `python/service@7315`
+- `python/repository@8462`
 
 Patterns describe code structure rather than application features. Registry entries are sorted by ID and validated against their manifests and declared files when a source is opened.
 
