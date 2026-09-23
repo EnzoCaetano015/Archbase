@@ -1,15 +1,24 @@
 name: Release
 
+run-name: Release ${{ inputs.version }}
+
 on:
-  push:
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Stable version (vMAJOR.MINOR.PATCH)"
+        required: true
+        type: string
+      message:
+        description: "Tag message and release notes introduction"
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ inputs.version }}
   cancel-in-progress: false
 
 jobs:
@@ -51,30 +60,74 @@ jobs:
           go-version: "1.27.x"
           cache: true
       - name: Validate stable release tag
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_MESSAGE: ${{ inputs.message }}
+          RELEASE_TAG: ${{ inputs.version }}
         shell: bash
         run: |
-          if [[ ! "$GITHUB_REF_NAME" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "stable releases must run from the main branch" >&2
+            exit 1
+          fi
+          if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
             echo "release tag must match vMAJOR.MINOR.PATCH" >&2
             exit 1
           fi
+          if [[ -z "${RELEASE_MESSAGE//[[:space:]]/}" ]]; then
+            echo "release message must not be empty" >&2
+            exit 1
+          fi
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "release $RELEASE_TAG already exists" >&2
+            exit 1
+          fi
+          if git show-ref --verify --quiet "refs/tags/$RELEASE_TAG"; then
+            tag_commit="$(git rev-parse "$RELEASE_TAG^{commit}")"
+            if [[ "$tag_commit" != "$GITHUB_SHA" ]]; then
+              echo "tag $RELEASE_TAG already points to $tag_commit instead of $GITHUB_SHA" >&2
+              exit 1
+            fi
+            echo "tag_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag_exists=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Build release twice
+        env:
+          RELEASE_TAG: ${{ inputs.version }}
         shell: bash
         run: |
           source_epoch="$(git show -s --format=%ct "$GITHUB_SHA")"
-          go run ./internal/release/cmd/package -tag "$GITHUB_REF_NAME" -source-epoch "$source_epoch" -output dist
-          go run ./internal/release/cmd/package -tag "$GITHUB_REF_NAME" -source-epoch "$source_epoch" -output dist-repeat
+          go run ./internal/release/cmd/package -tag "$RELEASE_TAG" -source-epoch "$source_epoch" -output dist
+          go run ./internal/release/cmd/package -tag "$RELEASE_TAG" -source-epoch "$source_epoch" -output dist-repeat
       - name: Verify reproducibility, checksums, and injected version
+        env:
+          RELEASE_TAG: ${{ inputs.version }}
         shell: bash
         run: |
           diff -r dist dist-repeat
-          version="${GITHUB_REF_NAME#v}"
+          version="${RELEASE_TAG#v}"
           checksum="dist/arc_v${version}_SHA256SUMS.txt"
           (cd dist && sha256sum --check "$(basename "$checksum")")
           mkdir release-smoke
           tar -xzf "dist/arc_v${version}_linux_amd64.tar.gz" -C release-smoke
           test "$(./release-smoke/arc version)" = "arc ${version}"
+      - name: Create annotated tag
+        if: steps.release.outputs.tag_exists != 'true'
+        env:
+          RELEASE_MESSAGE: ${{ inputs.message }}
+          RELEASE_TAG: ${{ inputs.version }}
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag --annotate "$RELEASE_TAG" --message "$RELEASE_MESSAGE" "$GITHUB_SHA"
+          git push origin "refs/tags/$RELEASE_TAG"
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_MESSAGE: ${{ inputs.message }}
+          RELEASE_TAG: ${{ inputs.version }}
         shell: bash
-        run: gh release create "$GITHUB_REF_NAME" dist/* --verify-tag --generate-notes --title "Archbase $GITHUB_REF_NAME"
+        run: gh release create "$RELEASE_TAG" dist/* --verify-tag --generate-notes --notes "$RELEASE_MESSAGE" --title "Archbase $RELEASE_TAG"

@@ -662,7 +662,12 @@ Stable releases use semantic tags:
 vMAJOR.MINOR.PATCH
 ```
 
-The release pipeline verifies tests, target archives, checksums, reproducibility and embedded CLI version before publication.
+To publish a stable release, open **Actions > Release > Run workflow** on GitHub, select the `main` branch and provide:
+
+- `version`: the new semantic version, such as `v0.2.0`;
+- `message`: the annotated tag message and introduction to the generated release notes.
+
+The workflow verifies tests, target archives, checksums, reproducibility and embedded CLI version before it creates the annotated tag and publishes the GitHub release. Existing versions are rejected and no tag is created when an earlier verification step fails.
 
 ---
 
