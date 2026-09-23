@@ -78,6 +78,11 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 			customFile: "Example/Example.tsx", target: "src/pages/Forms/Example.tsx", outsideTarget: "src/components/ui/button.tsx",
 			ruleID: "architecture/react-tailwind-modular@1", exported: ".cursor/rules/architecture-react-tailwind-modular-1.mdc",
 		},
+		{
+			name: "spring-boot", fixture: "spring-boot", rootPattern: "spring-boot/controller@2841", nested: "src/main/java/com/example/api/controller", localName: "controllers-standard",
+			customFile: "ExampleController.java", target: "src/main/java/com/example/api/controller/AdminController.java", outsideTarget: "src/main/java/com/example/api/service/ItemService.java",
+			ruleID: "architecture/spring-boot-layered@1", exported: ".cursor/rules/architecture-spring-boot-layered-1.mdc",
+		},
 	} {
 		t.Run(scenario.name, func(t *testing.T) {
 			project := filepath.Join(t.TempDir(), "project")

@@ -1,0 +1,32 @@
+schemaVersion: 1
+id: spring-boot/security@8196
+name: Stateless Spring Security JWT boundary
+description: Security bundle defining a stateless filter chain and a once-per-request JWT authentication filter.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: SecurityConfig.java
+      destination: "{{Name}}/SecurityConfig.java"
+      required: true
+    - source: TokenAuthenticationFilter.java
+      destination: "{{Name}}/TokenAuthenticationFilter.java"
+      required: true
+allowedChanges:
+  - package
+  - identifiers
+  - public-routes
+  - token-service
+  - claims
+  - unauthorized-response
+preserve:
+  - stateless-session-policy
+  - explicit-public-routes
+  - once-per-request-filter
+  - verified-security-context
+  - filter-chain-continuation
+metadata:
+  framework: spring-security
+  concern: jwt-authentication
+  maturity: foundation-sample

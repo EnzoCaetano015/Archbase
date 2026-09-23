@@ -1,0 +1,32 @@
+schemaVersion: 1
+id: spring-boot/entity@4172
+name: Audited JPA entity
+description: JPA entity bundle with a reusable auditing base and explicit column constraints.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: Auditable.java
+      destination: "{{Name}}/config/Auditable.java"
+      required: true
+    - source: Example.java
+      destination: "{{Name}}/{{Name}}.java"
+      required: true
+allowedChanges:
+  - package
+  - identifiers
+  - table-name
+  - fields
+  - column-constraints
+  - relationships
+preserve:
+  - jpa-entity-boundary
+  - generated-identity
+  - explicit-nullability
+  - reusable-auditing
+  - no-service-or-web-dependency
+metadata:
+  framework: spring-data-jpa
+  layer: domain
+  maturity: foundation-sample

@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: spring-boot/repository@5427
+name: Spring Data JPA repository
+description: Typed JPA repository with derived operations and an explicit pageable query for domain filtering.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: ExampleRepository.java
+      destination: "{{Name}}/{{Name}}Repository.java"
+      required: true
+allowedChanges:
+  - package
+  - identifiers
+  - entity-type
+  - id-type
+  - derived-queries
+  - jpql-queries
+preserve:
+  - spring-data-interface
+  - typed-entity-and-id
+  - parameterized-query
+  - pagination-support
+  - no-application-workflow
+metadata:
+  framework: spring-data-jpa
+  layer: persistence
+  maturity: foundation-sample

@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: spring-boot/mapper@6583
+name: Spring MapStruct mapper
+description: Compile-time MapStruct adapter mapping validated request contracts to JPA entities while ignoring generated fields.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: ExampleMapper.java
+      destination: "{{Name}}/{{Name}}Mapper.java"
+      required: true
+allowedChanges:
+  - package
+  - identifiers
+  - source-type
+  - target-type
+  - field-mappings
+  - transformations
+preserve:
+  - compile-time-mapping
+  - spring-component-model
+  - generated-field-ignores
+  - no-persistence-or-web-workflow
+metadata:
+  framework: mapstruct
+  layer: mapping
+  maturity: foundation-sample

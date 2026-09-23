@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: spring-boot/service@3714
+name: Transactional Spring application service
+description: Constructor-injected service coordinating validation, mapping, repository access, transactions, and application errors.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: ExampleService.java
+      destination: "{{Name}}/{{Name}}Service.java"
+      required: true
+allowedChanges:
+  - package
+  - identifiers
+  - imports
+  - injected-dependencies
+  - business-rules
+  - transactions
+  - errors
+preserve:
+  - service-stereotype
+  - constructor-injection
+  - repository-and-mapper-delegation
+  - transaction-boundary
+  - no-web-request-dependency
+metadata:
+  framework: spring-boot
+  layer: application
+  maturity: foundation-sample

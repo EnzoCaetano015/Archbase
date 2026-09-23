@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: spring-boot/controller@2841
+name: Spring MVC REST controller
+description: Thin annotated REST controller with validated DTOs, pagination, OpenAPI metadata, and service delegation.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: ExampleController.java
+      destination: "{{Name}}/{{Name}}Controller.java"
+      required: true
+allowedChanges:
+  - package
+  - identifiers
+  - imports
+  - routes
+  - request-contracts
+  - response-contracts
+  - documentation
+preserve:
+  - rest-controller-boundary
+  - constructor-injection
+  - bean-validation
+  - service-delegation
+  - no-repository-access
+metadata:
+  framework: spring-boot
+  layer: web
+  maturity: foundation-sample

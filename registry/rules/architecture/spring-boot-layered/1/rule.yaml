@@ -1,0 +1,48 @@
+schemaVersion: 1
+id: architecture/spring-boot-layered@1
+name: Layered Spring Boot API architecture
+description: Organizes a Java 21 Spring Boot API into web, application, persistence, domain, mapping, security, and global response layers.
+version: 1.0.0
+scopes:
+  - path: src/main/java/**/*Application.java
+    pattern: spring-boot/bootstrap@1258
+  - path: src/main/java/**/controller/**
+    pattern: spring-boot/controller@2841
+  - path: src/main/java/**/service/**
+    pattern: spring-boot/service@3714
+  - path: src/main/java/**/repository/**
+    pattern: spring-boot/repository@5427
+  - path: src/main/java/**/domain/*.java
+    pattern: spring-boot/entity@4172
+  - path: src/main/java/**/domain/dto/**
+    pattern: spring-boot/dto@9365
+  - path: src/main/java/**/mapper/**
+    pattern: spring-boot/mapper@6583
+  - path: src/main/java/**/config/SecurityConfig.java
+    pattern: spring-boot/security@8196
+  - path: src/main/java/**/security/**
+    pattern: spring-boot/security@8196
+  - path: src/main/java/**/config/*ResponseBodyAdvice.java
+    pattern: spring-boot/api-advice@7634
+  - path: src/main/java/**/exception/**
+    pattern: spring-boot/api-advice@7634
+rules:
+  - The Spring Boot application class is the component-discovery root and enables global framework capabilities without containing feature workflows.
+  - Controllers own HTTP routing, request validation, pagination, and API documentation and delegate behavior to services without accessing repositories.
+  - Services own business validation and transaction boundaries and coordinate repositories and mappers without depending on servlet requests or response advice.
+  - Repositories are Spring Data interfaces responsible only for typed persistence queries and must not contain application or web workflows.
+  - JPA entities own persistence mappings and auditing while request and response DTOs remain separate immutable transport contracts.
+  - MapStruct mappers perform compile-time structural conversion and must not execute database access or application workflows.
+  - Security configuration is stateless, lists public routes explicitly, and installs a token filter that populates the security context only after verification.
+  - Global response and exception advice must avoid double wrapping, expose validation details, preserve known statuses, and hide unexpected implementation details.
+  - Dependencies flow from controller to service to repository, with domain contracts and mappers shared only in the inward direction; reverse dependencies are prohibited.
+  - Secrets and environment-specific database settings must be supplied through external configuration rather than committed application defaults.
+metadata:
+  stack: spring-boot
+  runtime: java-21
+  persistence: spring-data-jpa
+  security: jwt
+  mapping: mapstruct
+  organization: layered
+  reference: simple-java-api
+  maturity: foundation

@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: spring-boot/bootstrap@1258
+name: Spring Boot application bootstrap
+description: Java 21 Spring Boot entrypoint enabling framework discovery and JPA auditing without feature behavior.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: ExampleApplication.java
+      destination: "{{Name}}/{{Name}}Application.java"
+      required: true
+allowedChanges:
+  - package
+  - class-name
+  - framework-features
+  - startup-configuration
+preserve:
+  - spring-boot-entrypoint
+  - framework-discovery-root
+  - no-feature-workflow
+metadata:
+  framework: spring-boot
+  language: java-21
+  layer: bootstrap
+  maturity: foundation-sample

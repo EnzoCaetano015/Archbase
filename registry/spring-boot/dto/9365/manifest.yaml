@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: spring-boot/dto@9365
+name: Validated Java request record
+description: Immutable Java record defining a Bean Validation request contract for a Spring MVC boundary.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+    - source: ExampleRequest.java
+      destination: "{{Name}}/{{Name}}Request.java"
+      required: true
+allowedChanges:
+  - package
+  - identifiers
+  - fields
+  - validation-annotations
+  - messages
+preserve:
+  - immutable-record
+  - runtime-validation
+  - transport-contract-responsibility
+  - no-persistence-or-service-logic
+metadata:
+  framework: spring-boot
+  language: java-21
+  layer: contract
+  maturity: foundation-sample

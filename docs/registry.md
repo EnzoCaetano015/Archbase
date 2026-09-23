@@ -62,6 +62,15 @@ The binary embeds the initial catalog:
 - `react/page@6325`
 - `react/routes@1973`
 - `react/util@3469`
+- `spring-boot/api-advice@7634`
+- `spring-boot/bootstrap@1258`
+- `spring-boot/controller@2841`
+- `spring-boot/dto@9365`
+- `spring-boot/entity@4172`
+- `spring-boot/mapper@6583`
+- `spring-boot/repository@5427`
+- `spring-boot/security@8196`
+- `spring-boot/service@3714`
 
 Patterns describe code structure rather than application features. Registry entries are sorted by ID and validated against their manifests and declared files when a source is opened.
 

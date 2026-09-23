@@ -131,6 +131,16 @@ python/service@7315
 python/repository@8462
 python/schemas@3950
 
+spring-boot/bootstrap@1258
+spring-boot/controller@2841
+spring-boot/service@3714
+spring-boot/repository@5427
+spring-boot/entity@4172
+spring-boot/dto@9365
+spring-boot/mapper@6583
+spring-boot/security@8196
+spring-boot/api-advice@7634
+
 react/page@6325
 react/component@5217
 react/api-controller@6142
@@ -166,6 +176,7 @@ architecture/dotnet-layered@1
 architecture/python-fastapi-modular@1
 architecture/react-tailwind-modular@1
 architecture/react-vite-modular@1
+architecture/spring-boot-layered@1
 ```
 
 A rule can define things such as:
@@ -507,6 +518,20 @@ The registry layer includes:
 | Service | `python/service@7315` |
 | Repository | `python/repository@8462` |
 
+### Java / Spring Boot
+
+| Type | Pattern ID |
+| --- | --- |
+| Application bootstrap | `spring-boot/bootstrap@1258` |
+| REST controller | `spring-boot/controller@2841` |
+| Transactional service | `spring-boot/service@3714` |
+| JPA repository | `spring-boot/repository@5427` |
+| Audited entity | `spring-boot/entity@4172` |
+| Validated DTO | `spring-boot/dto@9365` |
+| MapStruct mapper | `spring-boot/mapper@6583` |
+| JWT security | `spring-boot/security@8196` |
+| Response and exception advice | `spring-boot/api-advice@7634` |
+
 ### React / Vite
 
 | Type | Pattern ID |
@@ -544,6 +569,7 @@ The registry layer includes:
 | Modular FastAPI | `architecture/python-fastapi-modular@1` |
 | Modular React/Tailwind | `architecture/react-tailwind-modular@1` |
 | Modular React/Vite | `architecture/react-vite-modular@1` |
+| Layered Spring Boot | `architecture/spring-boot-layered@1` |
 
 The catalog is intentionally small in the first public version. New languages, stacks and architecture styles can be added incrementally.
 

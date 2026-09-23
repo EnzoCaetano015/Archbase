@@ -224,3 +224,39 @@ patterns:
     version: 1.0.0
     path: react/util/3469
     description: Pure typed frontend utility without React or browser state.
+  - id: spring-boot/api-advice@7634
+    version: 1.0.0
+    path: spring-boot/api-advice/7634
+    description: Spring MVC advice bundle standardizing successful responses, validation failures, and unexpected errors.
+  - id: spring-boot/bootstrap@1258
+    version: 1.0.0
+    path: spring-boot/bootstrap/1258
+    description: Java 21 Spring Boot entrypoint and component-discovery root with JPA auditing.
+  - id: spring-boot/controller@2841
+    version: 1.0.0
+    path: spring-boot/controller/2841
+    description: Thin Spring MVC controller with validation, pagination, OpenAPI metadata, and service delegation.
+  - id: spring-boot/dto@9365
+    version: 1.0.0
+    path: spring-boot/dto/9365
+    description: Immutable Java request record with Bean Validation constraints.
+  - id: spring-boot/entity@4172
+    version: 1.0.0
+    path: spring-boot/entity/4172
+    description: JPA entity bundle with explicit constraints and reusable auditing.
+  - id: spring-boot/mapper@6583
+    version: 1.0.0
+    path: spring-boot/mapper/6583
+    description: Compile-time MapStruct adapter mapping request contracts to entities.
+  - id: spring-boot/repository@5427
+    version: 1.0.0
+    path: spring-boot/repository/5427
+    description: Typed Spring Data JPA repository with pageable parameterized filtering.
+  - id: spring-boot/security@8196
+    version: 1.0.0
+    path: spring-boot/security/8196
+    description: Stateless Spring Security filter chain and JWT authentication filter.
+  - id: spring-boot/service@3714
+    version: 1.0.0
+    path: spring-boot/service/3714
+    description: Transactional Spring service coordinating validation, mapping, and repository access.
