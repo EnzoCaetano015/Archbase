@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/Go-1.26%2B-00ADD8?style=for-the-badge&logo=go&logoColor=white" alt="Go 1.26+">
   <img src="https://img.shields.io/badge/CLI-arc-111827?style=for-the-badge" alt="arc CLI">
   <img src="https://img.shields.io/badge/MCP-supported-7C3AED?style=for-the-badge" alt="MCP">
-  <img src="https://img.shields.io/badge/Next.js-patterns-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js">
+  <img src="https://img.shields.io/badge/Open%20Source-contributions%20welcome-22C55E?style=for-the-badge" alt="Open Source">
 </p>
 
 ---
