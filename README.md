@@ -13,8 +13,6 @@
   <img src="https://img.shields.io/badge/CLI-arc-111827?style=for-the-badge" alt="arc CLI">
   <img src="https://img.shields.io/badge/MCP-supported-7C3AED?style=for-the-badge" alt="MCP">
   <img src="https://img.shields.io/badge/Next.js-patterns-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js">
-  <img src="https://img.shields.io/badge/.NET-patterns-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET">
-  <img src="https://img.shields.io/badge/Open%20Source-contributions%20welcome-22C55E?style=for-the-badge" alt="Open Source">
 </p>
 
 ---
