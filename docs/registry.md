@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="../README.md">
+    <img src="./img/logo.jpg" alt="Archbase" width="160">
+  </a>
+</p>
+
 # Archbase registry core
 
 The registry core resolves IDs in `stack/type@id` form without depending on CLI commands. A resolver receives an ordered list of sources; the first source containing the requested ID wins. A malformed registry is a hard error and is never hidden by falling back to a later source.

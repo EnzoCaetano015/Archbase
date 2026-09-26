@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="../README.md">
+    <img src="./img/logo.jpg" alt="Archbase" width="160">
+  </a>
+</p>
+
 # Archbase schemas
 
 The public contracts live in `schemas/` and use JSON Schema Draft 2020-12. YAML documents are converted to their JSON data model before validation.

@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="../README.md">
+    <img src="./img/logo.jpg" alt="Archbase" width="160">
+  </a>
+</p>
+
 # Archbase MCP server
 
 Archbase exposes its validated pattern, scope, and rule core to AI agents through the Model Context Protocol. The first server uses stdio and starts from the same `arc` binary:

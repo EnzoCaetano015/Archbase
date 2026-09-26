@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="../README.md">
+    <img src="./img/logo.jpg" alt="Archbase" width="160">
+  </a>
+</p>
+
 # First Archbase flow with Next
 
 This guide starts from an empty project directory and demonstrates a remote pattern, a customizable local pattern, hierarchical scope resolution, architecture rules, and the MCP server. Install `arc` first by following [installation.md](installation.md).

@@ -1,4 +1,8 @@
-# Archbase
+<p align="center">
+  <img src="./docs/img/logo_full.jpg" alt="Archbase — Architecture and Code Standards" width="480">
+</p>
+
+<h1 align="center">Archbase</h1>
 
 <p align="center">
   <strong>Architecture that AI coding agents can actually follow.</strong>
@@ -675,6 +679,9 @@ The repository contains additional technical documentation:
 
 ```text
 docs/
+├── img/
+│   ├── logo.jpg
+│   └── logo_full.jpg
 ├── installation.md
 ├── getting-started.md
 ├── schemas.md

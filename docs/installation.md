@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="../README.md">
+    <img src="./img/logo.jpg" alt="Archbase" width="160">
+  </a>
+</p>
+
 # Installing Archbase
 
 Archbase publishes one self-contained `arc` executable for each supported operating system and architecture. Version `v0.1.0` is the first binary release.
