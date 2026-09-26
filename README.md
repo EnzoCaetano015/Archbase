@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./docs/img/logo_full.jpg" alt="Archbase — Architecture and Code Standards" width="480">
+  <img src="./docs/img/logo_without_background.png" alt="Archbase — Architecture and Code Standards" width="360">
 </p>
 
 <h1 align="center">Archbase</h1>
@@ -681,7 +681,8 @@ The repository contains additional technical documentation:
 docs/
 ├── img/
 │   ├── logo.jpg
-│   └── logo_full.jpg
+│   ├── logo_full.jpg
+│   └── logo_without_background.png
 ├── installation.md
 ├── getting-started.md
 ├── schemas.md

@@ -1,9 +1,3 @@
-<p align="center">
-  <a href="../README.md">
-    <img src="./img/logo.jpg" alt="Archbase" width="160">
-  </a>
-</p>
-
 # Archbase canonical rules
 
 Patterns define how a type of code is structured. Rules define where those types belong, how layers relate, and which pattern applies to each path. A rule references pattern IDs and never copies their example source code.
