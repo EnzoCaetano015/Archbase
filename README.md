@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./docs/img/logo_without_background.png" alt="Archbase — Architecture and Code Standards" width="360">
+  <img src="./docs/img/logo_without_background.png" alt="Archbase — Architecture and Code Standards" >
 </p>
 
 <h1 align="center">Archbase</h1>
