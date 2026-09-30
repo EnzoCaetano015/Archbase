@@ -1,87 +1,91 @@
 # Installing Archbase
 
-Archbase publishes one self-contained `arc` executable for each supported operating system and architecture. Version `v0.1.0` is the first binary release.
+Archbase publishes a self-contained `arc` executable for Linux, macOS, and Windows. The official installers detect the operating system and architecture, download only the matching release archive, verify its SHA-256 checksum, install the executable, and configure the user `PATH`.
 
-| Operating system | Architecture | Asset |
-| --- | --- | --- |
-| Linux | x86-64 | `arc_v0.1.0_linux_amd64.tar.gz` |
-| Linux | ARM64 | `arc_v0.1.0_linux_arm64.tar.gz` |
-| macOS | Intel | `arc_v0.1.0_darwin_amd64.tar.gz` |
-| macOS | Apple silicon | `arc_v0.1.0_darwin_arm64.tar.gz` |
-| Windows | x86-64 | `arc_v0.1.0_windows_amd64.zip` |
-| Windows | ARM64 | `arc_v0.1.0_windows_arm64.zip` |
-
-All assets and `arc_v0.1.0_SHA256SUMS.txt` are published at the [v0.1.0 release](https://github.com/EnzoCaetano015/Archbase/releases/tag/v0.1.0). Verify the archive before extracting it.
-
-## Linux
-
-Replace `amd64` with `arm64` when appropriate.
+## Linux and macOS
 
 ```bash
-version=0.1.0
-asset="arc_v${version}_linux_amd64.tar.gz"
-base="https://github.com/EnzoCaetano015/Archbase/releases/download/v${version}"
-curl -fLO "$base/$asset"
-curl -fLO "$base/arc_v${version}_SHA256SUMS.txt"
-grep -F "  $asset" "arc_v${version}_SHA256SUMS.txt" | sha256sum --check -
-tar -xzf "$asset"
-install -d "$HOME/.local/bin"
-test ! -e "$HOME/.local/bin/arc" || { echo "arc already exists in $HOME/.local/bin" >&2; exit 1; }
-install -m 0755 arc "$HOME/.local/bin/arc"
+curl -fsSL https://archbase.caetanodev.com/install.sh | sh
 ```
 
-Ensure `$HOME/.local/bin` is in `PATH`, open a new shell, and run `arc version`.
-
-## macOS
-
-Use `darwin_arm64` on Apple silicon and `darwin_amd64` on Intel Macs.
+The installer supports Linux on x86-64 and ARM64, macOS on Intel and Apple silicon, and installs to `$HOME/.local/bin` by default. Open a new terminal after the first installation, then verify it:
 
 ```bash
-version=0.1.0
-asset="arc_v${version}_darwin_arm64.tar.gz"
-base="https://github.com/EnzoCaetano015/Archbase/releases/download/v${version}"
-curl -fLO "$base/$asset"
-curl -fLO "$base/arc_v${version}_SHA256SUMS.txt"
-expected="$(grep -F "  $asset" "arc_v${version}_SHA256SUMS.txt" | cut -d ' ' -f 1)"
-actual="$(shasum -a 256 "$asset" | cut -d ' ' -f 1)"
-test "$actual" = "$expected"
-tar -xzf "$asset"
-mkdir -p "$HOME/.local/bin"
-test ! -e "$HOME/.local/bin/arc" || { echo "arc already exists in $HOME/.local/bin" >&2; exit 1; }
-install -m 0755 arc "$HOME/.local/bin/arc"
+arc version
 ```
 
-Ensure `$HOME/.local/bin` is in `PATH`, open a new shell, and run `arc version`.
+Install a specific stable version:
+
+```bash
+curl -fsSL https://archbase.caetanodev.com/install.sh | sh -s -- --version v0.2.0
+```
+
+Choose another installation directory:
+
+```bash
+curl -fsSL https://archbase.caetanodev.com/install.sh | sh -s -- --install-dir "$HOME/bin"
+```
+
+Replace an existing installation explicitly:
+
+```bash
+curl -fsSL https://archbase.caetanodev.com/install.sh | sh -s -- --force
+```
+
+Available options: `--version`, `--install-dir`, `--force`, and `--help`.
 
 ## Windows PowerShell
 
-The example uses x86-64. Replace `amd64` with `arm64` on Windows ARM devices.
-
 ```powershell
-$version = "0.1.0"
-$asset = "arc_v${version}_windows_amd64.zip"
-$base = "https://github.com/EnzoCaetano015/Archbase/releases/download/v${version}"
-Invoke-WebRequest "$base/$asset" -OutFile $asset
-Invoke-WebRequest "$base/arc_v${version}_SHA256SUMS.txt" -OutFile "arc_v${version}_SHA256SUMS.txt"
-$line = Get-Content "arc_v${version}_SHA256SUMS.txt" | Where-Object { $_ -match "  $([regex]::Escape($asset))$" }
-$expected = ($line -split '\s+')[0].ToLowerInvariant()
-$actual = (Get-FileHash $asset -Algorithm SHA256).Hash.ToLowerInvariant()
-if ($actual -ne $expected) { throw "SHA-256 checksum mismatch for $asset" }
-Expand-Archive $asset -DestinationPath .\archbase-v$version
-$install = Join-Path $env:LOCALAPPDATA "Programs\Archbase"
-New-Item -ItemType Directory -Force $install | Out-Null
-$target = Join-Path $install "arc.exe"
-if (Test-Path -LiteralPath $target) { throw "arc.exe already exists at $target" }
-Copy-Item ".\archbase-v$version\arc.exe" $target
+powershell -ExecutionPolicy Bypass -c "irm https://archbase.caetanodev.com/install.ps1 | iex"
 ```
 
-Add `%LOCALAPPDATA%\Programs\Archbase` to the user `PATH`, open a new terminal, and run:
+The installer supports Windows on x86-64 and ARM64 and installs to `%LOCALAPPDATA%\Programs\Archbase` by default. Open a new terminal after the first installation, then verify it:
 
 ```powershell
 arc version
 ```
 
-The expected output for these packages is `arc 0.1.0`.
+To install a specific version, choose another directory, or replace an existing installation, load the installer as a script block:
+
+```powershell
+$install = [scriptblock]::Create((irm https://archbase.caetanodev.com/install.ps1))
+& $install -Version v0.2.0
+& $install -InstallDir "$HOME\bin"
+& $install -Force
+```
+
+Available parameters: `-Version`, `-InstallDir`, `-Force`, and `-Help`.
+
+## Installer safety
+
+Both installers:
+
+- accept only stable `vMAJOR.MINOR.PATCH` releases;
+- download release assets from the official GitHub repository;
+- verify the selected archive against the published SHA-256 manifest;
+- validate the embedded CLI version before modifying the destination;
+- stage the executable in the destination directory before atomically promoting it;
+- preserve an existing executable unless `--force` or `-Force` is provided;
+- update the user `PATH` without duplicating entries;
+- remove temporary files after success or failure.
+
+The installer source is available at [`site/install.sh`](../site/install.sh) and [`site/install.ps1`](../site/install.ps1) for inspection before execution.
+
+## Manual installation
+
+Manual archives and `SHA256SUMS.txt` are available on the [GitHub Releases page](https://github.com/EnzoCaetano015/Archbase/releases/latest).
+
+| Operating system | Architecture | Asset suffix |
+| --- | --- | --- |
+| Linux | x86-64 | `linux_amd64.tar.gz` |
+| Linux | ARM64 | `linux_arm64.tar.gz` |
+| macOS | Intel | `darwin_amd64.tar.gz` |
+| macOS | Apple silicon | `darwin_arm64.tar.gz` |
+| Windows | x86-64 | `windows_amd64.zip` |
+| Windows | ARM64 | `windows_arm64.zip` |
+
+Verify the archive against the release checksum manifest before extracting it. Place `arc` or `arc.exe` in a directory on `PATH`, then run `arc version`.
 
 ## Build from source
 

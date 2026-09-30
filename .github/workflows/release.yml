@@ -37,7 +37,7 @@ jobs:
             go-version: "1.27.x"
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
@@ -52,7 +52,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: actions/setup-go@v6
@@ -113,6 +113,40 @@ jobs:
           mkdir release-smoke
           tar -xzf "dist/arc_v${version}_linux_amd64.tar.gz" -C release-smoke
           test "$(./release-smoke/arc version)" = "arc ${version}"
+      - name: Verify installer contract and explicit-version install
+        env:
+          RELEASE_TAG: ${{ inputs.version }}
+        shell: bash
+        run: |
+          version="${RELEASE_TAG#v}"
+          expected=(
+            "arc_v${version}_darwin_amd64.tar.gz"
+            "arc_v${version}_darwin_arm64.tar.gz"
+            "arc_v${version}_linux_amd64.tar.gz"
+            "arc_v${version}_linux_arm64.tar.gz"
+            "arc_v${version}_windows_amd64.zip"
+            "arc_v${version}_windows_arm64.zip"
+            "arc_v${version}_SHA256SUMS.txt"
+          )
+          for asset in "${expected[@]}"; do
+            test -f "dist/$asset" || { echo "missing release asset: $asset" >&2; exit 1; }
+          done
+
+          fixture="$RUNNER_TEMP/archbase-release-fixture"
+          install_dir="$RUNNER_TEMP/archbase-release-install"
+          mkdir -p "$fixture/$RELEASE_TAG" "$install_dir"
+          cp dist/* "$fixture/$RELEASE_TAG/"
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory "$fixture" >"$RUNNER_TEMP/archbase-http.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..20}; do
+            curl -fsS "http://127.0.0.1:8765/$RELEASE_TAG/arc_v${version}_SHA256SUMS.txt" >/dev/null && break
+            sleep 0.25
+          done
+          export PATH="$install_dir:$PATH"
+          ARCHBASE_RELEASE_BASE_URL="http://127.0.0.1:8765" \
+            sh site/install.sh --version "$RELEASE_TAG" --install-dir "$install_dir"
+          test "$("$install_dir/arc" version)" = "arc ${version}"
       - name: Create annotated tag
         if: steps.release.outputs.tag_exists != 'true'
         env:

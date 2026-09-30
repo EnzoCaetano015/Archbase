@@ -1,8 +1,8 @@
 # First Archbase flow with Next
 
-This guide starts from an empty project directory and demonstrates a remote pattern, a customizable local pattern, hierarchical scope resolution, architecture rules, and the MCP server. Install `arc` first by following [installation.md](installation.md).
+This guide starts from an empty project directory and demonstrates a remote pattern, a customizable local pattern, hierarchical scope resolution, architecture rules, and the MCP server. Install `arc` first with the one-command installer in [installation.md](installation.md).
 
-The commands pin the public Archbase registry to `v0.1.0`, so the result does not change when `main` advances. No global configuration file is created.
+The commands pin the public Archbase registry to `v0.2.0`, so the result does not change when `main` advances. No global configuration file is created.
 
 ## 1. Create a minimal project
 
@@ -21,7 +21,7 @@ New-Item -ItemType Directory -Force src/pages/admin | Out-Null
 All registry-backed commands below use these global options:
 
 ```text
---registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.1.0 --registry-subdir registry
+--registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.2.0 --registry-subdir registry
 ```
 
 ## 2. Install the remote page pattern
@@ -29,7 +29,7 @@ All registry-backed commands below use these global options:
 Install `next/page@1234` at the project root:
 
 ```bash
-arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.1.0 --registry-subdir registry add next/page@1234 .
+arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.2.0 --registry-subdir registry add next/page@1234 .
 ```
 
 The command creates `.archbase/scope.yaml` and stores the validated bundle under `.archbase/patterns/page-1234`. The scope records the Git source, original PatternID, and version.
@@ -38,7 +38,7 @@ Inspect the installed scope and the registry pattern:
 
 ```bash
 arc resolve src/pages/Home.tsx
-arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.1.0 --registry-subdir registry inspect next/page@1234
+arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.2.0 --registry-subdir registry inspect next/page@1234
 ```
 
 The target file does not need to exist. Resolution walks its ancestors and selects the project scope.
@@ -48,7 +48,7 @@ The target file does not need to exist. Resolution walks its ancestors and selec
 Create a nested scope derived from the same remote bundle:
 
 ```bash
-arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.1.0 --registry-subdir registry create pages-standard src/pages/admin --from next/page@1234
+arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.2.0 --registry-subdir registry create pages-standard src/pages/admin --from next/page@1234
 ```
 
 The active ID in that scope is `local/pages-standard@1`. Its files are stored at:
@@ -74,8 +74,8 @@ The first target resolves to `next/page@1234` in the project scope. The nested t
 ## 4. Export the Next architecture rule
 
 ```bash
-arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.1.0 --registry-subdir registry rules inspect architecture/next-modular@1
-arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.1.0 --registry-subdir registry rules add architecture/next-modular@1 --format cursor --destination .
+arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.2.0 --registry-subdir registry rules inspect architecture/next-modular@1
+arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.2.0 --registry-subdir registry rules add architecture/next-modular@1 --format cursor --destination .
 ```
 
 The export creates `.cursor/rules/architecture-next-modular-1.mdc`. It references the four Next PatternIDs and their scopes without copying pattern source examples.
@@ -83,8 +83,8 @@ The export creates `.cursor/rules/architecture-next-modular-1.mdc`. It reference
 Copilot and hierarchical AGENTS exports use the same canonical rule:
 
 ```bash
-arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.1.0 --registry-subdir registry rules add architecture/next-modular@1 --format copilot --destination .
-arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.1.0 --registry-subdir registry rules add architecture/next-modular@1 --format agents --destination .
+arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.2.0 --registry-subdir registry rules add architecture/next-modular@1 --format copilot --destination .
+arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.2.0 --registry-subdir registry rules add architecture/next-modular@1 --format agents --destination .
 ```
 
 If an `AGENTS.md` already exists, repeat the AGENTS command with `--merge`. Cursor and Copilot require `--overwrite` when intentionally replacing their generated files.
@@ -102,7 +102,7 @@ Resolve the absolute path of `archbase-next-demo`, then register this stdio serv
         "--registry-url",
         "https://github.com/EnzoCaetano015/Archbase.git",
         "--registry-ref",
-        "v0.1.0",
+        "v0.2.0",
         "--registry-subdir",
         "registry",
         "mcp",

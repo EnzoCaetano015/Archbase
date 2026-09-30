@@ -246,11 +246,19 @@ arc mcp serve --project-root .
 
 ### 1. Install Archbase
 
-Download the archive for your operating system from the GitHub Releases page.
+Linux and macOS:
 
-The project publishes builds for Linux, macOS and Windows with SHA-256 checksums.
+```bash
+curl -fsSL https://archbase.caetanodev.com/install.sh | sh
+```
 
-After extracting the binary, place `arc` or `arc.exe` somewhere available in your `PATH`.
+Windows PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -c "irm https://archbase.caetanodev.com/install.ps1 | iex"
+```
+
+The installer detects the operating system and architecture, verifies the release checksum, installs the executable, and configures the user `PATH`. Open a new terminal after installation.
 
 Check the installation:
 
@@ -804,11 +812,7 @@ The first public milestone is complete and includes:
 - MCP stdio server;
 - cross-platform release archives.
 
-Current public version referenced by the documentation:
-
-```text
-v0.1.0
-```
+The current stable version is available on the [GitHub Releases page](https://github.com/EnzoCaetano015/Archbase/releases/latest).
 
 ---
 
