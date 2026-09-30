@@ -39,44 +39,6 @@ The goal is not to generate an entire application from a template. The goal is t
 
 ---
 
-## Why Archbase?
-
-AI coding tools are very good at generating code, but they often have one recurring problem:
-
-> they understand the task, but not always the exact way your project expects that code to be organized.
-
-A repository may already have conventions for pages, hooks, controllers, repositories, services or utilities, but those conventions are usually implicit.
-
-Archbase turns those conventions into something that can be:
-
-- versioned;
-- inspected;
-- reused;
-- customized locally;
-- exported to different coding agents;
-- resolved automatically by project path;
-- exposed through MCP.
-
-```mermaid
-flowchart LR
-    DEV[Developer] --> ARC[Archbase / arc]
-    AGENT[AI Coding Agent] --> ARC
-
-    ARC --> PAT[Patterns]
-    ARC --> RULE[Architecture Rules]
-    ARC --> SCOPE[Project Scopes]
-    ARC --> REG[Registry]
-
-    PAT --> CODE[Consistent Code]
-    RULE --> CODE
-    SCOPE --> CODE
-    REG --> CODE
-```
-
----
-
-## Mental model
-
 ### Pattern
 
 A pattern is a structural example for one type of code.
@@ -84,30 +46,12 @@ A pattern is a structural example for one type of code.
 Examples:
 
 ```text
-astro/page@5904
-astro/layout@6813
-astro/component@3148
-astro/content-collection@4720
-astro/util@2386
-
-next/page@1234
-next/component@4821
-next/hook@9214
-next/util@3378
-
 next-feature/page@1846
 next-feature/layout@2673
 next-feature/route-handler@7318
 next-feature/server-action@6492
 next-feature/application-service@3527
-next-feature/data-access@8164
-next-feature/model@4739
-next-feature/schema@9251
 next-feature/component@5086
-
-dotnet/controller@7743
-dotnet/service@1172
-dotnet/repository@5532
 
 dotnet-multiproject/bootstrap@1624
 dotnet-multiproject/controller@2947
@@ -117,16 +61,6 @@ dotnet-multiproject/contracts@4716
 dotnet-multiproject/di-composition@7138
 dotnet-multiproject/exception-handler@8463
 dotnet-multiproject/background-job@8094
-
-nestjs/bootstrap@1437
-nestjs/module@6419
-nestjs/controller@2864
-nestjs/service@4793
-nestjs/dto@9175
-nestjs/guard@3642
-nestjs/http-client@7528
-nestjs/http-envelope@5281
-nestjs/prisma-service@8356
 
 python/router@2784
 python/service@7315
@@ -150,14 +84,6 @@ react/api-model@4086
 react/hook@8534
 react/routes@1973
 react/util@3469
-
-react-tailwind/page@6592
-react-tailwind/component@5463
-react-tailwind/ui-primitive@7924
-react-tailwind/api-controller@7251
-react-tailwind/api-model@4380
-react-tailwind/api-routes@2648
-react-tailwind/routes@2159
 ```
 
 A pattern does **not** describe a business feature. It describes the expected structure of that kind of code.
@@ -169,15 +95,10 @@ A rule defines where patterns belong and how the architecture is expected to beh
 Examples included in the current catalog:
 
 ```text
-architecture/astro-content-site@1
 architecture/dotnet-multiproject@1
-architecture/nestjs-prisma-modular@1
 architecture/next-feature-app-router@1
-architecture/next-modular@1
 architecture/dotnet-layered@1
 architecture/python-fastapi-modular@1
-architecture/react-tailwind-modular@1
-architecture/react-vite-modular@1
 architecture/spring-boot-layered@1
 ```
 
@@ -443,168 +364,6 @@ The registry layer includes:
 - validated stale-cache fallback;
 - support for public Git and local file registries.
 
----
-
-## Current official catalog
-
-### Astro
-
-| Type | Pattern ID |
-| --- | --- |
-| Page | `astro/page@5904` |
-| Layout | `astro/layout@6813` |
-| Component | `astro/component@3148` |
-| Content collection | `astro/content-collection@4720` |
-| Utility | `astro/util@2386` |
-
-### Next.js
-
-| Type | Pattern ID |
-| --- | --- |
-| Page | `next/page@1234` |
-| Component | `next/component@4821` |
-| Hook | `next/hook@9214` |
-| Utility | `next/util@3378` |
-
-### Next.js App Router / feature-first
-
-| Type | Pattern ID |
-| --- | --- |
-| Page | `next-feature/page@1846` |
-| Layout | `next-feature/layout@2673` |
-| Route Handler | `next-feature/route-handler@7318` |
-| Server Action | `next-feature/server-action@6492` |
-| Application service | `next-feature/application-service@3527` |
-| Data access | `next-feature/data-access@8164` |
-| Model | `next-feature/model@4739` |
-| Schema | `next-feature/schema@9251` |
-| Server/Client components | `next-feature/component@5086` |
-
-### .NET
-
-| Type | Pattern ID |
-| --- | --- |
-| Controller | `dotnet/controller@7743` |
-| Service | `dotnet/service@1172` |
-| Repository | `dotnet/repository@5532` |
-
-### .NET multi-project
-
-| Type | Pattern ID |
-| --- | --- |
-| API bootstrap | `dotnet-multiproject/bootstrap@1624` |
-| Controller | `dotnet-multiproject/controller@2947` |
-| Application service | `dotnet-multiproject/application-service@5279` |
-| Repository | `dotnet-multiproject/repository@6485` |
-| Shared contracts | `dotnet-multiproject/contracts@4716` |
-| Dependency composition | `dotnet-multiproject/di-composition@7138` |
-| Exception handler | `dotnet-multiproject/exception-handler@8463` |
-| Background job | `dotnet-multiproject/background-job@8094` |
-
-### NestJS / Prisma
-
-| Type | Pattern ID |
-| --- | --- |
-| Bootstrap | `nestjs/bootstrap@1437` |
-| Feature module | `nestjs/module@6419` |
-| Controller | `nestjs/controller@2864` |
-| Application service | `nestjs/service@4793` |
-| Validated DTO | `nestjs/dto@9175` |
-| Authentication guard | `nestjs/guard@3642` |
-| External HTTP client | `nestjs/http-client@7528` |
-| HTTP response envelope | `nestjs/http-envelope@5281` |
-| Prisma infrastructure | `nestjs/prisma-service@8356` |
-
-### Python / FastAPI
-
-| Type | Pattern ID |
-| --- | --- |
-| Router | `python/router@2784` |
-| Schemas | `python/schemas@3950` |
-| Service | `python/service@7315` |
-| Repository | `python/repository@8462` |
-
-### Java / Spring Boot
-
-| Type | Pattern ID |
-| --- | --- |
-| Application bootstrap | `spring-boot/bootstrap@1258` |
-| REST controller | `spring-boot/controller@2841` |
-| Transactional service | `spring-boot/service@3714` |
-| JPA repository | `spring-boot/repository@5427` |
-| Audited entity | `spring-boot/entity@4172` |
-| Validated DTO | `spring-boot/dto@9365` |
-| MapStruct mapper | `spring-boot/mapper@6583` |
-| JWT security | `spring-boot/security@8196` |
-| Response and exception advice | `spring-boot/api-advice@7634` |
-
-### React / Vite
-
-| Type | Pattern ID |
-| --- | --- |
-| Page | `react/page@6325` |
-| Component | `react/component@5217` |
-| API controller | `react/api-controller@6142` |
-| API model | `react/api-model@4086` |
-| Shared hook | `react/hook@8534` |
-| Routes | `react/routes@1973` |
-| Utility | `react/util@3469` |
-
-### React / Tailwind
-
-| Type | Pattern ID |
-| --- | --- |
-| Page | `react-tailwind/page@6592` |
-| Domain component | `react-tailwind/component@5463` |
-| UI primitive | `react-tailwind/ui-primitive@7924` |
-| API controller | `react-tailwind/api-controller@7251` |
-| API model | `react-tailwind/api-model@4380` |
-| API routes | `react-tailwind/api-routes@2648` |
-| Routes and page registry | `react-tailwind/routes@2159` |
-
-### Architecture rules
-
-| Architecture | Rule ID |
-| --- | --- |
-| Astro content site | `architecture/astro-content-site@1` |
-| Multi-project ASP.NET Core | `architecture/dotnet-multiproject@1` |
-| Modular NestJS/Prisma API | `architecture/nestjs-prisma-modular@1` |
-| Feature-oriented Next.js App Router | `architecture/next-feature-app-router@1` |
-| Modular Next.js | `architecture/next-modular@1` |
-| Layered .NET | `architecture/dotnet-layered@1` |
-| Modular FastAPI | `architecture/python-fastapi-modular@1` |
-| Modular React/Tailwind | `architecture/react-tailwind-modular@1` |
-| Modular React/Vite | `architecture/react-vite-modular@1` |
-| Layered Spring Boot | `architecture/spring-boot-layered@1` |
-
-The catalog is intentionally small in the first public version. New languages, stacks and architecture styles can be added incrementally.
-
----
-
-## How Archbase fits into a development workflow
-
-```mermaid
-flowchart TD
-    A[Project conventions] --> B[Create or choose patterns]
-    B --> C[Install patterns into scopes]
-    C --> D[Define architecture rules]
-    D --> E{How will the agent consume them?}
-
-    E -->|Cursor| F[Export .cursor/rules]
-    E -->|Copilot| G[Export .github/instructions]
-    E -->|AGENTS.md| H[Export hierarchical AGENTS files]
-    E -->|MCP| I[arc mcp serve]
-
-    F --> J[AI generates code with project context]
-    G --> J
-    H --> J
-    I --> J
-
-    J --> K[More consistent codebase]
-```
-
----
-
 ## Build from source
 
 ### Requirements
@@ -677,71 +436,6 @@ The workflow verifies tests, target archives, checksums, reproducibility and emb
 
 ---
 
-## Documentation
-
-The repository contains additional technical documentation:
-
-```text
-docs/
-├── img/
-│   ├── logo.jpg
-│   ├── logo_full.jpg
-│   └── logo_without_background.png
-├── installation.md
-├── getting-started.md
-├── privacy.md
-├── code-signing-policy.md
-├── schemas.md
-├── registry.md
-├── rules.md
-└── mcp.md
-```
-
-Recommended starting points:
-
-- `docs/installation.md` — installation on supported operating systems.
-- `docs/getting-started.md` — complete first workflow.
-- `docs/privacy.md` — data and network-access policy.
-- `docs/code-signing-policy.md` — Windows release-signing policy and status.
-- `docs/registry.md` — registry resolution and cache behavior.
-- `docs/rules.md` — canonical architecture-rule model.
-- `docs/mcp.md` — MCP server and tool contracts.
-
----
-
-## Open-source roadmap
-
-Archbase is intended to grow through practical architecture patterns rather than becoming a generic code-template dump.
-
-Useful contribution areas include:
-
-- new language patterns;
-- new framework patterns;
-- architecture rules;
-- new agent exporters;
-- improvements to the MCP integration;
-- registry tooling;
-- developer experience;
-- documentation;
-- tests;
-- official Linux support, plus unsigned preview compatibility for macOS and Windows.
-
-Examples of future catalogs could include:
-
-```text
-react/
-python/
-fastapi/
-laravel/
-flutter/
-spring/
-nestjs/
-```
-
-The important rule is that a contribution should represent a reusable **structural convention**, not a one-off business feature.
-
----
-
 ## Contributing
 
 Contributions are welcome.
@@ -773,25 +467,6 @@ Then open a Pull Request describing:
 For changes to public YAML contracts, keep the schema, tests and documentation synchronized.
 
 For new registry entries, preserve deterministic ordering and ensure every declared file passes bundle validation.
-
----
-
-## Philosophy
-
-Archbase is built around a few principles:
-
-```text
-Architecture should be explicit.
-Patterns should be reusable.
-Local conventions should remain customizable.
-AI agents should inspect context instead of guessing it.
-Generated instructions should come from one canonical source.
-Existing project files should be treated safely.
-```
-
-The goal is not to remove developer decisions.
-
-The goal is to make those decisions easier to communicate — to humans and to coding agents.
 
 ---
 
