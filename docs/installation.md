@@ -17,7 +17,7 @@ arc version
 Install a specific stable version:
 
 ```bash
-curl -fsSL https://archbase.caetanodev.com/install.sh | sh -s -- --version v0.2.0
+curl -fsSL https://archbase.caetanodev.com/install.sh | sh -s -- --version v0.3.0
 ```
 
 Choose another installation directory:
@@ -50,7 +50,7 @@ To install a specific version, choose another directory, or replace an existing 
 
 ```powershell
 $install = [scriptblock]::Create((irm https://archbase.caetanodev.com/install.ps1))
-& $install -Version v0.2.0
+& $install -Version v0.3.0
 & $install -InstallDir "$HOME\bin"
 & $install -Force
 ```
@@ -71,6 +71,46 @@ Both installers:
 - remove temporary files after success or failure.
 
 The installer source is available at [`site/install.sh`](../site/install.sh) and [`site/install.ps1`](../site/install.ps1) for inspection before execution.
+
+## System changes
+
+On Linux and macOS, the default installation creates `$HOME/.local/bin` when needed and places the executable at `$HOME/.local/bin/arc`. If that directory is not already on `PATH`, the installer appends one marked `# Archbase CLI` entry to the configuration for the detected shell: `.bashrc`, `.zshrc`, `.config/fish/config.fish`, or `.profile`.
+
+On Windows, the default installation creates `%LOCALAPPDATA%\Programs\Archbase`, places `arc.exe` there, and adds that directory to the current user's `PATH` only when it is absent. The installer does not modify the machine-wide `PATH` and does not require administrator privileges. Existing `PATH` entries are preserved on every platform.
+
+## Uninstall
+
+Before uninstalling, close terminals and tools that may be running `arc`.
+
+On Linux or macOS, remove the executable:
+
+```bash
+rm "$HOME/.local/bin/arc"
+```
+
+If the installer added a `PATH` entry, open the shell file reported during installation and remove the `# Archbase CLI` line together with the following `export PATH=...` or `fish_add_path ...` line. Do not remove `$HOME/.local/bin` from `PATH` when other installed programs use that directory.
+
+On Windows PowerShell, remove the executable and remove only the matching Archbase directory from the user `PATH`:
+
+```powershell
+$installDir = Join-Path $env:LOCALAPPDATA 'Programs\Archbase'
+Remove-Item (Join-Path $installDir 'arc.exe') -Force
+
+$userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+$entries = @($userPath -split ';' | Where-Object {
+    $_ -and -not [string]::Equals(
+        $_.TrimEnd('\'),
+        $installDir.TrimEnd('\'),
+        [StringComparison]::OrdinalIgnoreCase
+    )
+})
+[Environment]::SetEnvironmentVariable('Path', ($entries -join ';'), 'User')
+if ((Test-Path $installDir) -and -not (Get-ChildItem $installDir -Force)) {
+    Remove-Item $installDir
+}
+```
+
+Open a new terminal after changing `PATH`. For a custom installation directory, substitute that exact directory and keep it on `PATH` if it contains other programs.
 
 ## Manual installation
 
@@ -98,3 +138,11 @@ go build -trimpath -o arc ./cmd/arc
 ```
 
 Source builds report `arc dev` unless a version is injected with linker flags.
+
+## Code signing status
+
+Free code signing provided by SignPath.io, certificate by SignPath Foundation.
+
+Archbase is preparing its Windows release process for SignPath Foundation approval. Version `v0.3.0` and all earlier releases are unsigned. They remain protected by the published SHA-256 checksums but do not contain an Authenticode publisher signature. No release will be described as signed until the SignPath integration is approved, activated, and verified.
+
+See the [code signing policy](code-signing-policy.md), [privacy policy](privacy.md), and [MIT license](../LICENSE).

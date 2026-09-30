@@ -16,11 +16,21 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
 
-const versionVariable = "github.com/EnzoCaetano015/Archbase/internal/version.Value"
+const (
+	versionVariable      = "github.com/EnzoCaetano015/Archbase/internal/version.Value"
+	windowsProductName   = "Archbase"
+	windowsDescription   = "Archbase CLI"
+	windowsCompanyName   = "Archbase contributors"
+	windowsInternalName  = "arc"
+	windowsOriginalName  = "arc.exe"
+	windowsCopyright     = "Copyright (c) 2026 Enzo Caetano"
+	windowsTempDirPrefix = "arc-release-main-windows-"
+)
 
 var stableTag = regexp.MustCompile(`^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`)
 
@@ -129,12 +139,8 @@ func Build(ctx context.Context, options Options) ([]string, error) {
 		if err := os.MkdirAll(filepath.Dir(binaryPath), 0o755); err != nil {
 			return nil, fmt.Errorf("create build directory for %s/%s: %w", target.OS, target.Arch, err)
 		}
-		ldflags := fmt.Sprintf("-s -w -buildid= -X %s=%s", versionVariable, version)
-		command := exec.CommandContext(ctx, options.GoBinary, "build", "-trimpath", "-buildvcs=false", "-ldflags", ldflags, "-o", binaryPath, "./cmd/arc")
-		command.Dir = options.ModuleRoot
-		command.Env = releaseEnvironment(os.Environ(), target)
-		if output, runErr := command.CombinedOutput(); runErr != nil {
-			return nil, fmt.Errorf("build arc for %s/%s: %w: %s", target.OS, target.Arch, runErr, strings.TrimSpace(string(output)))
+		if err := buildBinary(ctx, options, target, version, binaryPath, runCommand); err != nil {
+			return nil, err
 		}
 		content, err := os.ReadFile(binaryPath)
 		if err != nil {
@@ -163,16 +169,140 @@ func Build(ctx context.Context, options Options) ([]string, error) {
 	return append(archiveNames, checksumName), nil
 }
 
+type commandRunner func(context.Context, string, []string, string, ...string) ([]byte, error)
+
+func runCommand(ctx context.Context, directory string, environment []string, name string, arguments ...string) ([]byte, error) {
+	command := exec.CommandContext(ctx, name, arguments...)
+	command.Dir = directory
+	command.Env = environment
+	return command.CombinedOutput()
+}
+
+func buildBinary(ctx context.Context, options Options, target Target, version, destination string, run commandRunner) (returnErr error) {
+	packagePath := "./cmd/arc"
+	cleanup := func() error { return nil }
+	if target.OS == "windows" {
+		var err error
+		packagePath, cleanup, err = prepareWindowsBuildPackage(ctx, options, target, version, run)
+		if err != nil {
+			return err
+		}
+	}
+	defer func() {
+		if err := cleanup(); err != nil {
+			returnErr = errors.Join(returnErr, fmt.Errorf("remove temporary Windows build package: %w", err))
+		}
+	}()
+
+	ldflags := fmt.Sprintf("-s -w -buildid= -X %s=%s", versionVariable, version)
+	environment := releaseEnvironment(os.Environ(), target)
+	output, err := run(ctx, options.ModuleRoot, environment, options.GoBinary,
+		"build", "-trimpath", "-buildvcs=false", "-ldflags", ldflags, "-o", destination, packagePath)
+	if err != nil {
+		return fmt.Errorf("build arc for %s/%s: %w: %s", target.OS, target.Arch, err, strings.TrimSpace(string(output)))
+	}
+	return nil
+}
+
+func prepareWindowsBuildPackage(ctx context.Context, options Options, target Target, version string, run commandRunner) (string, func() error, error) {
+	peVersion, components, err := windowsPEVersion(version)
+	if err != nil {
+		return "", nil, err
+	}
+	moduleRoot, err := filepath.Abs(options.ModuleRoot)
+	if err != nil {
+		return "", nil, fmt.Errorf("resolve module root %q: %w", options.ModuleRoot, err)
+	}
+	temporaryPackage := filepath.Join(moduleRoot, "internal", windowsTempDirPrefix+target.Arch)
+	if err := os.Mkdir(temporaryPackage, 0o755); err != nil {
+		return "", nil, fmt.Errorf("create temporary Windows build package %q: %w", temporaryPackage, err)
+	}
+	cleanup := func() error { return os.RemoveAll(temporaryPackage) }
+	fail := func(buildErr error) (string, func() error, error) {
+		if cleanupErr := cleanup(); cleanupErr != nil {
+			return "", nil, errors.Join(buildErr, fmt.Errorf("remove temporary Windows build package: %w", cleanupErr))
+		}
+		return "", nil, buildErr
+	}
+
+	mainSource, err := os.ReadFile(filepath.Join(moduleRoot, "cmd", "arc", "main.go"))
+	if err != nil {
+		return fail(fmt.Errorf("read Windows release entry point: %w", err))
+	}
+	if err := os.WriteFile(filepath.Join(temporaryPackage, "main.go"), mainSource, 0o644); err != nil {
+		return fail(fmt.Errorf("write temporary Windows release entry point: %w", err))
+	}
+	if err := os.WriteFile(filepath.Join(temporaryPackage, "versioninfo.json"), []byte("{}\n"), 0o644); err != nil {
+		return fail(fmt.Errorf("write temporary Windows VERSIONINFO configuration: %w", err))
+	}
+
+	arguments := []string{
+		"tool", "goversioninfo",
+		"-o=resource.syso",
+		"-company=" + windowsCompanyName,
+		"-description=" + windowsDescription,
+		"-file-version=" + peVersion,
+		"-internal-name=" + windowsInternalName,
+		"-copyright=" + windowsCopyright,
+		"-original-name=" + windowsOriginalName,
+		"-product-name=" + windowsProductName,
+		"-product-version=" + peVersion,
+		"-ver-major=" + components[0],
+		"-ver-minor=" + components[1],
+		"-ver-patch=" + components[2],
+		"-ver-build=0",
+		"-product-ver-major=" + components[0],
+		"-product-ver-minor=" + components[1],
+		"-product-ver-patch=" + components[2],
+		"-product-ver-build=0",
+		"-64=true",
+	}
+	if target.Arch == "arm64" {
+		arguments = append(arguments, "-arm=true")
+	}
+	environment := hostToolEnvironment(os.Environ())
+	if output, runErr := run(ctx, temporaryPackage, environment, options.GoBinary, arguments...); runErr != nil {
+		return fail(fmt.Errorf("generate VERSIONINFO for %s/%s: %w: %s", target.OS, target.Arch, runErr, strings.TrimSpace(string(output))))
+	}
+
+	relativePackage, err := filepath.Rel(moduleRoot, temporaryPackage)
+	if err != nil {
+		return fail(fmt.Errorf("resolve temporary Windows build package: %w", err))
+	}
+	return "./" + filepath.ToSlash(relativePackage), cleanup, nil
+}
+
+func windowsPEVersion(version string) (string, [3]string, error) {
+	parts := strings.Split(version, ".")
+	if len(parts) != 3 {
+		return "", [3]string{}, fmt.Errorf("version %q must have three numeric components", version)
+	}
+	var components [3]string
+	for index, part := range parts {
+		value, err := strconv.ParseUint(part, 10, 16)
+		if err != nil {
+			return "", [3]string{}, fmt.Errorf("version component %q must be between 0 and 65535", part)
+		}
+		components[index] = strconv.FormatUint(value, 10)
+	}
+	return strings.Join(components[:], ".") + ".0", components, nil
+}
+
 func releaseEnvironment(environment []string, target Target) []string {
+	result := hostToolEnvironment(environment)
+	return append(result, "GOOS="+target.OS, "GOARCH="+target.Arch, "CGO_ENABLED=0")
+}
+
+func hostToolEnvironment(environment []string) []string {
 	blocked := map[string]bool{"GOOS": true, "GOARCH": true, "CGO_ENABLED": true}
-	result := make([]string, 0, len(environment)+3)
+	result := make([]string, 0, len(environment))
 	for _, item := range environment {
 		key, _, _ := strings.Cut(item, "=")
 		if !blocked[strings.ToUpper(key)] {
 			result = append(result, item)
 		}
 	}
-	return append(result, "GOOS="+target.OS, "GOARCH="+target.Arch, "CGO_ENABLED=0")
+	return result
 }
 
 func writeArchive(destination string, target Target, binaryName string, content []byte, timestamp time.Time) error {

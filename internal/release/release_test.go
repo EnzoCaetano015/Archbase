@@ -5,6 +5,8 @@ import (
 	"archive/zip"
 	"bytes"
 	"compress/gzip"
+	"context"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -39,21 +41,158 @@ func TestVersionFromTag(t *testing.T) {
 }
 
 func TestAssetNames(t *testing.T) {
-	names, err := AssetNames("v0.1.0")
+	names, err := AssetNames("v0.3.0")
 	if err != nil {
 		t.Fatal(err)
 	}
 	expected := []string{
-		"arc_v0.1.0_darwin_amd64.tar.gz",
-		"arc_v0.1.0_darwin_arm64.tar.gz",
-		"arc_v0.1.0_linux_amd64.tar.gz",
-		"arc_v0.1.0_linux_arm64.tar.gz",
-		"arc_v0.1.0_windows_amd64.zip",
-		"arc_v0.1.0_windows_arm64.zip",
-		"arc_v0.1.0_SHA256SUMS.txt",
+		"arc_v0.3.0_darwin_amd64.tar.gz",
+		"arc_v0.3.0_darwin_arm64.tar.gz",
+		"arc_v0.3.0_linux_amd64.tar.gz",
+		"arc_v0.3.0_linux_arm64.tar.gz",
+		"arc_v0.3.0_windows_amd64.zip",
+		"arc_v0.3.0_windows_arm64.zip",
+		"arc_v0.3.0_SHA256SUMS.txt",
 	}
 	if !reflect.DeepEqual(names, expected) {
 		t.Fatalf("unexpected assets:\n%q\nwant:\n%q", names, expected)
+	}
+}
+
+func TestWindowsPEVersion(t *testing.T) {
+	version, components, err := windowsPEVersion("12.34.56")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if version != "12.34.56.0" || components != [3]string{"12", "34", "56"} {
+		t.Fatalf("unexpected PE version: %q %#v", version, components)
+	}
+	for _, invalid := range []string{"1.2", "1.2.x", "1.2.65536"} {
+		if _, _, err := windowsPEVersion(invalid); err == nil {
+			t.Fatalf("windowsPEVersion(%q) unexpectedly succeeded", invalid)
+		}
+	}
+}
+
+func TestWindowsResourceFailureCleansTemporaryPackage(t *testing.T) {
+	moduleRoot := windowsBuildFixture(t)
+	runner := func(context.Context, string, []string, string, ...string) ([]byte, error) {
+		return []byte("fixture generator failure"), errors.New("exit status 1")
+	}
+	_, _, err := prepareWindowsBuildPackage(context.Background(), Options{ModuleRoot: moduleRoot, GoBinary: "go"}, Target{OS: "windows", Arch: "amd64"}, "1.2.3", runner)
+	if err == nil || !strings.Contains(err.Error(), "fixture generator failure") {
+		t.Fatalf("unexpected generator error: %v", err)
+	}
+	assertInternalDirectoryEmpty(t, moduleRoot)
+}
+
+func TestWindowsBuildFailureCleansTemporaryPackage(t *testing.T) {
+	moduleRoot := windowsBuildFixture(t)
+	call := 0
+	runner := func(context.Context, string, []string, string, ...string) ([]byte, error) {
+		call++
+		if call == 2 {
+			return []byte("fixture build failure"), errors.New("exit status 1")
+		}
+		return nil, nil
+	}
+	err := buildBinary(context.Background(), Options{ModuleRoot: moduleRoot, GoBinary: "go"}, Target{OS: "windows", Arch: "arm64"}, "1.2.3", filepath.Join(t.TempDir(), "arc.exe"), runner)
+	if err == nil || !strings.Contains(err.Error(), "fixture build failure") {
+		t.Fatalf("unexpected build error: %v", err)
+	}
+	assertInternalDirectoryEmpty(t, moduleRoot)
+}
+
+func windowsBuildFixture(t *testing.T) string {
+	t.Helper()
+	moduleRoot := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(moduleRoot, "cmd", "arc"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(moduleRoot, "internal"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(moduleRoot, "cmd", "arc", "main.go"), []byte("package main\nfunc main() {}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	return moduleRoot
+}
+
+func assertInternalDirectoryEmpty(t *testing.T, moduleRoot string) {
+	t.Helper()
+	entries, readErr := os.ReadDir(filepath.Join(moduleRoot, "internal"))
+	if readErr != nil {
+		t.Fatal(readErr)
+	}
+	if len(entries) != 0 {
+		t.Fatalf("temporary package was not removed: %v", entries)
+	}
+}
+
+func TestReleaseBuildIsReproducible(t *testing.T) {
+	if os.Getenv("ARCHBASE_RELEASE_INTEGRATION") != "1" {
+		t.Skip("set ARCHBASE_RELEASE_INTEGRATION=1 to run the cross-platform release build")
+	}
+	moduleRoot, err := filepath.Abs(filepath.Join("..", ".."))
+	if err != nil {
+		t.Fatal(err)
+	}
+	goBinary := os.Getenv("ARCHBASE_GO_BINARY")
+	if goBinary == "" {
+		goBinary = "go"
+	}
+	timestamp := time.Date(2026, time.September, 30, 12, 34, 56, 0, time.UTC)
+	outputRoot := os.Getenv("ARCHBASE_RELEASE_OUTPUT")
+	if outputRoot == "" {
+		outputRoot = t.TempDir()
+	} else if err := os.Mkdir(outputRoot, 0o755); err != nil {
+		t.Fatalf("create requested integration output %q: %v", outputRoot, err)
+	}
+	first := filepath.Join(outputRoot, "release-a")
+	second := filepath.Join(outputRoot, "release-b")
+	for _, output := range []string{first, second} {
+		if _, err := Build(context.Background(), Options{
+			Tag: "v9.8.7", ModuleRoot: moduleRoot, OutputDir: output,
+			GoBinary: goBinary, Timestamp: timestamp,
+		}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	assertDirectoriesEqual(t, first, second)
+}
+
+func assertDirectoriesEqual(t *testing.T, left, right string) {
+	t.Helper()
+	leftEntries, err := os.ReadDir(left)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rightEntries, err := os.ReadDir(right)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(leftEntries) != len(rightEntries) {
+		t.Fatalf("release directories contain different file counts: %d and %d", len(leftEntries), len(rightEntries))
+	}
+	differences := make([]string, 0)
+	for index, leftEntry := range leftEntries {
+		if leftEntry.Name() != rightEntries[index].Name() {
+			t.Fatalf("release file names differ: %q and %q", leftEntry.Name(), rightEntries[index].Name())
+		}
+		leftContent, err := os.ReadFile(filepath.Join(left, leftEntry.Name()))
+		if err != nil {
+			t.Fatal(err)
+		}
+		rightContent, err := os.ReadFile(filepath.Join(right, rightEntries[index].Name()))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Equal(leftContent, rightContent) {
+			differences = append(differences, leftEntry.Name())
+		}
+	}
+	if len(differences) > 0 {
+		t.Fatalf("release artifacts are not reproducible: %s", strings.Join(differences, ", "))
 	}
 }
 

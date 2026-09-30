@@ -13,8 +13,11 @@
 - Keep Go packages under `internal/` until a public Go API is intentionally designed.
 - Public Git registries may be cloned by the registry core; authentication remains out of scope.
 - Stable releases are triggered only by existing `vMAJOR.MINOR.PATCH` tags and must pass the complete verification gate before publication.
-- Release archives and checksums must remain byte-for-byte reproducible for identical source, version, and timestamp inputs.
-- Registry authentication, package-manager distribution, release signing, attestations, and non-stdio MCP transports remain out of scope.
+- Unsigned release archives and checksums must remain byte-for-byte reproducible for identical source, version, and timestamp inputs.
+- Release-signing preparation and Authenticode signing through the approved SignPath workflow are in scope. Signed executables may differ byte-for-byte because trusted Authenticode timestamps are intentionally non-deterministic.
+- Public checksum manifests must always describe the final artifacts delivered to users, including signed Windows archives after signing is activated.
+- The SignPath integration must remain inactive until the project is approved; do not add credentials, secret placeholders, or claim that a release is signed before signature validation succeeds.
+- Registry authentication, package-manager distribution, attestations, and non-stdio MCP transports remain out of scope.
 - Existing files must never be overwritten unless the caller explicitly opts in.
 - Changes to public YAML contracts require matching schema, tests, and documentation updates.
 - Registry entries must remain sorted by ID and every declared required file must pass bundle validation.

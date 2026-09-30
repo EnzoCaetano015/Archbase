@@ -13,7 +13,7 @@ import (
 func main() {
 	var tag, moduleRoot, outputDirectory, goBinary string
 	var sourceEpoch int64
-	flag.StringVar(&tag, "tag", "", "stable release tag, such as v0.1.0")
+	flag.StringVar(&tag, "tag", "", "stable release tag, such as v0.3.0")
 	flag.StringVar(&moduleRoot, "module-root", ".", "Archbase module root")
 	flag.StringVar(&outputDirectory, "output", "dist", "new directory receiving release assets")
 	flag.StringVar(&goBinary, "go", "go", "Go executable")

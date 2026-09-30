@@ -258,7 +258,7 @@ Windows PowerShell:
 powershell -ExecutionPolicy Bypass -c "irm https://archbase.caetanodev.com/install.ps1 | iex"
 ```
 
-The installer detects the operating system and architecture, verifies the release checksum, installs the executable, and configures the user `PATH`. Open a new terminal after installation.
+The installer detects the operating system and architecture, verifies the release checksum, installs the executable, and configures the user `PATH`. On Linux and macOS it installs to `$HOME/.local/bin`; on Windows it installs to `%LOCALAPPDATA%\Programs\Archbase`. Open a new terminal after installation.
 
 Check the installation:
 
@@ -662,7 +662,7 @@ A release version can be injected during build:
 
 ```bash
 go build \
-  -ldflags "-X github.com/EnzoCaetano015/Archbase/internal/version.Value=0.1.0" \
+  -ldflags "-X github.com/EnzoCaetano015/Archbase/internal/version.Value=0.3.0" \
   ./cmd/arc
 ```
 
@@ -674,7 +674,7 @@ vMAJOR.MINOR.PATCH
 
 To publish a stable release, open **Actions > Release > Run workflow** on GitHub, select the `main` branch and provide:
 
-- `version`: the new semantic version, such as `v0.2.0`;
+- `version`: the new semantic version, such as `v0.3.1`;
 - `message`: the annotated tag message and introduction to the generated release notes.
 
 The workflow verifies tests, target archives, checksums, reproducibility and embedded CLI version before it creates the annotated tag and publishes the GitHub release. Existing versions are rejected and no tag is created when an earlier verification step fails.
@@ -693,6 +693,8 @@ docs/
 │   └── logo_without_background.png
 ├── installation.md
 ├── getting-started.md
+├── privacy.md
+├── code-signing-policy.md
 ├── schemas.md
 ├── registry.md
 ├── rules.md
@@ -703,6 +705,8 @@ Recommended starting points:
 
 - `docs/installation.md` — installation on supported operating systems.
 - `docs/getting-started.md` — complete first workflow.
+- `docs/privacy.md` — data and network-access policy.
+- `docs/code-signing-policy.md` — Windows release-signing policy and status.
 - `docs/registry.md` — registry resolution and cache behavior.
 - `docs/rules.md` — canonical architecture-rule model.
 - `docs/mcp.md` — MCP server and tool contracts.
@@ -813,6 +817,14 @@ The first public milestone is complete and includes:
 - cross-platform release archives.
 
 The current stable version is available on the [GitHub Releases page](https://github.com/EnzoCaetano015/Archbase/releases/latest).
+
+Windows release `v0.3.0` and all earlier releases are unsigned. Archbase is preparing for SignPath Foundation approval; see the [installation guide](docs/installation.md) and [code signing policy](docs/code-signing-policy.md) before downloading.
+
+Free code signing provided by SignPath.io, certificate by SignPath Foundation.
+
+## License and policies
+
+Archbase is released under the [MIT License](LICENSE). It does not collect telemetry or personal data; details are in the [privacy policy](docs/privacy.md). Safe removal instructions and the exact system changes made by the installers are documented in the [installation guide](docs/installation.md).
 
 ---
 

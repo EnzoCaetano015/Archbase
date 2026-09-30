@@ -1,0 +1,5 @@
+# Release integrity and SignPath configuration
+/.github/CODEOWNERS @EnzoCaetano015
+/.github/workflows/release.yml @EnzoCaetano015
+/.signpath/ @EnzoCaetano015
+/internal/release/ @EnzoCaetano015

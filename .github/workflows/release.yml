@@ -45,6 +45,49 @@ jobs:
       - run: go test ./...
       - run: go vet ./...
       - run: go build -trimpath ./cmd/arc
+      - name: Validate Windows VERSIONINFO
+        if: runner.os == 'Windows' && matrix.go-version == '1.26.x'
+        shell: pwsh
+        run: |
+          $sourceEpoch = git show -s --format=%ct HEAD
+          go run ./internal/release/cmd/package -tag v9.8.7 -source-epoch $sourceEpoch -output dist-versioninfo
+
+          $amd64Dir = Join-Path $env:RUNNER_TEMP 'archbase-versioninfo-amd64'
+          $arm64Dir = Join-Path $env:RUNNER_TEMP 'archbase-versioninfo-arm64'
+          Expand-Archive dist-versioninfo/arc_v9.8.7_windows_amd64.zip $amd64Dir
+          Expand-Archive dist-versioninfo/arc_v9.8.7_windows_arm64.zip $arm64Dir
+
+          function Assert-VersionInfo([string] $Path) {
+            $info = [Diagnostics.FileVersionInfo]::GetVersionInfo($Path)
+            $expected = @{
+              ProductName = 'Archbase'
+              FileDescription = 'Archbase CLI'
+              CompanyName = 'Archbase contributors'
+              InternalName = 'arc'
+              OriginalFilename = 'arc.exe'
+              FileVersion = '9.8.7.0'
+              ProductVersion = '9.8.7.0'
+              LegalCopyright = 'Copyright (c) 2026 Enzo Caetano'
+            }
+            foreach ($field in $expected.Keys) {
+              if ($info.$field -ne $expected[$field]) {
+                throw "$Path has $field='$($info.$field)', expected '$($expected[$field])'"
+              }
+            }
+          }
+
+          Assert-VersionInfo (Join-Path $amd64Dir 'arc.exe')
+          Assert-VersionInfo (Join-Path $arm64Dir 'arc.exe')
+          $nativeArchitecture = [Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString()
+          $nativeExecutable = switch ($nativeArchitecture) {
+            'X64' { Join-Path $amd64Dir 'arc.exe' }
+            'Arm64' { Join-Path $arm64Dir 'arc.exe' }
+            default { throw "unsupported Windows runner architecture: $nativeArchitecture" }
+          }
+          $reportedVersion = & $nativeExecutable version
+          if ($reportedVersion -ne 'arc 9.8.7') {
+            throw "$nativeArchitecture arc.exe reported '$reportedVersion'"
+          }
 
   publish:
     needs: verify

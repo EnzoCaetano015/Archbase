@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true" />
+    <parameter name="pe-version" required="true" />
+  </parameters>
+  <zip-file>
+    <zip-file path="arc_v${version}_windows_amd64.zip">
+      <pe-file
+        path="arc.exe"
+        product-name="Archbase"
+        product-version="${pe-version}"
+        file-version="${pe-version}"
+        company-name="Archbase contributors"
+        copyright="Copyright (c) 2026 Enzo Caetano"
+        original-filename="arc.exe">
+        <authenticode-sign
+          hash-algorithm="sha256"
+          description="Archbase CLI"
+          description-url="https://github.com/EnzoCaetano015/Archbase" />
+      </pe-file>
+    </zip-file>
+    <zip-file path="arc_v${version}_windows_arm64.zip">
+      <pe-file
+        path="arc.exe"
+        product-name="Archbase"
+        product-version="${pe-version}"
+        file-version="${pe-version}"
+        company-name="Archbase contributors"
+        copyright="Copyright (c) 2026 Enzo Caetano"
+        original-filename="arc.exe">
+        <authenticode-sign
+          hash-algorithm="sha256"
+          description="Archbase CLI"
+          description-url="https://github.com/EnzoCaetano015/Archbase" />
+      </pe-file>
+    </zip-file>
+  </zip-file>
+</artifact-configuration>
