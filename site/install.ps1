@@ -138,7 +138,19 @@ try {
     }
     [void]($checksumLine -match '^(?<hash>[0-9A-Fa-f]{64})')
     $expectedHash = $Matches.hash.ToLowerInvariant()
-    $actualHash = (Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash.ToLowerInvariant()
+    $archiveStream = [System.IO.File]::OpenRead($archivePath)
+    try {
+        $sha256 = [System.Security.Cryptography.SHA256]::Create()
+        try {
+            $actualHash = -join ($sha256.ComputeHash($archiveStream) | ForEach-Object { $_.ToString('x2') })
+        }
+        finally {
+            $sha256.Dispose()
+        }
+    }
+    finally {
+        $archiveStream.Dispose()
+    }
     if ($actualHash -ne $expectedHash) {
         Fail "SHA-256 checksum mismatch for $asset"
     }
