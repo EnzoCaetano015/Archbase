@@ -246,19 +246,15 @@ arc mcp serve --project-root .
 
 ### 1. Install Archbase
 
-Linux and macOS:
+Linux (official):
 
 ```bash
 curl -fsSL https://archbase.caetanodev.com/install.sh | sh
 ```
 
-Windows PowerShell:
+The official Linux installer detects the architecture, verifies the release checksum, installs the executable to `$HOME/.local/bin`, and configures the user `PATH`. Open a new terminal after installation.
 
-```powershell
-powershell -ExecutionPolicy Bypass -c "irm https://archbase.caetanodev.com/install.ps1 | iex"
-```
-
-The installer detects the operating system and architecture, verifies the release checksum, installs the executable, and configures the user `PATH`. On Linux and macOS it installs to `$HOME/.local/bin`; on Windows it installs to `%LOCALAPPDATA%\Programs\Archbase`. Open a new terminal after installation.
+macOS and Windows builds remain available as **unsigned previews**, outside the primary installation path. Review their warnings and installation options in the [installation guide](docs/installation.md).
 
 Check the installation:
 
@@ -728,7 +724,7 @@ Useful contribution areas include:
 - developer experience;
 - documentation;
 - tests;
-- Windows, Linux and macOS compatibility.
+- official Linux support, plus unsigned preview compatibility for macOS and Windows.
 
 Examples of future catalogs could include:
 
@@ -818,9 +814,7 @@ The first public milestone is complete and includes:
 
 The current stable version is available on the [GitHub Releases page](https://github.com/EnzoCaetano015/Archbase/releases/latest).
 
-Windows release `v0.3.0` and all earlier releases are unsigned. Archbase is preparing for SignPath Foundation approval; see the [installation guide](docs/installation.md) and [code signing policy](docs/code-signing-policy.md) before downloading.
-
-Free code signing provided by SignPath.io, certificate by SignPath Foundation.
+Linux is the official distribution channel. macOS and Windows release artifacts are unsigned previews and may be warned about or blocked by platform security controls. The SignPath Foundation application was not approved at the project's current level of public adoption; Archbase may reapply after gaining broader community recognition. The project has no active SignPath certificate or signing integration. See the [installation guide](docs/installation.md) and [code signing policy](docs/code-signing-policy.md) before downloading a preview build.
 
 ## License and policies
 

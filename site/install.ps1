@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Installs the Archbase CLI on Windows.
+Installs the unsigned Archbase CLI preview on Windows.
 
 .PARAMETER Version
 Stable version to install, with or without the leading v. Defaults to the latest release.
@@ -36,7 +36,7 @@ function Fail([string]$Message) {
 
 if ($Help) {
     @'
-Install the Archbase CLI.
+Install the unsigned Archbase CLI preview on Windows.
 
 Usage:
   install.ps1 [-Version <vMAJOR.MINOR.PATCH>] [-InstallDir <path>] [-Force]
@@ -54,6 +54,9 @@ try {
     if ($env:OS -ne 'Windows_NT' -and -not $env:ARCHBASE_TEST_OS) {
         Fail 'install.ps1 only supports Windows'
     }
+
+    Write-Warning 'Windows support is an unsigned preview, outside the primary Archbase installation path.'
+    Write-Warning 'arc.exe has no trusted Authenticode signature and Windows Smart App Control may block it. Do not disable Windows security protections.'
 
     if ([string]::IsNullOrWhiteSpace($InstallDir)) {
         if ([string]::IsNullOrWhiteSpace($env:LOCALAPPDATA)) {

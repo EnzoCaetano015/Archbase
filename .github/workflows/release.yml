@@ -207,4 +207,16 @@ jobs:
           RELEASE_MESSAGE: ${{ inputs.message }}
           RELEASE_TAG: ${{ inputs.version }}
         shell: bash
-        run: gh release create "$RELEASE_TAG" dist/* --verify-tag --generate-notes --notes "$RELEASE_MESSAGE" --title "Archbase $RELEASE_TAG"
+        run: |
+          notes_file="$RUNNER_TEMP/archbase-release-notes.md"
+          {
+            printf '%s\n\n' "$RELEASE_MESSAGE"
+            cat <<'EOF'
+          ## Distribution status
+
+          - Linux: official distribution.
+          - macOS: unsigned preview; Gatekeeper may warn or block the executable.
+          - Windows: unsigned preview; Smart App Control may block the executable.
+          EOF
+          } > "$notes_file"
+          gh release create "$RELEASE_TAG" dist/* --verify-tag --generate-notes --notes-file "$notes_file" --title "Archbase $RELEASE_TAG"

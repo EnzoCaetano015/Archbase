@@ -96,6 +96,33 @@ func TestInstallerRejectsUnsupportedArchitecture(t *testing.T) {
 	}
 }
 
+func TestPreviewInstallerWarnsBeforeDownload(t *testing.T) {
+	root := repositoryRoot(t)
+	home := t.TempDir()
+	installDir := filepath.Join(home, "install")
+	environment := map[string]string{"ARCHBASE_TEST_ARCH": "unsupported"}
+	var command *exec.Cmd
+	var expectedWarnings []string
+	if runtime.GOOS == "windows" {
+		command = exec.Command("powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", filepath.Join(root, "site", "install.ps1"), "-Version", testVersion, "-InstallDir", installDir)
+		expectedWarnings = []string{"unsigned preview", "Smart App Control"}
+	} else {
+		environment["ARCHBASE_TEST_OS"] = "darwin"
+		command = exec.Command("sh", filepath.Join(root, "site", "install.sh"), "--version", testVersion, "--install-dir", installDir)
+		expectedWarnings = []string{"unsigned preview", "not signed or notarized"}
+	}
+	command.Env = mergedEnvironment(environment)
+	output, err := command.CombinedOutput()
+	if err == nil {
+		t.Fatalf("preview installer unexpectedly succeeded with an unsupported architecture: %s", output)
+	}
+	for _, warning := range expectedWarnings {
+		if !strings.Contains(string(output), warning) {
+			t.Fatalf("preview installer did not emit %q before download: %v\n%s", warning, err, output)
+		}
+	}
+}
+
 func TestInstallerSelectsArm64Asset(t *testing.T) {
 	requestedPath := make(chan string, 1)
 	server := httptest.NewServer(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
@@ -244,8 +271,8 @@ func runInstaller(t *testing.T, root, serverURL, home, installDir, pathState str
 		"ARCHBASE_RELEASE_API_URL":     serverURL + "/latest",
 		"ARCHBASE_RELEASE_BASE_URL":    serverURL + "/download",
 		"ARCHBASE_TEST_USER_PATH_FILE": pathState,
-		"HOME":                          home,
-		"SHELL":                         "/bin/sh",
+		"HOME":                         home,
+		"SHELL":                        "/bin/sh",
 	}
 	var command *exec.Cmd
 	if runtime.GOOS == "windows" {

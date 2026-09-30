@@ -100,9 +100,18 @@ jobs:
         shell: bash
         run: |
           attribution='Free code signing provided by SignPath.io, certificate by SignPath Foundation.'
-          grep -Fqx "$attribution" docs/installation.md
-          grep -Fqx "$attribution" docs/code-signing-policy.md
-          grep -Fq 'v0.3.0` and all earlier releases are unsigned' README.md
+          if grep -R -Fq "$attribution" README.md docs .signpath; then
+            echo 'SignPath attribution must not be published without an approved certificate.' >&2
+            exit 1
+          fi
+          grep -Fq 'Linux (official)' README.md
+          grep -Fq '## Linux (official)' docs/installation.md
+          grep -Fq '## macOS preview (unsigned)' docs/installation.md
+          grep -Fq '## Windows preview (unsigned)' docs/installation.md
+          grep -Fq 'application was not approved' docs/code-signing-policy.md
+          grep -Fq 'no active SignPath certificate or signing integration' README.md
+          grep -Fq 'macOS: unsigned preview' .github/workflows/release.yml
+          grep -Fq 'Windows: unsigned preview' .github/workflows/release.yml
           grep -Fq 'does not collect, transmit, or store personal data, telemetry, analytics' docs/privacy.md
           grep -Fq '## Uninstall' docs/installation.md
           test -f LICENSE

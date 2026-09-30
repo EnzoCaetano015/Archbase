@@ -13,7 +13,7 @@ staged_target=""
 
 usage() {
     cat <<'EOF'
-Install the Archbase CLI.
+Install the Archbase CLI on Linux. macOS support is an unsigned preview.
 
 Usage:
   install.sh [--version <vMAJOR.MINOR.PATCH>] [--install-dir <path>] [--force]
@@ -74,6 +74,26 @@ done
 command -v curl >/dev/null 2>&1 || fail "curl is required"
 command -v tar >/dev/null 2>&1 || fail "tar is required"
 
+detected_os=${ARCHBASE_TEST_OS:-$(uname -s)}
+case "$detected_os" in
+    Linux|linux) target_os=linux ;;
+    Darwin|darwin) target_os=darwin ;;
+    *) fail "unsupported operating system: $detected_os" ;;
+esac
+
+if [ "$target_os" = darwin ]; then
+    printf '%s\n' 'WARNING: macOS support is an unsigned preview.' >&2
+    printf '%s\n' 'The binary is not signed or notarized, so macOS security controls may warn or block it.' >&2
+    printf '%s\n' 'Do not disable system security protections; continue only if you trust this source.' >&2
+fi
+
+detected_arch=${ARCHBASE_TEST_ARCH:-$(uname -m)}
+case "$detected_arch" in
+    x86_64|amd64) target_arch=amd64 ;;
+    arm64|aarch64) target_arch=arm64 ;;
+    *) fail "unsupported architecture: $detected_arch" ;;
+esac
+
 if [ -n "$requested_version" ]; then
     case "$requested_version" in
         v*) release_tag=$requested_version ;;
@@ -92,20 +112,6 @@ fi
 printf '%s\n' "$release_tag" | grep -Eq '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' || \
     fail "version must match vMAJOR.MINOR.PATCH"
 version=${release_tag#v}
-
-detected_os=${ARCHBASE_TEST_OS:-$(uname -s)}
-case "$detected_os" in
-    Linux|linux) target_os=linux ;;
-    Darwin|darwin) target_os=darwin ;;
-    *) fail "unsupported operating system: $detected_os" ;;
-esac
-
-detected_arch=${ARCHBASE_TEST_ARCH:-$(uname -m)}
-case "$detected_arch" in
-    x86_64|amd64) target_arch=amd64 ;;
-    arm64|aarch64) target_arch=arm64 ;;
-    *) fail "unsupported architecture: $detected_arch" ;;
-esac
 
 asset="arc_v${version}_${target_os}_${target_arch}.tar.gz"
 checksum="arc_v${version}_SHA256SUMS.txt"

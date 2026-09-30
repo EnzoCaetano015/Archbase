@@ -14,9 +14,11 @@
 - Public Git registries may be cloned by the registry core; authentication remains out of scope.
 - Stable releases are triggered only by existing `vMAJOR.MINOR.PATCH` tags and must pass the complete verification gate before publication.
 - Unsigned release archives and checksums must remain byte-for-byte reproducible for identical source, version, and timestamp inputs.
-- Release-signing preparation and Authenticode signing through the approved SignPath workflow are in scope. Signed executables may differ byte-for-byte because trusted Authenticode timestamps are intentionally non-deterministic.
+- Linux is the official distribution channel. macOS and Windows artifacts and installers remain available only as unsigned previews.
+- Release-signing preparation remains in scope, but the current SignPath Foundation application was not approved. Reapply only after the project has meaningful public adoption and external recognition.
+- If a trusted signing workflow is approved in the future, signed executables may differ byte-for-byte because trusted Authenticode timestamps are intentionally non-deterministic.
 - Public checksum manifests must always describe the final artifacts delivered to users, including signed Windows archives after signing is activated.
-- The SignPath integration must remain inactive until the project is approved; do not add credentials, secret placeholders, or claim that a release is signed before signature validation succeeds.
+- The SignPath integration must remain inactive until a future application is approved; do not add attribution, credentials, secret placeholders, or claim an affiliation or signed release before signature validation succeeds.
 - Registry authentication, package-manager distribution, attestations, and non-stdio MCP transports remain out of scope.
 - Existing files must never be overwritten unless the caller explicitly opts in.
 - Changes to public YAML contracts require matching schema, tests, and documentation updates.
