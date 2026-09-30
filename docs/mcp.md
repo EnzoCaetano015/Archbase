@@ -8,6 +8,23 @@ arc mcp serve --project-root .
 
 The global `--registry-*` flags apply to MCP exactly as they do to the other commands. A configured public Git registry has precedence over the embedded catalog, and a valid stale cache is reported through tool output warnings.
 
+## Client configuration
+
+Register the server in a compatible MCP client:
+
+```json
+{
+  "mcpServers": {
+    "archbase": {
+      "command": "arc",
+      "args": ["mcp", "serve", "--project-root", "/absolute/path/to/project"]
+    }
+  }
+}
+```
+
+Use your project's absolute path, including a Windows path when applicable. The client launches `arc` and communicates over stdio; stdout is reserved for protocol messages. For a complete example with a public Git registry, see [Getting started](getting-started.md#5-connect-an-mcp-client).
+
 ## Project boundary
 
 `--project-root` defaults to the current directory and must identify an existing regular directory. Relative tool paths are resolved from this root. Absolute paths are accepted only when they remain inside it. Traversal and symlinks in existing path components are rejected.
