@@ -293,6 +293,30 @@ func assertPathUpdatedOnce(t *testing.T, home, installDir, pathState string) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if runtime.GOOS == "windows" {
+		matches := 0
+		installInfo, statErr := os.Stat(installDir)
+		for _, entry := range strings.Split(string(content), ";") {
+			entry = strings.TrimSpace(entry)
+			if entry == "" {
+				continue
+			}
+			if strings.EqualFold(filepath.Clean(entry), filepath.Clean(installDir)) {
+				matches++
+				continue
+			}
+			if statErr == nil {
+				entryInfo, entryErr := os.Stat(entry)
+				if entryErr == nil && os.SameFile(installInfo, entryInfo) {
+					matches++
+				}
+			}
+		}
+		if matches != 1 {
+			t.Fatalf("PATH entry was not written exactly once: install directory %q, PATH %q", installDir, content)
+		}
+		return
+	}
 	if strings.Count(string(content), installDir) != 1 {
 		t.Fatalf("PATH entry was not written exactly once: %q", content)
 	}
