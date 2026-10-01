@@ -99,19 +99,26 @@ jobs:
       - name: Validate public release policies
         shell: bash
         run: |
+          require_text() {
+            if ! grep -Fq "$2" "$1"; then
+              echo "Missing required policy text in $1: $2" >&2
+              exit 1
+            fi
+          }
           attribution='Free code signing provided by SignPath.io, certificate by SignPath Foundation.'
           if grep -R -Fq "$attribution" README.md docs .signpath; then
             echo 'SignPath attribution must not be published without an approved certificate.' >&2
             exit 1
           fi
-          grep -Fq 'Linux (official)' README.md
-          grep -Fq '## Linux (official)' docs/installation.md
-          grep -Fq '## macOS preview (unsigned)' docs/installation.md
-          grep -Fq '## Windows preview (unsigned)' docs/installation.md
-          grep -Fq 'application was not approved' docs/code-signing-policy.md
-          grep -Fq 'no active SignPath certificate or signing integration' README.md
-          grep -Fq 'macOS: unsigned preview' .github/workflows/release.yml
-          grep -Fq 'Windows: unsigned preview' .github/workflows/release.yml
-          grep -Fq 'does not collect, transmit, or store personal data, telemetry, analytics' docs/privacy.md
-          grep -Fq '## Uninstall' docs/installation.md
+          require_text README.md '(docs/installation.md)'
+          require_text README.md '(docs/code-signing-policy.md)'
+          require_text docs/installation.md '## Linux (official)'
+          require_text docs/installation.md '## macOS preview (unsigned)'
+          require_text docs/installation.md '## Windows preview (unsigned)'
+          require_text docs/code-signing-policy.md 'application was not approved'
+          require_text docs/code-signing-policy.md 'does not currently have a code-signing certificate or an active signing integration'
+          require_text .github/workflows/release.yml 'macOS: unsigned preview'
+          require_text .github/workflows/release.yml 'Windows: unsigned preview'
+          require_text docs/privacy.md 'does not collect, transmit, or store personal data, telemetry, analytics'
+          require_text docs/installation.md '## Uninstall'
           test -f LICENSE
