@@ -27,11 +27,14 @@ curl -fsSL https://archbase.caetanodev.com/install.sh | sh
 Open a new terminal, then run these commands from your project directory:
 
 ```bash
+arc
 arc version
 arc add next/page@1234 .
 arc resolve src/pages/Home.tsx
 arc inspect next/page@1234
 ```
+
+Running `arc` without arguments displays a welcome screen with a silver ARCHBASE wordmark, the installed version, and starting commands. Color is enabled on supported terminals and disabled for redirected output, `TERM=dumb`, or a non-empty `NO_COLOR`. Use `arc --help` for the full command reference.
 
 `arc add` stores the pattern in a local `.archbase` scope. `arc resolve` finds the active pattern even when the target file does not exist yet. Use `arc help` for available commands.
 

@@ -120,7 +120,7 @@ func NewRootCommand(cliVersion string, supplied ...Dependencies) *cobra.Command 
 	root := &cobra.Command{
 		Use: "arc", Short: "Structural patterns for AI-generated code", Long: longDescription,
 		SilenceErrors: true, SilenceUsage: true, Args: cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, _ []string) error { return cmd.Help() },
+		RunE: func(cmd *cobra.Command, _ []string) error { return welcome(cmd.OutOrStdout(), cliVersion) },
 	}
 	root.CompletionOptions.DisableDefaultCmd = true
 	flags := root.PersistentFlags()
