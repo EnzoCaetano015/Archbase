@@ -35,7 +35,9 @@ arc inspect next/page@1234
 arc remove architecture/next-modular@1
 ```
 
-Running `arc` without arguments displays a welcome screen with a silver ARCHBASE wordmark, the installed version, and starting commands. Color is enabled on supported terminals and disabled for redirected output, `TERM=dumb`, or a non-empty `NO_COLOR`. Use `arc --help` for the full command reference.
+Running `arc` in an interactive terminal opens a full-screen application with the silver ARCHBASE wordmark. Browse and search patterns and rules, inspect long documents, and use forms to install, create, export, or remove managed rules. Press `Ctrl+P` for the command palette and `Esc` to go back. See the [terminal UI guide](docs/terminal-ui.md) for navigation and shortcuts.
+
+Direct commands still work in your shell, with formatted help, tables, and readable sections. Use `arc --plain` to keep the welcome screen instead of opening the application, or `arc --plain <command>` for the original text output. Redirected output stays plain automatically. `TERM=dumb` disables the UI and rich formatting; a non-empty `NO_COLOR` disables colors while keeping interactive navigation. Use `arc --help` for the full command reference.
 
 `arc add` stores the pattern in a local `.archbase` scope. `arc resolve` finds the active pattern even when the target file does not exist yet. Use `arc help` for available commands.
 
@@ -49,6 +51,7 @@ macOS and Windows are available as **unsigned previews**. See the [installation 
 | --- | --- |
 | [Installation](docs/installation.md) | Installers, supported platforms, checksums, and uninstall. |
 | [Getting started](docs/getting-started.md) | Complete workflow with patterns, customization, rules, and MCP. |
+| [Terminal UI](docs/terminal-ui.md) | Interactive navigation, forms, long documents, and plain output. |
 | [Concepts](docs/concepts.md) | Patterns, nested scopes, resolution, and local customization. |
 | [Registry](docs/registry.md) | Pattern catalog, public Git sources, caching, and validation. |
 | [Architecture rules](docs/rules.md) | Rule catalog and exports for Cursor, Copilot, and `AGENTS.md`. |

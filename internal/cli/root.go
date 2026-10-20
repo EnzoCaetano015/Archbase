@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"text/tabwriter"
 	"time"
 
 	"github.com/EnzoCaetano015/Archbase/internal/contracts"
@@ -117,14 +116,24 @@ func NewRootCommand(cliVersion string, supplied ...Dependencies) *cobra.Command 
 			dependencies.MCPRunner = archmcp.RunStdio
 		}
 	}
+	var plain bool
 	options := RegistryOptions{Ref: "main", CacheRoot: defaultCacheRoot(), TTL: registry.DefaultGitCacheTTL}
 	root := &cobra.Command{
 		Use: "arc", Short: "Structural patterns for AI-generated code", Long: longDescription,
 		SilenceErrors: true, SilenceUsage: true, Args: cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, _ []string) error { return welcome(cmd.OutOrStdout(), cliVersion) },
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			if !plainCommand(cmd) && terminalStream(cmd.InOrStdin()) && terminalStream(cmd.OutOrStdout()) {
+				return runInteractive(cmd, dependencies, options, cliVersion)
+			}
+			if plainCommand(cmd) {
+				return renderWelcome(cmd.OutOrStdout(), cliVersion, false)
+			}
+			return welcome(cmd.OutOrStdout(), cliVersion)
+		},
 	}
 	root.CompletionOptions.DisableDefaultCmd = true
 	flags := root.PersistentFlags()
+	flags.BoolVar(&plain, "plain", false, "disable the interactive UI and rich terminal output")
 	flags.StringVar(&options.URL, "registry-url", "", "public Git registry URL (https, git, or file)")
 	flags.StringVar(&options.Ref, "registry-ref", "main", "Git registry branch or tag")
 	flags.StringVar(&options.Subdirectory, "registry-subdir", "", "registry subdirectory inside the checkout")
@@ -134,6 +143,7 @@ func NewRootCommand(cliVersion string, supplied ...Dependencies) *cobra.Command 
 	root.AddCommand(&cobra.Command{Use: "version", Short: "Show the CLI version", Args: cobra.NoArgs, Run: func(cmd *cobra.Command, _ []string) {
 		fmt.Fprintf(cmd.OutOrStdout(), "arc %s\n", cliVersion)
 	}})
+	installHelp(root, cliVersion)
 	return root
 }
 
@@ -162,14 +172,6 @@ func newMCPCommand(dependencies Dependencies, options *RegistryOptions, cliVersi
 	return command
 }
 
-func ruleService(ctx context.Context, dependencies Dependencies, options RegistryOptions) (*archrules.Resolver, error) {
-	patterns, err := dependencies.ResolverFactory(ctx, options)
-	if err != nil {
-		return nil, err
-	}
-	return dependencies.RuleResolverFactory(ctx, options, patterns)
-}
-
 func newRulesCommand(dependencies Dependencies, options *RegistryOptions) *cobra.Command {
 	command := &cobra.Command{Use: "rules", Short: "Manage architecture rules", Args: cobra.NoArgs, RunE: func(cmd *cobra.Command, _ []string) error {
 		return cmd.Help()
@@ -180,75 +182,26 @@ func newRulesCommand(dependencies Dependencies, options *RegistryOptions) *cobra
 
 func newRulesListCommand(dependencies Dependencies, options *RegistryOptions) *cobra.Command {
 	return &cobra.Command{Use: "list", Short: "List available architecture rules", Args: cobra.NoArgs, RunE: func(cmd *cobra.Command, _ []string) error {
-		resolver, err := ruleService(cmd.Context(), dependencies, *options)
-		if err != nil {
-			return err
-		}
-		result, err := resolver.List(cmd.Context())
-		if err != nil {
-			return err
-		}
-		printWarnings(cmd.ErrOrStderr(), result.Warnings)
-		writer := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 2, ' ', 0)
-		fmt.Fprintln(writer, "ID\tVERSION\tSOURCE\tDESCRIPTION")
-		for _, entry := range result.Entries {
-			fmt.Fprintf(writer, "%s\t%s\t%s\t%s\n", entry.ID, entry.Version, entry.Source, entry.Description)
-		}
-		return writer.Flush()
+		return executeOperation(cmd, dependencies, *options, request{Action: listRules})
 	}}
 }
 
 func newRulesInspectCommand(dependencies Dependencies, options *RegistryOptions) *cobra.Command {
 	return &cobra.Command{Use: "inspect <rule-id>", Short: "Inspect an architecture rule", Args: cobra.ExactArgs(1), RunE: func(cmd *cobra.Command, args []string) error {
-		resolver, err := ruleService(cmd.Context(), dependencies, *options)
-		if err != nil {
-			return err
-		}
-		resolved, err := resolver.Resolve(cmd.Context(), args[0])
-		if err != nil {
-			return err
-		}
-		printWarnings(cmd.ErrOrStderr(), resolved.Warnings)
-		printRule(cmd.OutOrStdout(), resolved.Rule)
-		return nil
+		return executeOperation(cmd, dependencies, *options, request{Action: inspectRule, ID: args[0]})
 	}}
 }
 
 func newRulesAddCommand(dependencies Dependencies, options *RegistryOptions) *cobra.Command {
-	var rawFormat, destination string
+	var format, destination string
 	var overwrite, merge bool
 	command := &cobra.Command{Use: "add <rule-id>", Short: "Export an architecture rule", Args: cobra.ExactArgs(1), RunE: func(cmd *cobra.Command, args []string) error {
-		if rawFormat == "" {
+		if format == "" {
 			return errors.New("--format is required")
 		}
-		format, err := archrules.ParseFormat(rawFormat)
-		if err != nil {
-			return err
-		}
-		resolver, err := ruleService(cmd.Context(), dependencies, *options)
-		if err != nil {
-			return err
-		}
-		resolved, err := resolver.Resolve(cmd.Context(), args[0])
-		if err != nil {
-			return err
-		}
-		printWarnings(cmd.ErrOrStderr(), resolved.Warnings)
-		exporter, err := archrules.NewExporter(dependencies.RuleFileSystem)
-		if err != nil {
-			return err
-		}
-		result, err := exporter.Export(resolved.Rule, format, archrules.ExportOptions{Destination: destination, Overwrite: overwrite, Merge: merge})
-		if err != nil {
-			return err
-		}
-		fmt.Fprintf(cmd.OutOrStdout(), "Exported: %s\nFormat: %s\nFiles:\n", resolved.Rule.Definition.ID, result.Format)
-		for _, file := range result.Paths {
-			fmt.Fprintf(cmd.OutOrStdout(), "  %s\n", file)
-		}
-		return nil
+		return executeOperation(cmd, dependencies, *options, request{Action: exportRule, ID: args[0], Path: destination, Format: format, Overwrite: overwrite, Merge: merge})
 	}}
-	command.Flags().StringVar(&rawFormat, "format", "", "export format: cursor, copilot, or agents")
+	command.Flags().StringVar(&format, "format", "", "export format: cursor, copilot, or agents")
 	command.Flags().StringVar(&destination, "destination", ".", "project root receiving exported files")
 	command.Flags().BoolVar(&overwrite, "overwrite", false, "replace an existing Cursor or Copilot file")
 	command.Flags().BoolVar(&merge, "merge", false, "merge the managed block into an existing AGENTS.md")
@@ -257,58 +210,24 @@ func newRulesAddCommand(dependencies Dependencies, options *RegistryOptions) *co
 
 func newRemoveCommand(dependencies Dependencies) *cobra.Command {
 	var destination string
-	var removeAll bool
-	command := &cobra.Command{
-		Use:   "remove [rule-id]",
-		Short: "Remove managed architecture rule exports",
-		Args: func(_ *cobra.Command, args []string) error {
-			if removeAll && len(args) != 0 {
-				return errors.New("a rule ID cannot be combined with --all")
-			}
-			if !removeAll && len(args) != 1 {
-				return errors.New("provide one rule ID or use --all")
-			}
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			rawID := ""
-			if len(args) == 1 {
-				rawID = args[0]
-			}
-			exporter, err := archrules.NewExporter(dependencies.RuleFileSystem)
-			if err != nil {
-				return err
-			}
-			result, err := exporter.Remove(rawID, archrules.RemoveOptions{Destination: destination, All: removeAll})
-			if err != nil {
-				return err
-			}
-			if len(result.Paths) == 0 {
-				if removeAll {
-					fmt.Fprintln(cmd.OutOrStdout(), "No managed rule exports found.")
-				} else {
-					fmt.Fprintf(cmd.OutOrStdout(), "No managed exports found for: %s\n", rawID)
-				}
-				return nil
-			}
-			if len(result.RuleIDs) > 0 {
-				fmt.Fprintln(cmd.OutOrStdout(), "Removed rules:")
-				for _, id := range result.RuleIDs {
-					fmt.Fprintf(cmd.OutOrStdout(), "  %s\n", id)
-				}
-			}
-			if result.LegacyExports > 0 {
-				fmt.Fprintf(cmd.OutOrStdout(), "Legacy exports: %d\n", result.LegacyExports)
-			}
-			fmt.Fprintln(cmd.OutOrStdout(), "Files:")
-			for _, file := range result.Paths {
-				fmt.Fprintf(cmd.OutOrStdout(), "  %s\n", file)
-			}
-			return nil
-		},
-	}
+	var all bool
+	command := &cobra.Command{Use: "remove [rule-id]", Short: "Remove managed architecture rule exports", Args: func(_ *cobra.Command, args []string) error {
+		if all && len(args) != 0 {
+			return errors.New("a rule ID cannot be combined with --all")
+		}
+		if !all && len(args) != 1 {
+			return errors.New("provide one rule ID or use --all")
+		}
+		return nil
+	}, RunE: func(cmd *cobra.Command, args []string) error {
+		id := ""
+		if len(args) == 1 {
+			id = args[0]
+		}
+		return executeOperation(cmd, dependencies, RegistryOptions{}, request{Action: removeRule, ID: id, Path: destination, All: all})
+	}}
 	command.Flags().StringVar(&destination, "destination", ".", "project root containing managed rule exports")
-	command.Flags().BoolVar(&removeAll, "all", false, "remove every managed rule export in the project")
+	command.Flags().BoolVar(&all, "all", false, "remove every managed rule export in the project")
 	return command
 }
 
@@ -341,34 +260,14 @@ func service(ctx context.Context, dependencies Dependencies, options RegistryOpt
 
 func newAddCommand(dependencies Dependencies, options *RegistryOptions) *cobra.Command {
 	return &cobra.Command{Use: "add <pattern-id> <scope-path>", Short: "Install a pattern in a local scope", Args: cobra.ExactArgs(2), RunE: func(cmd *cobra.Command, args []string) error {
-		workspaceService, _, err := service(cmd.Context(), dependencies, *options)
-		if err != nil {
-			return err
-		}
-		installed, err := workspaceService.Add(cmd.Context(), args[0], args[1])
-		if err != nil {
-			return err
-		}
-		printWarnings(cmd.ErrOrStderr(), installed.Warnings)
-		fmt.Fprintf(cmd.OutOrStdout(), "Installed: %s\nScope: %s\nPattern root: %s\n", installed.PatternID, installed.ScopeDirectory, installed.PatternDirectory)
-		return nil
+		return executeOperation(cmd, dependencies, *options, request{Action: addPattern, ID: args[0], Path: args[1]})
 	}}
 }
 
 func newCreateCommand(dependencies Dependencies, options *RegistryOptions) *cobra.Command {
 	var from string
 	command := &cobra.Command{Use: "create <name> <scope-path>", Short: "Create a customizable local pattern", Args: cobra.ExactArgs(2), RunE: func(cmd *cobra.Command, args []string) error {
-		workspaceService, _, err := service(cmd.Context(), dependencies, *options)
-		if err != nil {
-			return err
-		}
-		installed, err := workspaceService.Create(cmd.Context(), args[0], args[1], from)
-		if err != nil {
-			return err
-		}
-		printWarnings(cmd.ErrOrStderr(), installed.Warnings)
-		fmt.Fprintf(cmd.OutOrStdout(), "Created: %s\nScope: %s\nPattern root: %s\n", installed.PatternID, installed.ScopeDirectory, installed.PatternDirectory)
-		return nil
+		return executeOperation(cmd, dependencies, *options, request{Action: createPattern, ID: args[0], Path: args[1], From: from})
 	}}
 	command.Flags().StringVar(&from, "from", "", "derive the local pattern from a registry pattern ID")
 	return command
@@ -380,42 +279,13 @@ func newResolveCommand(dependencies Dependencies, options *RegistryOptions) *cob
 		if len(args) == 1 {
 			target = args[0]
 		}
-		workspaceService, _, err := service(cmd.Context(), dependencies, *options)
-		if err != nil {
-			return err
-		}
-		resolved, err := workspaceService.Resolve(cmd.Context(), target)
-		if err != nil {
-			return err
-		}
-		printWarnings(cmd.ErrOrStderr(), resolved.Warnings)
-		printResolution(cmd.OutOrStdout(), resolved)
-		return nil
+		return executeOperation(cmd, dependencies, *options, request{Action: resolvePath, Path: target})
 	}}
 }
 
 func newInspectCommand(dependencies Dependencies, options *RegistryOptions) *cobra.Command {
 	return &cobra.Command{Use: "inspect <path-or-pattern-id>", Short: "Inspect a local or registry pattern", Args: cobra.ExactArgs(1), RunE: func(cmd *cobra.Command, args []string) error {
-		workspaceService, resolver, err := service(cmd.Context(), dependencies, *options)
-		if err != nil {
-			return err
-		}
-		if _, parseErr := registry.ParsePatternID(args[0]); parseErr == nil {
-			resolved, err := resolver.Resolve(cmd.Context(), args[0])
-			if err != nil {
-				return err
-			}
-			printWarnings(cmd.ErrOrStderr(), resolved.Warnings)
-			printPattern(cmd.OutOrStdout(), resolved.Pattern, resolved.Pattern.Source, nil)
-			return nil
-		}
-		resolved, err := workspaceService.Resolve(cmd.Context(), args[0])
-		if err != nil {
-			return err
-		}
-		printWarnings(cmd.ErrOrStderr(), resolved.Warnings)
-		printPattern(cmd.OutOrStdout(), resolved.Pattern, resolved.Scope.Pattern.Source, resolved.Scope.Origin)
-		return nil
+		return executeOperation(cmd, dependencies, *options, request{Action: inspectPattern, ID: args[0]})
 	}}
 }
 
@@ -473,7 +343,12 @@ func Execute(args []string, stdout, stderr io.Writer, cliVersion string, depende
 	cmd.SetOut(stdout)
 	cmd.SetErr(stderr)
 	if err := cmd.Execute(); err != nil {
-		fmt.Fprintln(stderr, err)
+		if !plainCommand(cmd) && terminalStream(stderr) {
+			t := newTheme(os.Getenv("NO_COLOR") == "")
+			fmt.Fprintln(stderr, t.danger.Render("Error  ")+safeText(err.Error()))
+		} else {
+			fmt.Fprintln(stderr, err)
+		}
 		return 1
 	}
 	return 0

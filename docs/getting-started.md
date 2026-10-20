@@ -2,6 +2,8 @@
 
 This guide starts from an empty project directory and demonstrates a remote pattern, a customizable local pattern, hierarchical scope resolution, architecture rules, and the MCP server. Install `arc` first with the one-command installer in [installation.md](installation.md).
 
+For an interactive version of these workflows, run `arc` from your project and use the catalogs and forms. `Ctrl+P` opens the action palette. The [terminal UI guide](terminal-ui.md) covers navigation and session registry settings; the commands below remain available directly in your shell.
+
 The commands pin the public Archbase registry to `v0.3.0`, so the result does not change when `main` advances. No global configuration file is created.
 
 ## 1. Create a minimal project
