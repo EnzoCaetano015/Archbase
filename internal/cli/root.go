@@ -27,6 +27,7 @@ Available commands:
   arc resolve    Resolve the active pattern for a path
   arc inspect    Inspect a local or registry pattern
   arc rules      List, inspect, and export architecture rules
+  arc remove     Remove one or all managed rule exports
   arc mcp serve  Start the project-scoped MCP server over stdio
   arc version    Show the CLI version`
 
@@ -129,7 +130,7 @@ func NewRootCommand(cliVersion string, supplied ...Dependencies) *cobra.Command 
 	flags.StringVar(&options.Subdirectory, "registry-subdir", "", "registry subdirectory inside the checkout")
 	flags.StringVar(&options.CacheRoot, "registry-cache-dir", options.CacheRoot, "absolute registry cache directory")
 	flags.DurationVar(&options.TTL, "registry-ttl", registry.DefaultGitCacheTTL, "registry cache time to live")
-	root.AddCommand(newAddCommand(dependencies, &options), newCreateCommand(dependencies, &options), newResolveCommand(dependencies, &options), newInspectCommand(dependencies, &options), newRulesCommand(dependencies, &options), newMCPCommand(dependencies, &options, cliVersion))
+	root.AddCommand(newAddCommand(dependencies, &options), newCreateCommand(dependencies, &options), newResolveCommand(dependencies, &options), newInspectCommand(dependencies, &options), newRulesCommand(dependencies, &options), newRemoveCommand(dependencies), newMCPCommand(dependencies, &options, cliVersion))
 	root.AddCommand(&cobra.Command{Use: "version", Short: "Show the CLI version", Args: cobra.NoArgs, Run: func(cmd *cobra.Command, _ []string) {
 		fmt.Fprintf(cmd.OutOrStdout(), "arc %s\n", cliVersion)
 	}})
@@ -251,6 +252,63 @@ func newRulesAddCommand(dependencies Dependencies, options *RegistryOptions) *co
 	command.Flags().StringVar(&destination, "destination", ".", "project root receiving exported files")
 	command.Flags().BoolVar(&overwrite, "overwrite", false, "replace an existing Cursor or Copilot file")
 	command.Flags().BoolVar(&merge, "merge", false, "merge the managed block into an existing AGENTS.md")
+	return command
+}
+
+func newRemoveCommand(dependencies Dependencies) *cobra.Command {
+	var destination string
+	var removeAll bool
+	command := &cobra.Command{
+		Use:   "remove [rule-id]",
+		Short: "Remove managed architecture rule exports",
+		Args: func(_ *cobra.Command, args []string) error {
+			if removeAll && len(args) != 0 {
+				return errors.New("a rule ID cannot be combined with --all")
+			}
+			if !removeAll && len(args) != 1 {
+				return errors.New("provide one rule ID or use --all")
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			rawID := ""
+			if len(args) == 1 {
+				rawID = args[0]
+			}
+			exporter, err := archrules.NewExporter(dependencies.RuleFileSystem)
+			if err != nil {
+				return err
+			}
+			result, err := exporter.Remove(rawID, archrules.RemoveOptions{Destination: destination, All: removeAll})
+			if err != nil {
+				return err
+			}
+			if len(result.Paths) == 0 {
+				if removeAll {
+					fmt.Fprintln(cmd.OutOrStdout(), "No managed rule exports found.")
+				} else {
+					fmt.Fprintf(cmd.OutOrStdout(), "No managed exports found for: %s\n", rawID)
+				}
+				return nil
+			}
+			if len(result.RuleIDs) > 0 {
+				fmt.Fprintln(cmd.OutOrStdout(), "Removed rules:")
+				for _, id := range result.RuleIDs {
+					fmt.Fprintf(cmd.OutOrStdout(), "  %s\n", id)
+				}
+			}
+			if result.LegacyExports > 0 {
+				fmt.Fprintf(cmd.OutOrStdout(), "Legacy exports: %d\n", result.LegacyExports)
+			}
+			fmt.Fprintln(cmd.OutOrStdout(), "Files:")
+			for _, file := range result.Paths {
+				fmt.Fprintf(cmd.OutOrStdout(), "  %s\n", file)
+			}
+			return nil
+		},
+	}
+	command.Flags().StringVar(&destination, "destination", ".", "project root containing managed rule exports")
+	command.Flags().BoolVar(&removeAll, "all", false, "remove every managed rule export in the project")
 	return command
 }
 

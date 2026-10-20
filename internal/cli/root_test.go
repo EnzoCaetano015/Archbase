@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -23,7 +24,7 @@ func TestHelpListsCurrentAndPlannedCommands(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("expected exit code 0, got %d: %s", code, stderr.String())
 	}
-	for _, expected := range []string{"arc version", "arc add", "arc mcp serve"} {
+	for _, expected := range []string{"arc version", "arc add", "arc remove", "arc mcp serve"} {
 		if !strings.Contains(stdout.String(), expected) {
 			t.Errorf("help output does not contain %q", expected)
 		}
@@ -174,6 +175,53 @@ func TestRulesAddValidatesArgumentsFlagsAndConflicts(t *testing.T) {
 	stderr.Reset()
 	if code := Execute(args, &stdout, &stderr, "dev"); code != 0 {
 		t.Fatalf("overwrite failed: %s", stderr.String())
+	}
+}
+
+func TestRemoveSpecificAndAllManagedRules(t *testing.T) {
+	root := t.TempDir()
+	run := func(args ...string) (string, string, int) {
+		var stdout, stderr bytes.Buffer
+		code := Execute(args, &stdout, &stderr, "dev")
+		return stdout.String(), stderr.String(), code
+	}
+	for _, id := range []string{"architecture/next-modular@1", "architecture/dotnet-layered@1"} {
+		if _, stderr, code := run("rules", "add", id, "--format", "cursor", "--destination", root); code != 0 {
+			t.Fatalf("export %s: %s", id, stderr)
+		}
+	}
+	stdout, stderr, code := run("remove", "architecture/next-modular@1", "--destination", root)
+	if code != 0 || !strings.Contains(stdout, "architecture/next-modular@1") {
+		t.Fatalf("specific remove: code=%d stdout=%q stderr=%q", code, stdout, stderr)
+	}
+	removed := filepath.Join(root, ".cursor", "rules", "architecture-next-modular-1.mdc")
+	remaining := filepath.Join(root, ".cursor", "rules", "architecture-dotnet-layered-1.mdc")
+	if _, err := os.Stat(removed); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("specific export survived: %v", err)
+	}
+	if _, err := os.Stat(remaining); err != nil {
+		t.Fatalf("unrelated export was removed: %v", err)
+	}
+	stdout, stderr, code = run("remove", "--all", "--destination", root)
+	if code != 0 || !strings.Contains(stdout, "architecture/dotnet-layered@1") {
+		t.Fatalf("remove all: code=%d stdout=%q stderr=%q", code, stdout, stderr)
+	}
+	if _, err := os.Stat(remaining); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("--all export survived: %v", err)
+	}
+}
+
+func TestRemoveValidatesArguments(t *testing.T) {
+	for _, args := range [][]string{
+		{"remove"},
+		{"remove", "architecture/next-modular@1", "--all"},
+		{"remove", "invalid"},
+		{"remove", "architecture/next-modular@1", "architecture/dotnet-layered@1"},
+	} {
+		var stdout, stderr bytes.Buffer
+		if code := Execute(args, &stdout, &stderr, "dev"); code == 0 {
+			t.Fatalf("arc %v unexpectedly succeeded: %s", args, stdout.String())
+		}
 	}
 }
 

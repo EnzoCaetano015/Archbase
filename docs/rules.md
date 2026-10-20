@@ -28,6 +28,8 @@ The official catalog is embedded and works offline. Directory and public Git reg
 - `arc rules list` lists IDs, versions, sources, and descriptions deterministically.
 - `arc rules inspect <rule-id>` displays identity, source, scopes, pattern IDs, and restrictions.
 - `arc rules add <rule-id> --format cursor|copilot|agents` exports a resolved rule. `--destination` defaults to the current directory.
+- `arc remove <rule-id>` removes every managed export of one rule from the destination project.
+- `arc remove --all` removes all managed rule exports from the destination project.
 
 The global Git registry flags apply to rules and patterns together. A configured Git source is tried before the embedded catalog; only a missing ID permits fallback. Valid stale-cache warnings are printed to stderr.
 
@@ -42,3 +44,16 @@ The full RuleID becomes a stable filename component: `architecture/next-modular@
 Cursor and Copilot refuse existing files unless `--overwrite` is explicit. AGENTS rejects `--overwrite`; an existing file requires `--merge`. Merge replaces one complete matching managed block or appends a missing block while preserving external content. Incomplete, reversed, or duplicate markers are errors.
 
 Every generated path is confined to the destination, and symlinked paths are rejected. Multi-file exports are fully prevalidated and rolled back if any write fails. Exported content contains architecture, restrictions, pattern IDs, and commands for inspecting patterns; it never copies pattern example source code.
+
+## Removing exports
+
+Removal is local and does not contact a registry. Use `--destination <path>` to target a project other than the current directory:
+
+```bash
+arc remove architecture/next-modular@1 --destination .
+arc remove --all --destination .
+```
+
+Cursor and Copilot exports include a RuleID-specific ownership marker. Archbase deletes only files carrying that marker; exports from older versions are recognized through their exact generated structure and, for a specific removal, the filename derived from the RuleID. Other `.mdc` and `.instructions.md` files are preserved.
+
+For `AGENTS.md`, removal deletes only complete Archbase-managed blocks. External instructions and blocks belonging to rules not selected for removal remain byte-for-byte intact. Incomplete, overlapping, reversed, or duplicate markers stop the entire operation. All candidate files are prevalidated, symlinks are rejected, and a multi-file failure restores earlier files.

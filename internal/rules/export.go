@@ -64,6 +64,8 @@ func renderCursor(rule Rule) []Artifact {
 		output.WriteByte('\n')
 	}
 	output.WriteString("alwaysApply: false\n---\n\n")
+	output.WriteString(ownershipMarker(rule.Definition.ID))
+	output.WriteString("\n\n")
 	output.WriteString(renderRuleBody(rule, scopes))
 	return []Artifact{{RelativePath: path.Join(".cursor", "rules", ruleSlug(rule.Definition.ID)+".mdc"), Content: []byte(output.String())}}
 }
@@ -81,6 +83,8 @@ func renderCopilot(rule Rule) ([]Artifact, error) {
 	output.WriteString("---\napplyTo: ")
 	output.WriteString(strconv.Quote(strings.Join(globs, ",")))
 	output.WriteString("\n---\n\n")
+	output.WriteString(ownershipMarker(rule.Definition.ID))
+	output.WriteString("\n\n")
 	output.WriteString(renderRuleBody(rule, scopes))
 	return []Artifact{{RelativePath: path.Join(".github", "instructions", ruleSlug(rule.Definition.ID)+".instructions.md"), Content: []byte(output.String())}}, nil
 }
@@ -160,6 +164,10 @@ func staticScopeBase(scope string) string {
 
 func managedMarkers(id string) (string, string) {
 	return "<!-- archbase:rule " + id + " start -->", "<!-- archbase:rule " + id + " end -->"
+}
+
+func ownershipMarker(id string) string {
+	return "<!-- archbase:rule " + id + " export -->"
 }
 
 func ruleSlug(id string) string {

@@ -20,6 +20,7 @@ type ExportFileSystem interface {
 	WriteFileAtomic(string, []byte, bool) error
 	Lstat(string) (fs.FileInfo, error)
 	Remove(string) error
+	WalkDir(string, fs.WalkDirFunc) error
 }
 
 type OSExportFileSystem struct{}
@@ -33,6 +34,9 @@ func (OSExportFileSystem) WriteFileAtomic(value string, data []byte, overwrite b
 	return archfs.WriteFileAtomic(value, data, overwrite)
 }
 func (OSExportFileSystem) Lstat(value string) (fs.FileInfo, error) { return os.Lstat(value) }
+func (OSExportFileSystem) WalkDir(root string, walk fs.WalkDirFunc) error {
+	return filepath.WalkDir(root, walk)
+}
 func (OSExportFileSystem) Remove(value string) error {
 	if err := os.Remove(value); err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return &archfs.PathError{Op: "remove", Path: value, Err: err}

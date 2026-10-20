@@ -48,6 +48,9 @@ func TestRenderCursorAndCopilot(t *testing.T) {
 				t.Errorf("render %s missing %q:\n%s", test.format, expected, text)
 			}
 		}
+		if !strings.Contains(text, "<!-- archbase:rule architecture/example@1 export -->") {
+			t.Errorf("render %s has no ownership marker", test.format)
+		}
 		if strings.Contains(text, "export default") || strings.Contains(text, "namespace Archbase") {
 			t.Errorf("render %s copied pattern example code", test.format)
 		}

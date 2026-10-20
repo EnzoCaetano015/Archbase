@@ -30,5 +30,6 @@
 - Rule registries use `rules/index.yaml`; entries remain sorted and every referenced rule document must validate.
 - Cursor and Copilot rule exports require explicit overwrite on conflict; AGENTS exports update only RuleID-specific managed blocks with explicit merge.
 - Every rule export path remains confined to its destination and multi-file exports must roll back on failure.
+- Rule removal may delete only Archbase-owned Cursor/Copilot exports and matching managed blocks in AGENTS.md; external content must be preserved and multi-file removals must roll back on failure.
 - MCP tools are read-only, use stdio, and must keep protocol output isolated on stdout.
 - MCP project paths remain confined to the configured project root and must reject traversal and symlinks.
