@@ -3,19 +3,20 @@ id: dotnet/repository@5532
 name: Asynchronous repository contract
 description: Domain-neutral repository interface with task-based operations and cancellation.
 type: pattern
-version: 1.0.0
+version: 1.0.1
 structure:
   root: "{{Name}}"
   files:
-    - source: IExampleRepository.cs
-      destination: "{{Name}}/I{{Name}}Repository.cs"
-      required: true
+  - format: markdown-code
+    source: IExampleRepository.cs.md
+    destination: "{{Name}}/I{{Name}}Repository.cs"
+    required: true
 allowedChanges:
-  - identifiers
-  - namespaces
-  - entity-types
-  - query-methods
+- identifiers
+- namespaces
+- entity-types
+- query-methods
 preserve:
-  - interface-contract
-  - asynchronous-operations
-  - cancellation-token
+- interface-contract
+- asynchronous-operations
+- cancellation-token

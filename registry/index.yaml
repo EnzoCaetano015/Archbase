@@ -1,262 +1,262 @@
 schemaVersion: 1
 patterns:
-  - id: astro/component@3148
-    version: 1.0.0
-    path: astro/component/3148
-    description: Typed Astro component with server frontmatter, semantic markup, and slots.
-  - id: astro/content-collection@4720
-    version: 1.0.0
-    path: astro/content-collection/4720
-    description: Astro content collection bundle with a schema and validated data entry.
-  - id: astro/layout@6813
-    version: 1.0.0
-    path: astro/layout/6813
-    description: Astro document layout centralizing metadata, global styles, and shared shell components.
-  - id: astro/page@5904
-    version: 1.0.0
-    path: astro/page/5904
-    description: File-routed Astro page composing a layout and build-time content collection.
-  - id: astro/util@2386
-    version: 1.0.0
-    path: astro/util/2386
-    description: Pure typed utility for conflict-safe Tailwind class composition.
-  - id: dotnet-multiproject/application-service@5279
-    version: 1.0.0
-    path: dotnet-multiproject/application-service/5279
-    description: Application service bundle separating a public interface from repository-driven orchestration.
-  - id: dotnet-multiproject/background-job@8094
-    version: 1.0.0
-    path: dotnet-multiproject/background-job/8094
-    description: Scheduled job contract, metadata, and application-service-driven implementation.
-  - id: dotnet-multiproject/bootstrap@1624
-    version: 1.0.0
-    path: dotnet-multiproject/bootstrap/1624
-    description: ASP.NET Core composition root with explicit service registration and middleware ordering.
-  - id: dotnet-multiproject/contracts@4716
-    version: 1.0.0
-    path: dotnet-multiproject/contracts/4716
-    description: Shared model, request, and response contracts for a multi-project .NET solution.
-  - id: dotnet-multiproject/controller@2947
-    version: 1.0.0
-    path: dotnet-multiproject/controller/2947
-    description: Contract-driven ASP.NET Core controller delegating to an application service interface.
-  - id: dotnet-multiproject/di-composition@7138
-    version: 1.0.0
-    path: dotnet-multiproject/di-composition/7138
-    description: Dependency registration boundary mapping application and infrastructure contracts to implementations.
-  - id: dotnet-multiproject/exception-handler@8463
-    version: 1.0.0
-    path: dotnet-multiproject/exception-handler/8463
-    description: Global ASP.NET Core exception handler with safe HTTP mapping and structured logging.
-  - id: dotnet-multiproject/repository@6485
-    version: 1.0.0
-    path: dotnet-multiproject/repository/6485
-    description: Repository interface and PetaPoco/SQLKata implementation isolated in infrastructure.
-  - id: dotnet/controller@7743
-    version: 1.0.0
-    path: dotnet/controller/7743
-    description: ASP.NET Core controller with explicit service delegation.
-  - id: dotnet/repository@5532
-    version: 1.0.0
-    path: dotnet/repository/5532
-    description: Asynchronous repository contract with cancellation support.
-  - id: dotnet/service@1172
-    version: 1.0.0
-    path: dotnet/service/1172
-    description: Application service with constructor-injected repository.
-  - id: nestjs/bootstrap@1437
-    version: 1.0.0
-    path: nestjs/bootstrap/1437
-    description: NestJS entrypoint centralizing validation, global HTTP policies, documentation, and startup.
-  - id: nestjs/controller@2864
-    version: 1.0.0
-    path: nestjs/controller/2864
-    description: Thin decorator-based HTTP controller with validated input and service delegation.
-  - id: nestjs/dto@9175
-    version: 1.0.0
-    path: nestjs/dto/9175
-    description: Runtime-validated NestJS request contract with Swagger metadata.
-  - id: nestjs/guard@3642
-    version: 1.0.0
-    path: nestjs/guard/3642
-    description: Metadata-aware authentication guard attaching verified claims to requests.
-  - id: nestjs/http-client@7528
-    version: 1.0.0
-    path: nestjs/http-client/7528
-    description: Configured external HTTP integration module exposing a typed injectable adapter.
-  - id: nestjs/http-envelope@5281
-    version: 1.0.0
-    path: nestjs/http-envelope/5281
-    description: Global interceptor and exception filter bundle standardizing HTTP responses.
-  - id: nestjs/module@6419
-    version: 1.0.0
-    path: nestjs/module/6419
-    description: Explicit NestJS feature composition boundary for controllers, providers, imports, and exports.
-  - id: nestjs/prisma-service@8356
-    version: 1.0.0
-    path: nestjs/prisma-service/8356
-    description: Lifecycle-aware Prisma infrastructure provider configured through NestJS dependency injection.
-  - id: nestjs/service@4793
-    version: 1.0.0
-    path: nestjs/service/4793
-    description: Injectable feature service coordinating application behavior through explicit dependencies.
-  - id: next-feature/application-service@3527
-    version: 1.0.0
-    path: next-feature/application-service/3527
-    description: Server-only feature use case coordinating domain policy and persistence without HTTP or React dependencies.
-  - id: next-feature/component@5086
-    version: 1.0.0
-    path: next-feature/component/5086
-    description: Feature UI bundle separating a server-rendered data view from a minimal client interaction island.
-  - id: next-feature/data-access@8164
-    version: 1.0.0
-    path: next-feature/data-access/8164
-    description: Server-only persistence adapter with explicit queries and typed model results.
-  - id: next-feature/layout@2673
-    version: 1.0.0
-    path: next-feature/layout/2673
-    description: App Router segment layout composing a shared application shell.
-  - id: next-feature/model@4739
-    version: 1.0.0
-    path: next-feature/model/4739
-    description: Framework-independent feature types and pure domain transformations.
-  - id: next-feature/page@1846
-    version: 1.0.0
-    path: next-feature/page/1846
-    description: Thin async App Router page delegating rendering to a feature Server Component.
-  - id: next-feature/route-handler@7318
-    version: 1.0.0
-    path: next-feature/route-handler/7318
-    description: HTTP boundary for external consumers with validation and application-service delegation.
-  - id: next-feature/schema@9251
-    version: 1.0.0
-    path: next-feature/schema/9251
-    description: Runtime validation contract for untrusted feature input with inferred TypeScript types.
-  - id: next-feature/server-action@6492
-    version: 1.0.0
-    path: next-feature/server-action/6492
-    description: Authenticated and validated Server Action delegating UI mutations to application services.
-  - id: next/component@4821
-    version: 1.0.0
-    path: next/component/4821
-    description: Typed presentational React component.
-  - id: next/hook@9214
-    version: 1.0.0
-    path: next/hook/9214
-    description: Custom React hook with explicit public return shape.
-  - id: next/page@1234
-    version: 1.0.0
-    path: next/page/1234
-    description: Next page bundle separating view, state, and pure transformations.
-  - id: next/util@3378
-    version: 1.0.0
-    path: next/util/3378
-    description: Pure typed utility function.
-  - id: python/repository@8462
-    version: 1.0.0
-    path: python/repository/8462
-    description: Synchronous repository isolating parameterized PostgreSQL access.
-  - id: python/router@2784
-    version: 1.0.0
-    path: python/router/2784
-    description: FastAPI router limited to HTTP transport and service delegation.
-  - id: python/schemas@3950
-    version: 1.0.0
-    path: python/schemas/3950
-    description: Pydantic request and response contracts for a feature module.
-  - id: python/service@7315
-    version: 1.0.0
-    path: python/service/7315
-    description: Application service with repository injection and a FastAPI dependency factory.
-  - id: react-tailwind/api-controller@7251
-    version: 1.0.0
-    path: react-tailwind/api-controller/7251
-    description: TanStack Query hooks using a centralized endpoint catalog and typed models.
-  - id: react-tailwind/api-model@4380
-    version: 1.0.0
-    path: react-tailwind/api-model/4380
-    description: Direct API request and response contracts with stable query-key identities.
-  - id: react-tailwind/api-routes@2648
-    version: 1.0.0
-    path: react-tailwind/api-routes/2648
-    description: Centralized immutable catalog of backend endpoint paths.
-  - id: react-tailwind/component@5463
-    version: 1.0.0
-    path: react-tailwind/component/5463
-    description: Typed domain component composed from Tailwind UI primitives.
-  - id: react-tailwind/page@6592
-    version: 1.0.0
-    path: react-tailwind/page/6592
-    description: Tailwind page bundle separating rendering, orchestration, validation, and pure helpers.
-  - id: react-tailwind/routes@2159
-    version: 1.0.0
-    path: react-tailwind/routes/2159
-    description: React Router tree separated from a centralized page registry.
-  - id: react-tailwind/ui-primitive@7924
-    version: 1.0.0
-    path: react-tailwind/ui-primitive/7924
-    description: Accessible Tailwind UI primitive with variants, composition, and class merging.
-  - id: react/api-controller@6142
-    version: 1.0.0
-    path: react/api-controller/6142
-    description: TanStack Query hooks isolating typed API reads, writes, and cache invalidation.
-  - id: react/api-model@4086
-    version: 1.0.0
-    path: react/api-model/4086
-    description: Typed API requests, responses, entities, and centralized query keys.
-  - id: react/component@5217
-    version: 1.0.0
-    path: react/component/5217
-    description: Reusable typed React component with optional styles and a public entrypoint.
-  - id: react/hook@8534
-    version: 1.0.0
-    path: react/hook/8534
-    description: Shared React hook with a focused responsibility and stable return shape.
-  - id: react/page@6325
-    version: 1.0.0
-    path: react/page/6325
-    description: React page bundle separating rendering, orchestration, validation, and styles.
-  - id: react/routes@1973
-    version: 1.0.0
-    path: react/routes/1973
-    description: Central React Router configuration with declarative redirects and layouts.
-  - id: react/util@3469
-    version: 1.0.0
-    path: react/util/3469
-    description: Pure typed frontend utility without React or browser state.
-  - id: spring-boot/api-advice@7634
-    version: 1.0.0
-    path: spring-boot/api-advice/7634
-    description: Spring MVC advice bundle standardizing successful responses, validation failures, and unexpected errors.
-  - id: spring-boot/bootstrap@1258
-    version: 1.0.0
-    path: spring-boot/bootstrap/1258
-    description: Java 21 Spring Boot entrypoint and component-discovery root with JPA auditing.
-  - id: spring-boot/controller@2841
-    version: 1.0.0
-    path: spring-boot/controller/2841
-    description: Thin Spring MVC controller with validation, pagination, OpenAPI metadata, and service delegation.
-  - id: spring-boot/dto@9365
-    version: 1.0.0
-    path: spring-boot/dto/9365
-    description: Immutable Java request record with Bean Validation constraints.
-  - id: spring-boot/entity@4172
-    version: 1.0.0
-    path: spring-boot/entity/4172
-    description: JPA entity bundle with explicit constraints and reusable auditing.
-  - id: spring-boot/mapper@6583
-    version: 1.0.0
-    path: spring-boot/mapper/6583
-    description: Compile-time MapStruct adapter mapping request contracts to entities.
-  - id: spring-boot/repository@5427
-    version: 1.0.0
-    path: spring-boot/repository/5427
-    description: Typed Spring Data JPA repository with pageable parameterized filtering.
-  - id: spring-boot/security@8196
-    version: 1.0.0
-    path: spring-boot/security/8196
-    description: Stateless Spring Security filter chain and JWT authentication filter.
-  - id: spring-boot/service@3714
-    version: 1.0.0
-    path: spring-boot/service/3714
-    description: Transactional Spring service coordinating validation, mapping, and repository access.
+- id: astro/component@3148
+  version: 1.0.1
+  path: astro/component/3148
+  description: Typed Astro component with server frontmatter, semantic markup, and slots.
+- id: astro/content-collection@4720
+  version: 1.0.1
+  path: astro/content-collection/4720
+  description: Astro content collection bundle with a schema and validated data entry.
+- id: astro/layout@6813
+  version: 1.0.1
+  path: astro/layout/6813
+  description: Astro document layout centralizing metadata, global styles, and shared shell components.
+- id: astro/page@5904
+  version: 1.0.1
+  path: astro/page/5904
+  description: File-routed Astro page composing a layout and build-time content collection.
+- id: astro/util@2386
+  version: 1.0.1
+  path: astro/util/2386
+  description: Pure typed utility for conflict-safe Tailwind class composition.
+- id: dotnet-multiproject/application-service@5279
+  version: 1.0.1
+  path: dotnet-multiproject/application-service/5279
+  description: Application service bundle separating a public interface from repository-driven orchestration.
+- id: dotnet-multiproject/background-job@8094
+  version: 1.0.1
+  path: dotnet-multiproject/background-job/8094
+  description: Scheduled job contract, metadata, and application-service-driven implementation.
+- id: dotnet-multiproject/bootstrap@1624
+  version: 1.0.1
+  path: dotnet-multiproject/bootstrap/1624
+  description: ASP.NET Core composition root with explicit service registration and middleware ordering.
+- id: dotnet-multiproject/contracts@4716
+  version: 1.0.1
+  path: dotnet-multiproject/contracts/4716
+  description: Shared model, request, and response contracts for a multi-project .NET solution.
+- id: dotnet-multiproject/controller@2947
+  version: 1.0.1
+  path: dotnet-multiproject/controller/2947
+  description: Contract-driven ASP.NET Core controller delegating to an application service interface.
+- id: dotnet-multiproject/di-composition@7138
+  version: 1.0.1
+  path: dotnet-multiproject/di-composition/7138
+  description: Dependency registration boundary mapping application and infrastructure contracts to implementations.
+- id: dotnet-multiproject/exception-handler@8463
+  version: 1.0.1
+  path: dotnet-multiproject/exception-handler/8463
+  description: Global ASP.NET Core exception handler with safe HTTP mapping and structured logging.
+- id: dotnet-multiproject/repository@6485
+  version: 1.0.1
+  path: dotnet-multiproject/repository/6485
+  description: Repository interface and PetaPoco/SQLKata implementation isolated in infrastructure.
+- id: dotnet/controller@7743
+  version: 1.0.1
+  path: dotnet/controller/7743
+  description: ASP.NET Core controller with explicit service delegation.
+- id: dotnet/repository@5532
+  version: 1.0.1
+  path: dotnet/repository/5532
+  description: Asynchronous repository contract with cancellation support.
+- id: dotnet/service@1172
+  version: 1.0.1
+  path: dotnet/service/1172
+  description: Application service with constructor-injected repository.
+- id: nestjs/bootstrap@1437
+  version: 1.0.1
+  path: nestjs/bootstrap/1437
+  description: NestJS entrypoint centralizing validation, global HTTP policies, documentation, and startup.
+- id: nestjs/controller@2864
+  version: 1.0.1
+  path: nestjs/controller/2864
+  description: Thin decorator-based HTTP controller with validated input and service delegation.
+- id: nestjs/dto@9175
+  version: 1.0.1
+  path: nestjs/dto/9175
+  description: Runtime-validated NestJS request contract with Swagger metadata.
+- id: nestjs/guard@3642
+  version: 1.0.1
+  path: nestjs/guard/3642
+  description: Metadata-aware authentication guard attaching verified claims to requests.
+- id: nestjs/http-client@7528
+  version: 1.0.1
+  path: nestjs/http-client/7528
+  description: Configured external HTTP integration module exposing a typed injectable adapter.
+- id: nestjs/http-envelope@5281
+  version: 1.0.1
+  path: nestjs/http-envelope/5281
+  description: Global interceptor and exception filter bundle standardizing HTTP responses.
+- id: nestjs/module@6419
+  version: 1.0.1
+  path: nestjs/module/6419
+  description: Explicit NestJS feature composition boundary for controllers, providers, imports, and exports.
+- id: nestjs/prisma-service@8356
+  version: 1.0.1
+  path: nestjs/prisma-service/8356
+  description: Lifecycle-aware Prisma infrastructure provider configured through NestJS dependency injection.
+- id: nestjs/service@4793
+  version: 1.0.1
+  path: nestjs/service/4793
+  description: Injectable feature service coordinating application behavior through explicit dependencies.
+- id: next-feature/application-service@3527
+  version: 1.0.1
+  path: next-feature/application-service/3527
+  description: Server-only feature use case coordinating domain policy and persistence without HTTP or React dependencies.
+- id: next-feature/component@5086
+  version: 1.0.1
+  path: next-feature/component/5086
+  description: Feature UI bundle separating a server-rendered data view from a minimal client interaction island.
+- id: next-feature/data-access@8164
+  version: 1.0.1
+  path: next-feature/data-access/8164
+  description: Server-only persistence adapter with explicit queries and typed model results.
+- id: next-feature/layout@2673
+  version: 1.0.1
+  path: next-feature/layout/2673
+  description: App Router segment layout composing a shared application shell.
+- id: next-feature/model@4739
+  version: 1.0.1
+  path: next-feature/model/4739
+  description: Framework-independent feature types and pure domain transformations.
+- id: next-feature/page@1846
+  version: 1.0.1
+  path: next-feature/page/1846
+  description: Thin async App Router page delegating rendering to a feature Server Component.
+- id: next-feature/route-handler@7318
+  version: 1.0.1
+  path: next-feature/route-handler/7318
+  description: HTTP boundary for external consumers with validation and application-service delegation.
+- id: next-feature/schema@9251
+  version: 1.0.1
+  path: next-feature/schema/9251
+  description: Runtime validation contract for untrusted feature input with inferred TypeScript types.
+- id: next-feature/server-action@6492
+  version: 1.0.1
+  path: next-feature/server-action/6492
+  description: Authenticated and validated Server Action delegating UI mutations to application services.
+- id: next/component@4821
+  version: 1.0.1
+  path: next/component/4821
+  description: Typed presentational React component.
+- id: next/hook@9214
+  version: 1.0.1
+  path: next/hook/9214
+  description: Custom React hook with explicit public return shape.
+- id: next/page@1234
+  version: 1.0.1
+  path: next/page/1234
+  description: Next page bundle separating view, state, and pure transformations.
+- id: next/util@3378
+  version: 1.0.1
+  path: next/util/3378
+  description: Pure typed utility function.
+- id: python/repository@8462
+  version: 1.0.1
+  path: python/repository/8462
+  description: Synchronous repository isolating parameterized PostgreSQL access.
+- id: python/router@2784
+  version: 1.0.1
+  path: python/router/2784
+  description: FastAPI router limited to HTTP transport and service delegation.
+- id: python/schemas@3950
+  version: 1.0.1
+  path: python/schemas/3950
+  description: Pydantic request and response contracts for a feature module.
+- id: python/service@7315
+  version: 1.0.1
+  path: python/service/7315
+  description: Application service with repository injection and a FastAPI dependency factory.
+- id: react-tailwind/api-controller@7251
+  version: 1.0.1
+  path: react-tailwind/api-controller/7251
+  description: TanStack Query hooks using a centralized endpoint catalog and typed models.
+- id: react-tailwind/api-model@4380
+  version: 1.0.1
+  path: react-tailwind/api-model/4380
+  description: Direct API request and response contracts with stable query-key identities.
+- id: react-tailwind/api-routes@2648
+  version: 1.0.1
+  path: react-tailwind/api-routes/2648
+  description: Centralized immutable catalog of backend endpoint paths.
+- id: react-tailwind/component@5463
+  version: 1.0.1
+  path: react-tailwind/component/5463
+  description: Typed domain component composed from Tailwind UI primitives.
+- id: react-tailwind/page@6592
+  version: 1.0.1
+  path: react-tailwind/page/6592
+  description: Tailwind page bundle separating rendering, orchestration, validation, and pure helpers.
+- id: react-tailwind/routes@2159
+  version: 1.0.1
+  path: react-tailwind/routes/2159
+  description: React Router tree separated from a centralized page registry.
+- id: react-tailwind/ui-primitive@7924
+  version: 1.0.1
+  path: react-tailwind/ui-primitive/7924
+  description: Accessible Tailwind UI primitive with variants, composition, and class merging.
+- id: react/api-controller@6142
+  version: 1.0.1
+  path: react/api-controller/6142
+  description: TanStack Query hooks isolating typed API reads, writes, and cache invalidation.
+- id: react/api-model@4086
+  version: 1.0.1
+  path: react/api-model/4086
+  description: Typed API requests, responses, entities, and centralized query keys.
+- id: react/component@5217
+  version: 1.0.1
+  path: react/component/5217
+  description: Reusable typed React component with optional styles and a public entrypoint.
+- id: react/hook@8534
+  version: 1.0.1
+  path: react/hook/8534
+  description: Shared React hook with a focused responsibility and stable return shape.
+- id: react/page@6325
+  version: 1.0.1
+  path: react/page/6325
+  description: React page bundle separating rendering, orchestration, validation, and styles.
+- id: react/routes@1973
+  version: 1.0.1
+  path: react/routes/1973
+  description: Central React Router configuration with declarative redirects and layouts.
+- id: react/util@3469
+  version: 1.0.1
+  path: react/util/3469
+  description: Pure typed frontend utility without React or browser state.
+- id: spring-boot/api-advice@7634
+  version: 1.0.1
+  path: spring-boot/api-advice/7634
+  description: Spring MVC advice bundle standardizing successful responses, validation failures, and unexpected errors.
+- id: spring-boot/bootstrap@1258
+  version: 1.0.1
+  path: spring-boot/bootstrap/1258
+  description: Java 21 Spring Boot entrypoint and component-discovery root with JPA auditing.
+- id: spring-boot/controller@2841
+  version: 1.0.1
+  path: spring-boot/controller/2841
+  description: Thin Spring MVC controller with validation, pagination, OpenAPI metadata, and service delegation.
+- id: spring-boot/dto@9365
+  version: 1.0.1
+  path: spring-boot/dto/9365
+  description: Immutable Java request record with Bean Validation constraints.
+- id: spring-boot/entity@4172
+  version: 1.0.1
+  path: spring-boot/entity/4172
+  description: JPA entity bundle with explicit constraints and reusable auditing.
+- id: spring-boot/mapper@6583
+  version: 1.0.1
+  path: spring-boot/mapper/6583
+  description: Compile-time MapStruct adapter mapping request contracts to entities.
+- id: spring-boot/repository@5427
+  version: 1.0.1
+  path: spring-boot/repository/5427
+  description: Typed Spring Data JPA repository with pageable parameterized filtering.
+- id: spring-boot/security@8196
+  version: 1.0.1
+  path: spring-boot/security/8196
+  description: Stateless Spring Security filter chain and JWT authentication filter.
+- id: spring-boot/service@3714
+  version: 1.0.1
+  path: spring-boot/service/3714
+  description: Transactional Spring service coordinating validation, mapping, and repository access.

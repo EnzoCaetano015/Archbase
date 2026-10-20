@@ -1,0 +1,5 @@
+```yaml
+title: Example entry
+description: Content validated during the Astro build.
+image: /images/example.png
+```

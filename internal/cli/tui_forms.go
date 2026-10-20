@@ -256,6 +256,7 @@ func (m *uiModel) saveSettings() error {
 		}
 	}
 	m.project, m.backend.options = project, options
+	m.backend.options.ProjectRoot = project
 	m.entries = nil
 	return nil
 }

@@ -91,6 +91,7 @@ type uiModel struct {
 }
 
 func newUI(ctx context.Context, backend operations, version, project string, color bool) *uiModel {
+	backend.options.ProjectRoot = project
 	query := textinput.New()
 	query.Prompt = "Search  "
 	query.Placeholder = "ID, name or description"
@@ -114,6 +115,12 @@ func runInteractive(cmd *cobra.Command, deps Dependencies, options RegistryOptio
 	project, err := os.Getwd()
 	if err != nil {
 		return err
+	}
+	if options.ProjectRoot != "" {
+		project, err = filepath.Abs(options.ProjectRoot)
+		if err != nil {
+			return err
+		}
 	}
 	m := newUI(cmd.Context(), operations{deps, options}, version, project, os.Getenv("NO_COLOR") == "")
 	opts := []tea.ProgramOption{tea.WithInput(cmd.InOrStdin()), tea.WithOutput(cmd.OutOrStdout()), tea.WithoutSignalHandler()}

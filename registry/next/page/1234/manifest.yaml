@@ -3,30 +3,33 @@ id: next/page@1234
 name: Page with hook and utilities
 description: Minimal, domain-neutral page bundle for the foundation registry.
 type: pattern-bundle
-version: 1.0.0
+version: 1.0.1
 structure:
   root: "{{Name}}"
   files:
-    - source: Example/Example.tsx
-      destination: "{{Name}}/{{Name}}.tsx"
-      required: true
-    - source: Example/Example.hook.ts
-      destination: "{{Name}}/{{Name}}.hook.ts"
-      required: true
-    - source: Example/Example.utils.ts
-      destination: "{{Name}}/{{Name}}.utils.ts"
-      required: true
+  - format: markdown-code
+    source: Example/Example.tsx.md
+    destination: "{{Name}}/{{Name}}.tsx"
+    required: true
+  - format: markdown-code
+    source: Example/Example.hook.ts.md
+    destination: "{{Name}}/{{Name}}.hook.ts"
+    required: true
+  - format: markdown-code
+    source: Example/Example.utils.ts.md
+    destination: "{{Name}}/{{Name}}.utils.ts"
+    required: true
 allowedChanges:
-  - identifiers
-  - imports
-  - types
-  - business-logic
-  - rendered-content
+- identifiers
+- imports
+- types
+- business-logic
+- rendered-content
 preserve:
-  - file-relationships
-  - declaration-order
-  - export-style
-  - hook-responsibilities
-  - utility-responsibilities
+- file-relationships
+- declaration-order
+- export-style
+- hook-responsibilities
+- utility-responsibilities
 metadata:
   maturity: foundation-sample

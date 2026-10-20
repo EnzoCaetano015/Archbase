@@ -2,13 +2,17 @@ package workspace
 
 import (
 	"context"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
+	"sort"
 	"strings"
+	"time"
 
 	"github.com/EnzoCaetano015/Archbase/internal/contracts"
 	archfs "github.com/EnzoCaetano015/Archbase/internal/filesystem"
@@ -32,338 +36,500 @@ type FileSystem interface {
 	Rename(string, string) error
 	RemoveAll(string) error
 	DirFS(string) fs.FS
+	CreateExclusive(string) error
 }
-
 type OSFileSystem struct{}
 
-func (OSFileSystem) Exists(value string) (bool, error) { return archfs.Exists(value) }
-func (OSFileSystem) EnsureDir(value string) error      { return archfs.EnsureDir(value) }
-func (OSFileSystem) WriteFileAtomic(value string, data []byte, overwrite bool) error {
-	return archfs.WriteFileAtomic(value, data, overwrite)
+func (OSFileSystem) Exists(p string) (bool, error) { return archfs.Exists(p) }
+func (OSFileSystem) EnsureDir(p string) error      { return archfs.EnsureDir(p) }
+func (OSFileSystem) WriteFileAtomic(p string, b []byte, o bool) error {
+	return archfs.WriteFileAtomic(p, b, o)
 }
-func (OSFileSystem) Lstat(value string) (fs.FileInfo, error) { return os.Lstat(value) }
-func (OSFileSystem) MkdirTemp(dir, pattern string) (string, error) {
-	return os.MkdirTemp(dir, pattern)
+func (OSFileSystem) Lstat(p string) (fs.FileInfo, error)   { return os.Lstat(p) }
+func (OSFileSystem) MkdirTemp(p, n string) (string, error) { return os.MkdirTemp(p, n) }
+func (OSFileSystem) Rename(a, b string) error              { return os.Rename(a, b) }
+func (OSFileSystem) RemoveAll(p string) error              { return os.RemoveAll(p) }
+func (OSFileSystem) DirFS(p string) fs.FS                  { return os.DirFS(p) }
+func (OSFileSystem) CreateExclusive(p string) error {
+	f, err := os.OpenFile(p, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
+	if err != nil {
+		return err
+	}
+	if err := f.Close(); err != nil {
+		_ = os.Remove(p)
+		return err
+	}
+	return nil
 }
-func (OSFileSystem) Rename(oldPath, newPath string) error { return os.Rename(oldPath, newPath) }
-func (OSFileSystem) RemoveAll(value string) error         { return os.RemoveAll(value) }
-func (OSFileSystem) DirFS(value string) fs.FS             { return os.DirFS(value) }
 
 type Service struct {
-	fs       FileSystem
-	registry *registry.Resolver
+	fs          FileSystem
+	registry    *registry.Resolver
+	projectRoot string
 }
 
 func NewService(fsys FileSystem, resolver *registry.Resolver) (*Service, error) {
-	if fsys == nil {
-		return nil, errors.New("workspace filesystem is required")
-	}
-	if resolver == nil {
-		return nil, errors.New("workspace registry resolver is required")
+	if fsys == nil || resolver == nil {
+		return nil, errors.New("workspace filesystem and registry resolver are required")
 	}
 	return &Service{fs: fsys, registry: resolver}, nil
 }
+func (s *Service) WithProjectRoot(root string) *Service { c := *s; c.projectRoot = root; return &c }
 
 type Installed struct {
-	ScopeDirectory   string
-	PatternDirectory string
-	PatternID        string
-	Warnings         []error
+	ScopeDirectory, PatternDirectory, PatternID string
+	Warnings                                    []error
+}
+type Resolution struct {
+	ScopeDirectory, ArchbaseDirectory, PatternRoot string
+	Scope                                          contracts.Scope
+	Pattern                                        registry.Pattern
+	Stale                                          bool
+	Warnings                                       []error
 }
 
-func (s *Service) Add(ctx context.Context, rawID, scopePath string) (Installed, error) {
-	resolved, err := s.registry.Resolve(ctx, rawID)
+func (s *Service) Add(ctx context.Context, id, target string) (Installed, error) {
+	resolved, err := s.registry.Resolve(ctx, id)
 	if err != nil {
 		return Installed{}, err
 	}
-	id := resolved.Pattern.Entry.ID.String()
-	origin := &contracts.Origin{
-		Registry: resolved.Pattern.Source,
-		ID:       id,
-		Version:  resolved.Pattern.Bundle.Manifest.Version,
-	}
-	return s.install(scopePath, patternDirectoryName(id), resolved.Pattern.Bundle, origin, resolved.Warnings)
+	origin := &contracts.Origin{Registry: resolved.Pattern.Source, ID: resolved.Pattern.Entry.ID.String(), Version: resolved.Pattern.Bundle.Manifest.Version}
+	return s.install(ctx, target, resolved.Pattern.Bundle, origin, resolved.Warnings)
 }
-
-func (s *Service) Create(ctx context.Context, name, scopePath, from string) (Installed, error) {
-	localID := "local/" + name + "@1"
-	if _, err := registry.ParsePatternID(localID); err != nil {
+func (s *Service) Create(ctx context.Context, name, target, from string) (Installed, error) {
+	id := "local/" + name + "@1"
+	if _, err := registry.ParsePatternID(id); err != nil {
 		return Installed{}, fmt.Errorf("invalid local pattern name %q: %w", name, err)
 	}
-	if from == "" {
-		manifest := contracts.Manifest{
-			SchemaVersion: 1,
-			ID:            localID,
-			Name:          name,
-			Description:   "Local customizable structural pattern.",
-			Type:          "pattern",
-			Version:       "1.0.0",
-			Structure: contracts.PatternStructure{
-				Root:  "{{Name}}",
-				Files: []contracts.PatternFile{{Source: "Example.txt", Destination: "{{Name}}.txt", Required: true}},
-			},
-			AllowedChanges: []string{"identifiers", "content"},
-			Preserve:       []string{"file-responsibility"},
-		}
-		manifestContent, err := contracts.EncodeManifest(manifest)
+	var bundle patterns.Bundle
+	var origin *contracts.Origin
+	var warnings []error
+	if from != "" {
+		resolved, err := s.registry.Resolve(ctx, from)
 		if err != nil {
 			return Installed{}, err
 		}
-		bundle := patterns.Bundle{
-			Manifest:        manifest,
-			ManifestContent: manifestContent,
-			Files:           []patterns.File{{Spec: manifest.Structure.Files[0], Present: true, Content: []byte("Replace this example with the required structure.\n")}},
+		bundle = resolved.Pattern.Bundle
+		origin = &contracts.Origin{Registry: resolved.Pattern.Source, ID: bundle.Manifest.ID, Version: bundle.Manifest.Version}
+		warnings = resolved.Warnings
+	} else {
+		spec := contracts.PatternFile{Source: "Example.txt", Destination: "{{Name}}.txt", Required: true}
+		bundle = patterns.Bundle{Manifest: contracts.Manifest{SchemaVersion: 1, Type: "pattern", Version: "1.0.0", Description: "Local customizable structural pattern.", Structure: contracts.PatternStructure{Root: "{{Name}}", Files: []contracts.PatternFile{spec}}, AllowedChanges: []string{"identifiers", "content"}, Preserve: []string{"file-responsibility"}}, Files: []patterns.File{{Spec: spec, Present: true, Content: []byte("Replace this example with the required structure.\n")}}}
+	}
+	bundle.Manifest.ID, bundle.Manifest.Name = id, name
+	return s.install(ctx, target, bundle, origin, warnings)
+}
+func safeLocalRoot(value string) (string, error) {
+	if value == "" || strings.ContainsAny(value, "\\:") || strings.HasPrefix(value, "/") || path.Clean(value) != value || value == ".." || strings.HasPrefix(value, "../") || value == "." {
+		return "", fmt.Errorf("%q escapes or is not normalized", value)
+	}
+	return value, nil
+}
+func (s *Service) checkPath(p string) error {
+	absolute, err := filepath.Abs(p)
+	if err != nil {
+		return err
+	}
+	boundary := s.projectRoot
+	if boundary == "" {
+		boundary, _ = os.Getwd()
+	}
+	boundary, _ = filepath.Abs(boundary)
+	for current := absolute; ; current = filepath.Dir(current) {
+		info, err := s.fs.Lstat(current)
+		if err != nil && !errors.Is(err, fs.ErrNotExist) {
+			return fmt.Errorf("inspect path %q: %w", current, err)
 		}
-		return s.install(scopePath, name, bundle, nil, nil)
+		if err == nil && info.Mode()&fs.ModeSymlink != 0 {
+			return fmt.Errorf("symbolic links are not allowed at %q", current)
+		}
+		if err == nil && current != absolute && !info.IsDir() {
+			return fmt.Errorf("path component %q must be a directory", current)
+		}
+		if current == boundary || current == filepath.Dir(current) {
+			break
+		}
 	}
-
-	resolved, err := s.registry.Resolve(ctx, from)
+	return nil
+}
+func relative(root, target string) (string, error) {
+	p, err := filepath.Rel(root, target)
+	if err != nil || p == ".." || strings.HasPrefix(p, ".."+string(filepath.Separator)) || filepath.IsAbs(p) {
+		return "", fmt.Errorf("path %q escapes project root %q", target, root)
+	}
+	return filepath.ToSlash(p), nil
+}
+func (s *Service) rootForWrite() (string, error) {
+	root := s.projectRoot
+	if root == "" {
+		var err error
+		root, err = os.Getwd()
+		if err != nil {
+			return "", err
+		}
+	}
+	root, err := filepath.Abs(root)
 	if err != nil {
-		return Installed{}, err
+		return "", err
 	}
-	bundle := cloneBundle(resolved.Pattern.Bundle)
-	originalID := bundle.Manifest.ID
-	originalVersion := bundle.Manifest.Version
-	bundle.Manifest.ID = localID
-	bundle.Manifest.Name = name
-	bundle.ManifestContent, err = contracts.EncodeManifest(bundle.Manifest)
+	if err = s.WithProjectRoot(root).checkPath(root); err != nil {
+		return "", err
+	}
+	info, err := s.fs.Lstat(root)
 	if err != nil {
-		return Installed{}, err
+		return "", fmt.Errorf("inspect project root %q: %w", root, err)
 	}
-	origin := &contracts.Origin{Registry: resolved.Pattern.Source, ID: originalID, Version: originalVersion}
-	return s.install(scopePath, name, bundle, origin, resolved.Warnings)
+	if !info.IsDir() {
+		return "", fmt.Errorf("project root %q must be a regular directory", root)
+	}
+	return root, nil
+}
+func (s *Service) load(root string) (contracts.Workspace, error) {
+	s = s.WithProjectRoot(root)
+	dir := filepath.Join(root, ".archbase")
+	if err := s.checkPath(dir); err != nil {
+		return contracts.Workspace{}, err
+	}
+	if err := s.checkPath(filepath.Join(dir, "scopes.yaml")); err != nil {
+		return contracts.Workspace{}, err
+	}
+	value, err := contracts.LoadWorkspaceFS(s.fs.DirFS(dir), "scopes.yaml")
+	if err != nil {
+		return value, fmt.Errorf("%w at %q: %w", ErrInvalidScope, dir, err)
+	}
+	return value, nil
 }
 
-func cloneBundle(source patterns.Bundle) patterns.Bundle {
-	result := source
-	result.Manifest.AllowedChanges = append([]string(nil), source.Manifest.AllowedChanges...)
-	result.Manifest.Preserve = append([]string(nil), source.Manifest.Preserve...)
-	result.Manifest.Structure.Files = append([]contracts.PatternFile(nil), source.Manifest.Structure.Files...)
-	result.Files = make([]patterns.File, len(source.Files))
-	for index, file := range source.Files {
-		result.Files[index] = file
-		result.Files[index].Content = append([]byte(nil), file.Content...)
-	}
-	return result
-}
-
-func patternDirectoryName(rawID string) string {
-	name := rawID[strings.LastIndex(rawID, "/")+1:]
-	return strings.Replace(name, "@", "-", 1)
-}
-
-func (s *Service) install(scopePath, directoryName string, bundle patterns.Bundle, origin *contracts.Origin, warnings []error) (result Installed, returnedErr error) {
-	scopeDirectory, err := filepath.Abs(scopePath)
-	if err != nil {
-		return result, fmt.Errorf("resolve scope path %q: %w", scopePath, err)
-	}
-	if err := s.fs.EnsureDir(scopeDirectory); err != nil {
-		return result, err
-	}
-	info, err := s.fs.Lstat(scopeDirectory)
-	if err != nil {
-		return result, fmt.Errorf("inspect scope path %q: %w", scopeDirectory, err)
-	}
-	if info.Mode()&fs.ModeSymlink != 0 || !info.IsDir() {
-		return result, fmt.Errorf("scope path %q must be a regular directory", scopeDirectory)
-	}
-
-	archbaseDirectory := filepath.Join(scopeDirectory, ".archbase")
-	archbaseExisted, err := s.fs.Exists(archbaseDirectory)
-	if err != nil {
-		return result, err
-	}
-	if archbaseExisted {
-		archbaseInfo, statErr := s.fs.Lstat(archbaseDirectory)
-		if statErr != nil || archbaseInfo.Mode()&fs.ModeSymlink != 0 || !archbaseInfo.IsDir() {
-			return result, fmt.Errorf("invalid .archbase directory %q", archbaseDirectory)
+// The owner removes the lock on normal exit. A crashed writer requires manual lock removal.
+func (s *Service) lock(ctx context.Context, root string) (func(), error) {
+	lock := filepath.Join(root, ".archbase.lock")
+	timer := time.NewTicker(20 * time.Millisecond)
+	defer timer.Stop()
+	permissionRetries := 0
+	for {
+		if err := ctx.Err(); err != nil {
+			return nil, err
 		}
-		scopeFile := filepath.Join(archbaseDirectory, "scope.yaml")
-		scopeInfo, statErr := s.fs.Lstat(scopeFile)
-		if statErr != nil || scopeInfo.Mode()&fs.ModeSymlink != 0 || !scopeInfo.Mode().IsRegular() {
-			return result, fmt.Errorf("%w at %q: scope file is missing, a symlink, or not regular", ErrInvalidScope, scopeFile)
+		err := s.fs.CreateExclusive(lock)
+		if err == nil {
+			return func() { _ = s.fs.RemoveAll(lock) }, nil
 		}
-		if _, loadErr := contracts.LoadScope(scopeFile); loadErr != nil {
-			return result, fmt.Errorf("%w at %q: %v", ErrInvalidScope, scopeFile, loadErr)
-		}
-	}
-	patternsDirectory := filepath.Join(archbaseDirectory, "patterns")
-	if err := s.fs.EnsureDir(patternsDirectory); err != nil {
-		return result, err
-	}
-	if !archbaseExisted {
-		defer func() {
-			if returnedErr != nil {
-				_ = s.fs.RemoveAll(archbaseDirectory)
+		if !errors.Is(err, fs.ErrExist) {
+			// Windows may briefly report ACCESS_DENIED while the previous lock
+			// is delete-pending. Retry that race, but do not hide persistent ACL errors.
+			if runtime.GOOS == "windows" && errors.Is(err, fs.ErrPermission) && permissionRetries < 10 {
+				permissionRetries++
+				select {
+				case <-ctx.Done():
+					return nil, ctx.Err()
+				case <-timer.C:
+				}
+				continue
 			}
-		}()
+			return nil, fmt.Errorf("lock workspace %q: %w", lock, err)
+		}
+		permissionRetries = 0
+		if err := s.checkPath(lock); err != nil {
+			return nil, err
+		}
+		if info, err := s.fs.Lstat(lock); err == nil && !info.Mode().IsRegular() {
+			return nil, fmt.Errorf("workspace lock %q must be a regular file", lock)
+		}
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-timer.C:
+		}
 	}
-
-	patternDirectory := filepath.Join(patternsDirectory, directoryName)
-	if exists, checkErr := s.fs.Exists(patternDirectory); checkErr != nil {
-		return result, checkErr
-	} else if exists {
-		return result, fmt.Errorf("%w: %s", ErrPatternExists, patternDirectory)
+}
+func (s *Service) install(ctx context.Context, target string, bundle patterns.Bundle, origin *contracts.Origin, warnings []error) (result Installed, returnedErr error) {
+	if err := rejectTraversal(target); err != nil {
+		return result, err
 	}
-	staging, err := s.fs.MkdirTemp(patternsDirectory, ".archbase-pattern-*")
+	root, err := s.rootForWrite()
 	if err != nil {
-		return result, fmt.Errorf("create pattern staging directory in %q: %w", patternsDirectory, err)
+		return result, err
 	}
-	defer s.fs.RemoveAll(staging)
-	manifestContent := bundle.ManifestContent
-	if len(manifestContent) == 0 {
-		manifestContent, err = contracts.EncodeManifest(bundle.Manifest)
+	s = s.WithProjectRoot(root)
+	absolute, err := filepath.Abs(target)
+	if err != nil {
+		return result, err
+	}
+	scopePath, err := relative(root, absolute)
+	if err != nil {
+		return result, err
+	}
+	if scopePath == ".archbase" || strings.HasPrefix(scopePath, ".archbase/") {
+		return result, fmt.Errorf("scope %q is inside workspace storage", target)
+	}
+	if err = s.checkPath(absolute); err != nil {
+		return result, err
+	}
+	if info, e := s.fs.Lstat(absolute); e == nil && !info.IsDir() {
+		return result, fmt.Errorf("scope %q must be a directory", absolute)
+	} else if e != nil && !errors.Is(e, fs.ErrNotExist) {
+		return result, e
+	}
+	bundle, err = patterns.DocumentBundle(bundle)
+	if err != nil {
+		return result, err
+	}
+	unlock, err := s.lock(ctx, root)
+	if err != nil {
+		return result, err
+	}
+	defer unlock()
+	dir := filepath.Join(root, ".archbase")
+	if err = s.checkPath(dir); err != nil {
+		return result, err
+	}
+	existed, err := s.fs.Exists(dir)
+	if err != nil {
+		return result, err
+	}
+	index := contracts.Workspace{SchemaVersion: 1, Scopes: []contracts.Scope{}}
+	if existed {
+		index, err = s.load(root)
 		if err != nil {
 			return result, err
 		}
 	}
-	if err := s.fs.WriteFileAtomic(filepath.Join(staging, "manifest.yaml"), manifestContent, false); err != nil {
+	if err = s.fs.EnsureDir(absolute); err != nil {
 		return result, err
 	}
-	for _, file := range bundle.Files {
-		if !file.Present {
-			continue
-		}
-		destination := filepath.Join(staging, filepath.FromSlash(strings.ReplaceAll(file.Spec.Source, "\\", "/")))
-		if err := s.fs.WriteFileAtomic(destination, file.Content, false); err != nil {
-			return result, err
-		}
+	key := fmt.Sprintf("patterns/%x/%x", sha256.Sum256([]byte(scopePath)), sha256.Sum256([]byte(bundle.Manifest.ID)))
+	final := filepath.Join(dir, filepath.FromSlash(key))
+	if err = s.checkPath(final); err != nil {
+		return result, err
 	}
-	if _, err := patterns.Load(s.fs.DirFS(staging), "."); err != nil {
-		return result, fmt.Errorf("validate staged pattern %q: %w", staging, err)
+	if exists, e := s.fs.Exists(final); e != nil {
+		return result, e
+	} else if exists {
+		return result, fmt.Errorf("%w: %s", ErrPatternExists, final)
 	}
-	if err := s.fs.Rename(staging, patternDirectory); err != nil {
-		return result, fmt.Errorf("promote pattern to %q: %w", patternDirectory, err)
-	}
-	committed := true
-	defer func() {
-		if returnedErr != nil && committed {
-			_ = s.fs.RemoveAll(patternDirectory)
-		}
-	}()
-
-	scope := contracts.Scope{
-		SchemaVersion: 1,
-		Scope:         contracts.ScopeSelector{Path: "."},
-		Pattern: contracts.ScopePattern{
-			ID:     bundle.Manifest.ID,
-			Source: "local",
-			Root:   path.Join("patterns", directoryName),
-		},
-		Origin: origin,
-		Behavior: contracts.ScopeBehavior{
-			NearestScopeWins:        true,
-			AllowLocalCustomization: true,
-		},
-	}
-	scopeContent, err := contracts.EncodeScope(scope)
+	stage, err := s.fs.MkdirTemp(root, ".archbase-stage-*")
 	if err != nil {
 		return result, err
 	}
-	if err := s.fs.WriteFileAtomic(filepath.Join(archbaseDirectory, "scope.yaml"), scopeContent, archbaseExisted); err != nil {
+	defer s.fs.RemoveAll(stage)
+	stageBundle := filepath.Join(stage, filepath.FromSlash(key))
+	if err = s.fs.EnsureDir(stageBundle); err != nil {
 		return result, err
 	}
-	committed = false
-	return Installed{ScopeDirectory: scopeDirectory, PatternDirectory: patternDirectory, PatternID: bundle.Manifest.ID, Warnings: warnings}, nil
-}
-
-type Resolution struct {
-	ScopeDirectory    string
-	ArchbaseDirectory string
-	PatternRoot       string
-	Scope             contracts.Scope
-	Pattern           registry.Pattern
-	Stale             bool
-	Warnings          []error
-}
-
-func (s *Service) Resolve(ctx context.Context, target string) (Resolution, error) {
-	absolute, err := filepath.Abs(target)
-	if err != nil {
-		return Resolution{}, fmt.Errorf("resolve target %q: %w", target, err)
+	if err = s.fs.WriteFileAtomic(filepath.Join(stageBundle, "manifest.yaml"), bundle.ManifestContent, false); err != nil {
+		return result, err
 	}
-	start := absolute
-	if info, statErr := s.fs.Lstat(absolute); statErr == nil {
-		if info.Mode()&fs.ModeSymlink != 0 {
-			return Resolution{}, fmt.Errorf("target %q must not be a symbolic link", absolute)
+	for _, f := range bundle.Files {
+		if f.Present {
+			content := f.DocumentContent
+			if content == nil {
+				content = f.Content
+			}
+			if err = s.fs.WriteFileAtomic(filepath.Join(stageBundle, filepath.FromSlash(f.Spec.Source)), content, false); err != nil {
+				return result, err
+			}
 		}
-		if info.Mode().IsRegular() {
-			start = filepath.Dir(start)
-		} else if !info.IsDir() {
-			return Resolution{}, fmt.Errorf("target %q is not a regular file or directory", absolute)
-		}
-	} else if !errors.Is(statErr, fs.ErrNotExist) {
-		return Resolution{}, fmt.Errorf("inspect target %q: %w", absolute, statErr)
 	}
-
-	for candidate := start; ; candidate = filepath.Dir(candidate) {
-		archbaseDirectory := filepath.Join(candidate, ".archbase")
-		exists, checkErr := s.fs.Exists(archbaseDirectory)
-		if checkErr != nil {
-			return Resolution{}, checkErr
-		}
-		if exists {
-			return s.resolveScope(ctx, candidate, archbaseDirectory)
-		}
-		parent := filepath.Dir(candidate)
-		if parent == candidate {
+	if _, err = patterns.Load(s.fs.DirFS(stageBundle), "."); err != nil {
+		return result, err
+	}
+	scope := contracts.Scope{SchemaVersion: 1, Scope: contracts.ScopeSelector{Path: scopePath}, Pattern: contracts.ScopePattern{ID: bundle.Manifest.ID, Source: "local", Root: key}, Origin: origin, Behavior: contracts.ScopeBehavior{NearestScopeWins: true, AllowLocalCustomization: true}}
+	found := false
+	for i := range index.Scopes {
+		if index.Scopes[i].Scope.Path == scopePath {
+			scope.Metadata = index.Scopes[i].Metadata
+			index.Scopes[i] = scope
+			found = true
 			break
 		}
 	}
-	return Resolution{}, fmt.Errorf("%w for %q", ErrScopeNotFound, target)
-}
-
-func (s *Service) resolveScope(ctx context.Context, scopeDirectory, archbaseDirectory string) (Resolution, error) {
-	info, err := s.fs.Lstat(archbaseDirectory)
-	if err != nil || info.Mode()&fs.ModeSymlink != 0 || !info.IsDir() {
-		return Resolution{}, fmt.Errorf("%w: .archbase path %q is not a regular directory", ErrInvalidScope, archbaseDirectory)
+	if !found {
+		index.Scopes = append(index.Scopes, scope)
 	}
-	scopeFile := filepath.Join(archbaseDirectory, "scope.yaml")
-	scopeInfo, err := s.fs.Lstat(scopeFile)
-	if err != nil || scopeInfo.Mode()&fs.ModeSymlink != 0 || !scopeInfo.Mode().IsRegular() {
-		return Resolution{}, fmt.Errorf("%w: scope file %q is missing, a symlink, or not regular", ErrInvalidScope, scopeFile)
-	}
-	scope, err := contracts.LoadScope(scopeFile)
+	sort.Slice(index.Scopes, func(i, j int) bool { return index.Scopes[i].Scope.Path < index.Scopes[j].Scope.Path })
+	data, err := contracts.EncodeWorkspace(index)
 	if err != nil {
-		return Resolution{}, fmt.Errorf("%w: %v", ErrInvalidScope, err)
+		return result, err
+	}
+	if err = ctx.Err(); err != nil {
+		return result, err
+	}
+	if !existed {
+		if err = s.fs.WriteFileAtomic(filepath.Join(stage, "scopes.yaml"), data, false); err != nil {
+			return result, err
+		}
+		if err = s.fs.Rename(stage, dir); err != nil {
+			return result, fmt.Errorf("promote workspace %q: %w", dir, err)
+		}
+	} else {
+		if err = s.fs.EnsureDir(filepath.Dir(final)); err != nil {
+			return result, err
+		}
+		if err = s.fs.Rename(stageBundle, final); err != nil {
+			return result, err
+		}
+		defer func() {
+			if returnedErr != nil {
+				if err := s.fs.RemoveAll(final); err != nil {
+					returnedErr = errors.Join(returnedErr, fmt.Errorf("rollback pattern %q: %w", final, err))
+				}
+			}
+		}()
+		previous, readErr := fs.ReadFile(s.fs.DirFS(dir), "scopes.yaml")
+		if readErr != nil {
+			return result, readErr
+		}
+		if err = s.fs.WriteFileAtomic(filepath.Join(dir, "scopes.yaml"), data, true); err != nil {
+			// Restore only if the writer actually changed the index before failing.
+			current, readErr := fs.ReadFile(s.fs.DirFS(dir), "scopes.yaml")
+			if readErr != nil || string(current) != string(previous) {
+				err = errors.Join(err, s.fs.WriteFileAtomic(filepath.Join(dir, "scopes.yaml"), previous, true))
+			}
+			return result, err
+		}
+	}
+	return Installed{ScopeDirectory: absolute, PatternDirectory: final, PatternID: bundle.Manifest.ID, Warnings: warnings}, nil
+}
+func (s *Service) Resolve(ctx context.Context, target string) (Resolution, error) {
+	if err := rejectTraversal(target); err != nil {
+		return Resolution{}, err
+	}
+	if err := ctx.Err(); err != nil {
+		return Resolution{}, err
+	}
+	absolute, err := filepath.Abs(target)
+	if err != nil {
+		return Resolution{}, err
+	}
+	start := absolute
+	if info, e := s.fs.Lstat(start); e == nil {
+		if info.Mode().IsRegular() {
+			start = filepath.Dir(start)
+		} else if !info.IsDir() {
+			return Resolution{}, fmt.Errorf("target %q is not a regular file or directory", start)
+		}
+	} else if !errors.Is(e, fs.ErrNotExist) {
+		return Resolution{}, e
+	}
+	root := s.projectRoot
+	if root != "" {
+		root, err = filepath.Abs(root)
+		if err != nil {
+			return Resolution{}, err
+		}
+		if _, err = relative(root, absolute); err != nil {
+			return Resolution{}, err
+		}
+	} else {
+		for candidate := start; ; candidate = filepath.Dir(candidate) {
+			exists, e := s.fs.Exists(filepath.Join(candidate, ".archbase"))
+			if e != nil {
+				return Resolution{}, e
+			}
+			if exists {
+				root = candidate
+				break
+			}
+			if candidate == filepath.Dir(candidate) {
+				break
+			}
+		}
+	}
+	if root == "" {
+		return Resolution{}, fmt.Errorf("%w for %q", ErrScopeNotFound, target)
+	}
+	s = s.WithProjectRoot(root)
+	if err = s.checkPath(absolute); err != nil {
+		return Resolution{}, err
+	}
+	index, err := s.load(root)
+	if err != nil {
+		return Resolution{}, err
+	}
+	rel, err := relative(root, absolute)
+	if err != nil {
+		return Resolution{}, err
+	}
+	var chosen *contracts.Scope
+	for i := range index.Scopes {
+		scope := &index.Scopes[i]
+		p := scope.Scope.Path
+		if (p == "." || rel == p || strings.HasPrefix(rel, p+"/")) && (chosen == nil || len(p) > len(chosen.Scope.Path)) {
+			chosen = scope
+		}
+	}
+	if chosen == nil {
+		return Resolution{}, fmt.Errorf("%w for %q", ErrScopeNotFound, target)
+	}
+	return s.resolveScope(ctx, root, *chosen)
+}
+func (s *Service) resolveScope(ctx context.Context, root string, scope contracts.Scope) (Resolution, error) {
+	s = s.WithProjectRoot(root)
+	if err := ctx.Err(); err != nil {
+		return Resolution{}, err
+	}
+	dir := filepath.Join(root, ".archbase")
+	result := Resolution{ScopeDirectory: filepath.Join(root, filepath.FromSlash(scope.Scope.Path)), ArchbaseDirectory: dir, Scope: scope}
+	if err := s.checkPath(result.ScopeDirectory); err != nil {
+		return Resolution{}, err
+	}
+	if info, err := s.fs.Lstat(result.ScopeDirectory); err == nil && !info.IsDir() {
+		return Resolution{}, fmt.Errorf("scope %q must be a directory", result.ScopeDirectory)
+	} else if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return Resolution{}, err
 	}
 	if scope.Pattern.Source == "registry" {
-		resolved, resolveErr := s.registry.Resolve(ctx, scope.Pattern.ID)
-		if resolveErr != nil {
-			return Resolution{}, resolveErr
-		}
-		return Resolution{ScopeDirectory: scopeDirectory, ArchbaseDirectory: archbaseDirectory, Scope: scope, Pattern: resolved.Pattern, Stale: resolved.Stale, Warnings: resolved.Warnings}, nil
+		r, err := s.registry.Resolve(ctx, scope.Pattern.ID)
+		result.Pattern, result.Stale, result.Warnings = r.Pattern, r.Stale, r.Warnings
+		return result, err
 	}
-	root, err := safeLocalRoot(scope.Pattern.Root)
+	local, err := safeLocalRoot(scope.Pattern.Root)
 	if err != nil {
-		return Resolution{}, fmt.Errorf("%w at %q: %v", ErrInvalidLocalRoot, scopeFile, err)
+		return Resolution{}, fmt.Errorf("%w at %q: %w", ErrInvalidLocalRoot, filepath.Join(dir, "scopes.yaml"), err)
 	}
-	bundle, err := patterns.Load(s.fs.DirFS(archbaseDirectory), root)
+	result.PatternRoot = filepath.Join(dir, filepath.FromSlash(local))
+	if err = s.checkPath(result.PatternRoot); err != nil {
+		return Resolution{}, err
+	}
+	bundle, err := patterns.Load(s.fs.DirFS(dir), local)
 	if err != nil {
-		return Resolution{}, fmt.Errorf("load local pattern %q: %w", filepath.Join(archbaseDirectory, filepath.FromSlash(root)), err)
+		return Resolution{}, fmt.Errorf("load local pattern %q: %w", result.PatternRoot, err)
 	}
 	if bundle.Manifest.ID != scope.Pattern.ID {
-		return Resolution{}, fmt.Errorf("scope pattern ID %q does not match local manifest ID %q at %q", scope.Pattern.ID, bundle.Manifest.ID, scopeFile)
+		return Resolution{}, fmt.Errorf("scope pattern ID %q does not match local manifest ID %q at %q", scope.Pattern.ID, bundle.Manifest.ID, result.PatternRoot)
 	}
 	id, err := registry.ParsePatternID(bundle.Manifest.ID)
 	if err != nil {
 		return Resolution{}, err
 	}
-	pattern := registry.Pattern{
-		Entry:  registry.Entry{ID: id, Version: bundle.Manifest.Version, Path: root, Description: bundle.Manifest.Description},
-		Bundle: bundle,
-		Source: "local",
-	}
-	return Resolution{ScopeDirectory: scopeDirectory, ArchbaseDirectory: archbaseDirectory, PatternRoot: filepath.Join(archbaseDirectory, filepath.FromSlash(root)), Scope: scope, Pattern: pattern}, nil
+	result.Pattern = registry.Pattern{Entry: registry.Entry{ID: id, Version: bundle.Manifest.Version, Path: local, Description: bundle.Manifest.Description}, Bundle: bundle, Source: "local"}
+	return result, nil
 }
 
-func safeLocalRoot(value string) (string, error) {
-	if value == "" || strings.Contains(value, "\\") || strings.HasPrefix(value, "/") || filepath.IsAbs(value) || filepath.VolumeName(value) != "" {
-		return "", fmt.Errorf("%q is not a slash-separated relative path", value)
+func rejectTraversal(value string) error {
+	for _, part := range strings.Split(strings.ReplaceAll(value, "\\", "/"), "/") {
+		if part == ".." {
+			return fmt.Errorf("traversal is not allowed in path %q", value)
+		}
 	}
-	cleaned := path.Clean(value)
-	if cleaned == "." || cleaned == ".." || strings.HasPrefix(cleaned, "../") || cleaned != value {
-		return "", fmt.Errorf("%q escapes or is not normalized", value)
+	return nil
+}
+func (s *Service) List(ctx context.Context, root string) ([]Resolution, error) {
+	root, err := filepath.Abs(root)
+	if err != nil {
+		return nil, err
 	}
-	return cleaned, nil
+	index, err := s.load(root)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]Resolution, 0, len(index.Scopes))
+	for _, scope := range index.Scopes {
+		r, err := s.resolveScope(ctx, root, scope)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, r)
+	}
+	return result, nil
 }

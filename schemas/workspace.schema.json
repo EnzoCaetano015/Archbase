@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://archbase.dev/schemas/v1/workspace.schema.json",
+  "title": "Archbase workspace",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "scopes"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "scopes": {"type": "array", "items": {"$ref": "scope.schema.json"}},
+    "metadata": {"type": "object", "additionalProperties": true}
+  }
+}

@@ -36,9 +36,11 @@ func (e *Error) Error() string {
 func (e *Error) Unwrap() error { return e.Err }
 
 type File struct {
-	Spec    contracts.PatternFile
-	Present bool
-	Content []byte
+	Spec            contracts.PatternFile
+	Present         bool
+	Content         []byte
+	DocumentContent []byte
+	Language        string
 }
 
 type Bundle struct {
@@ -118,6 +120,13 @@ func Load(fsys fs.FS, root string) (Bundle, error) {
 		}
 		file.Present = true
 		file.Content = content
+		file.DocumentContent = content
+		if spec.Format == "markdown-code" {
+			file.Content, file.Language, err = DecodeDocument(spec.Source, content)
+			if err != nil {
+				return Bundle{}, &Error{Manifest: manifestDisplayPath, Field: fmt.Sprintf("/structure/files/%d/source", index), Path: spec.Source, Err: err}
+			}
+		}
 		result.Files = append(result.Files, file)
 	}
 	return result, nil

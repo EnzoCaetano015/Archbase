@@ -3,27 +3,28 @@ id: dotnet-multiproject/bootstrap@1624
 name: ASP.NET Core composition root
 description: Minimal-hosting entrypoint that assembles cross-cutting services and preserves explicit middleware ordering.
 type: pattern
-version: 1.0.0
+version: 1.0.1
 structure:
   root: "{{Name}}"
   files:
-    - source: Program.cs
-      destination: "{{Name}}/Program.cs"
-      required: true
+  - format: markdown-code
+    source: Program.cs.md
+    destination: "{{Name}}/Program.cs"
+    required: true
 allowedChanges:
-  - imports
-  - service-registration
-  - middleware
-  - authentication
-  - observability
-  - documentation
+- imports
+- service-registration
+- middleware
+- authentication
+- observability
+- documentation
 preserve:
-  - single-composition-root
-  - explicit-middleware-order
-  - delegated-registration-extensions
-  - no-feature-workflows
+- single-composition-root
+- explicit-middleware-order
+- delegated-registration-extensions
+- no-feature-workflows
 metadata:
   framework: aspnet-core
-  runtime: dotnet-8
   layer: api
   maturity: foundation-sample
+  runtime: dotnet-8

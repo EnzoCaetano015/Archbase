@@ -57,6 +57,7 @@ func TestUnknownCommandReturnsNonZero(t *testing.T) {
 
 func TestAddResolveInspectAndCreateCommands(t *testing.T) {
 	root := t.TempDir()
+	t.Chdir(root)
 	for _, test := range []struct {
 		args []string
 		want string
@@ -77,6 +78,7 @@ func TestAddResolveInspectAndCreateCommands(t *testing.T) {
 
 func TestCommandsReturnNonZeroForMissingScopeAndCollision(t *testing.T) {
 	root := t.TempDir()
+	t.Chdir(root)
 	var stdout, stderr bytes.Buffer
 	if code := Execute([]string{"resolve", root}, &stdout, &stderr, "dev"); code == 0 || !strings.Contains(stderr.String(), "scope not found") {
 		t.Fatalf("unexpected missing-scope result: code=%d stderr=%q", code, stderr.String())
@@ -114,6 +116,28 @@ func TestRegistryFlagsArePassedToResolverFactory(t *testing.T) {
 	}
 	if captured.URL != "https://example.com/registry.git" || captured.Ref != "v1" || captured.Subdirectory != "catalog" || captured.CacheRoot != cache || captured.TTL != 30*time.Minute {
 		t.Fatalf("unexpected registry options: %#v", captured)
+	}
+}
+
+func TestExplicitWorkspaceRootAndConfinement(t *testing.T) {
+	root := t.TempDir()
+	invocation := t.TempDir()
+	t.Chdir(invocation)
+	var stdout, stderr bytes.Buffer
+	target := filepath.Join(root, "src", "pages")
+	if code := Execute([]string{"--project-root", root, "add", "next/page@1234", target}, &stdout, &stderr, "dev"); code != 0 {
+		t.Fatal(stderr.String())
+	}
+	if _, err := os.Stat(filepath.Join(root, ".archbase", "scopes.yaml")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(target, ".archbase")); !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("nested metadata created")
+	}
+	stdout.Reset()
+	stderr.Reset()
+	if code := Execute([]string{"--project-root", root, "create", "outside", invocation}, &stdout, &stderr, "dev"); code == 0 {
+		t.Fatal("escaped root accepted")
 	}
 }
 

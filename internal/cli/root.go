@@ -21,16 +21,21 @@ import (
 const longDescription = `Archbase standardizes how AI agents structure code.
 
 Available commands:
-  arc add        Install a pattern in a local scope
+  arc add        Install a pattern in the central project workspace
   arc create     Create a customizable local pattern
   arc resolve    Resolve the active pattern for a path
   arc inspect    Inspect a local or registry pattern
   arc rules      List, inspect, and export architecture rules
   arc remove     Remove one or all managed rule exports
   arc mcp serve  Start the project-scoped MCP server over stdio
-  arc version    Show the CLI version`
+  arc version    Show the CLI version
+
+Workspace: add/create use the current directory as the project root.
+Use --project-root to select another root. Scopes live in .archbase/scopes.yaml;
+pattern examples use typed Markdown (.ts.md, .tsx.md, .cs.md).`
 
 type RegistryOptions struct {
+	ProjectRoot  string
 	URL          string
 	Ref          string
 	Subdirectory string
@@ -133,6 +138,7 @@ func NewRootCommand(cliVersion string, supplied ...Dependencies) *cobra.Command 
 	}
 	root.CompletionOptions.DisableDefaultCmd = true
 	flags := root.PersistentFlags()
+	flags.StringVar(&options.ProjectRoot, "project-root", "", "workspace root (add/create default to the current directory)")
 	flags.BoolVar(&plain, "plain", false, "disable the interactive UI and rich terminal output")
 	flags.StringVar(&options.URL, "registry-url", "", "public Git registry URL (https, git, or file)")
 	flags.StringVar(&options.Ref, "registry-ref", "main", "Git registry branch or tag")
@@ -151,8 +157,11 @@ func newMCPCommand(dependencies Dependencies, options *RegistryOptions, cliVersi
 	command := &cobra.Command{Use: "mcp", Short: "Run Model Context Protocol integrations", Args: cobra.NoArgs, RunE: func(cmd *cobra.Command, _ []string) error {
 		return cmd.Help()
 	}}
-	var projectRoot string
 	serve := &cobra.Command{Use: "serve", Short: "Start the project-scoped MCP server over stdio", Args: cobra.NoArgs, RunE: func(cmd *cobra.Command, _ []string) error {
+		projectRoot := options.ProjectRoot
+		if projectRoot == "" {
+			projectRoot = "."
+		}
 		workspaceService, patterns, err := service(cmd.Context(), dependencies, *options)
 		if err != nil {
 			return err
@@ -167,7 +176,6 @@ func newMCPCommand(dependencies Dependencies, options *RegistryOptions, cliVersi
 		}
 		return dependencies.MCPRunner(cmd.Context(), mcpService, cliVersion)
 	}}
-	serve.Flags().StringVar(&projectRoot, "project-root", ".", "project root exposed to MCP tools")
 	command.AddCommand(serve)
 	return command
 }
@@ -255,6 +263,9 @@ func service(ctx context.Context, dependencies Dependencies, options RegistryOpt
 		return nil, nil, err
 	}
 	workspaceService, err := workspace.NewService(dependencies.FileSystem, resolver)
+	if err == nil && options.ProjectRoot != "" {
+		workspaceService = workspaceService.WithProjectRoot(options.ProjectRoot)
+	}
 	return workspaceService, resolver, err
 }
 

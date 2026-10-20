@@ -104,6 +104,9 @@ func TestEmbeddedSourceContainsAllFoundationPatterns(t *testing.T) {
 			t.Fatalf("manifest mismatch for %s", rawID)
 		}
 		for _, file := range result.Pattern.Bundle.Files {
+			if file.Spec.Format != "markdown-code" || !strings.HasSuffix(file.Spec.Source, ".md") || (file.Present && (file.Language == "" || len(file.DocumentContent) == 0)) {
+				t.Fatalf("untyped official example %s", file.Spec.Source)
+			}
 			if file.Spec.Required && !file.Present {
 				t.Fatalf("required file %s is absent from %s", file.Spec.Source, rawID)
 			}

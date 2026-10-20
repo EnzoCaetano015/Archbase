@@ -3,26 +3,27 @@ id: next-feature/layout@2673
 name: App Router segment layout
 description: App Router layout that composes a shared shell around a route segment without owning feature workflows.
 type: pattern
-version: 1.0.0
+version: 1.0.1
 structure:
   root: "{{Name}}"
   files:
-    - source: layout.tsx
-      destination: "{{Name}}/layout.tsx"
-      required: true
+  - format: markdown-code
+    source: layout.tsx.md
+    destination: "{{Name}}/layout.tsx"
+    required: true
 allowedChanges:
-  - identifiers
-  - imports
-  - shell-components
-  - segment-config
-  - rendered-content
+- identifiers
+- imports
+- shell-components
+- segment-config
+- rendered-content
 preserve:
-  - app-router-file-convention
-  - typed-children
-  - shared-shell-responsibility
-  - server-component-default
-  - no-feature-workflow
+- app-router-file-convention
+- typed-children
+- shared-shell-responsibility
+- server-component-default
+- no-feature-workflow
 metadata:
   framework: next
-  router: app
   maturity: foundation-sample
+  router: app

@@ -3,32 +3,35 @@ id: spring-boot/api-advice@7634
 name: Spring API response and exception advice
 description: Controller advice bundle standardizing successful responses, pagination metadata, validation failures, and safe unexpected errors.
 type: pattern-bundle
-version: 1.0.0
+version: 1.0.1
 structure:
   root: "{{Name}}"
   files:
-    - source: ApiResponse.java
-      destination: "{{Name}}/ApiResponse.java"
-      required: true
-    - source: ResponseEnvelopeAdvice.java
-      destination: "{{Name}}/ResponseEnvelopeAdvice.java"
-      required: true
-    - source: GlobalExceptionHandler.java
-      destination: "{{Name}}/GlobalExceptionHandler.java"
-      required: true
+  - format: markdown-code
+    source: ApiResponse.java.md
+    destination: "{{Name}}/ApiResponse.java"
+    required: true
+  - format: markdown-code
+    source: ResponseEnvelopeAdvice.java.md
+    destination: "{{Name}}/ResponseEnvelopeAdvice.java"
+    required: true
+  - format: markdown-code
+    source: GlobalExceptionHandler.java.md
+    destination: "{{Name}}/GlobalExceptionHandler.java"
+    required: true
 allowedChanges:
-  - package
-  - envelope-shape
-  - pagination-metadata
-  - exception-mapping
-  - error-messages
-  - logging
+- package
+- envelope-shape
+- pagination-metadata
+- exception-mapping
+- error-messages
+- logging
 preserve:
-  - centralized-response-envelope
-  - validation-error-details
-  - safe-unexpected-error
-  - known-status-preservation
-  - no-feature-workflow
+- centralized-response-envelope
+- validation-error-details
+- safe-unexpected-error
+- known-status-preservation
+- no-feature-workflow
 metadata:
   framework: spring-mvc
   layer: web

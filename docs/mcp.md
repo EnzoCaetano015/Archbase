@@ -35,9 +35,10 @@ All tools are read-only. They may refresh the existing Git registry cache, but t
 
 - `search_patterns` searches ID, name, and description case-insensitively and returns deterministic pattern summaries.
 - `get_pattern` returns the validated manifest for a registry PatternID.
-- `resolve_pattern` resolves the nearest `.archbase` scope for a project path.
+- `resolve_pattern` selects the most specific directory scope from the root `.archbase/scopes.yaml`.
 - `get_pattern_files` accepts exactly one of `patternId` or `path` and returns every declared bundle file. UTF-8 content is returned as text; other bytes use base64.
 - `get_scope_rules` returns registry rules whose pattern association and glob match the resolved project path. A local pattern's recorded origin is considered.
-- `list_project_scopes` validates and lists every scope below the configured project root.
+- `list_project_scopes` validates and lists every scope registered in the configured root's index.
 
 Normal results use typed structured content and include `stale` and `warnings` where registry access is involved. Invalid arguments, missing IDs, missing scopes, corrupt bundles, and paths outside the project are returned as visible MCP tool errors so an agent can correct its request.
+`get_pattern_files` returns extracted source code, without Markdown fences, for `markdown-code` files. Its optional `language` field identifies the fence language; `source` retains the `.ts.md`/`.tsx.md`/`.cs.md` storage name and `destination` retains the logical source path. Raw binary files still use base64. Project-local customizations take precedence.

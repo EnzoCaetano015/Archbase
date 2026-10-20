@@ -10,6 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/EnzoCaetano015/Archbase/schemas"
 	"github.com/goccy/go-yaml"
@@ -19,15 +20,17 @@ import (
 type Kind string
 
 const (
-	ManifestKind Kind = "manifest"
-	ScopeKind    Kind = "scope"
-	RuleKind     Kind = "rule"
+	ManifestKind  Kind = "manifest"
+	ScopeKind     Kind = "scope"
+	RuleKind      Kind = "rule"
+	WorkspaceKind Kind = "workspace"
 )
 
 var schemaFiles = map[Kind]string{
-	ManifestKind: "manifest.schema.json",
-	ScopeKind:    "scope.schema.json",
-	RuleKind:     "rule.schema.json",
+	ManifestKind:  "manifest.schema.json",
+	ScopeKind:     "scope.schema.json",
+	RuleKind:      "rule.schema.json",
+	WorkspaceKind: "workspace.schema.json",
 }
 
 type ValidationError struct {
@@ -156,27 +159,58 @@ func decodeAndValidate(kind Kind, sourcePath string, data []byte, destination an
 	return nil
 }
 
-func validateJSON(kind Kind, data []byte) error {
+var schemaMutex sync.Mutex
+var compiledSchemas = make(map[Kind]*jsonschema.Schema)
+
+// Embedded schemas are immutable; cache compilation, not validation results.
+func compileEmbedded(kind Kind) (*jsonschema.Schema, error) {
+	schemaMutex.Lock()
+	defer schemaMutex.Unlock()
+	if schema, ok := compiledSchemas[kind]; ok {
+		return schema, nil
+	}
 	schemaName, ok := schemaFiles[kind]
 	if !ok {
-		return fmt.Errorf("unsupported document kind %q", kind)
+		return nil, fmt.Errorf("unsupported document kind %q", kind)
 	}
 	schemaData, err := schemas.FS.ReadFile(schemaName)
 	if err != nil {
-		return fmt.Errorf("read embedded schema: %w", err)
+		return nil, fmt.Errorf("read embedded schema: %w", err)
 	}
 	schemaValue, err := jsonschema.UnmarshalJSON(bytes.NewReader(schemaData))
 	if err != nil {
-		return fmt.Errorf("parse embedded schema: %w", err)
+		return nil, fmt.Errorf("parse embedded schema: %w", err)
 	}
 	compiler := jsonschema.NewCompiler()
+	if kind == WorkspaceKind {
+		data, readErr := schemas.FS.ReadFile("scope.schema.json")
+		if readErr != nil {
+			return nil, readErr
+		}
+		value, parseErr := jsonschema.UnmarshalJSON(bytes.NewReader(data))
+		if parseErr != nil {
+			return nil, parseErr
+		}
+		if err := compiler.AddResource("https://archbase.dev/schemas/v1/scope.schema.json", value); err != nil {
+			return nil, err
+		}
+	}
 	resourceURL := "https://archbase.dev/embedded/" + schemaName
 	if err := compiler.AddResource(resourceURL, schemaValue); err != nil {
-		return fmt.Errorf("register embedded schema: %w", err)
+		return nil, fmt.Errorf("register embedded schema: %w", err)
 	}
 	compiled, err := compiler.Compile(resourceURL)
 	if err != nil {
-		return fmt.Errorf("compile embedded schema: %w", err)
+		return nil, fmt.Errorf("compile embedded schema: %w", err)
+	}
+	compiledSchemas[kind] = compiled
+	return compiled, nil
+}
+
+func validateJSON(kind Kind, data []byte) error {
+	compiled, err := compileEmbedded(kind)
+	if err != nil {
+		return err
 	}
 	instance, err := jsonschema.UnmarshalJSON(bytes.NewReader(data))
 	if err != nil {
@@ -203,6 +237,9 @@ func validationField(err error) string {
 
 func validateManifestPaths(sourcePath string, manifest Manifest) error {
 	for index, file := range manifest.Structure.Files {
+		if file.Format == "markdown-code" && !strings.HasSuffix(file.Source, ".md") {
+			return &ValidationError{Kind: ManifestKind, Path: sourcePath, Field: fmt.Sprintf("/structure/files/%d/source", index), Cause: errors.New("markdown-code source must end in .md")}
+		}
 		for field, value := range map[string]string{"source": file.Source, "destination": file.Destination} {
 			if !safeRelativePath(value) {
 				return &ValidationError{

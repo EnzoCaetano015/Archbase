@@ -41,6 +41,7 @@ func newTestService(t *testing.T, root string) (*Service, *workspace.Service) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	workspaceService = workspaceService.WithProjectRoot(root)
 	service, err := NewService(root, patterns, rules, workspaceService, OSFileSystem{})
 	if err != nil {
 		t.Fatal(err)
@@ -82,8 +83,8 @@ func TestResolveFilesRulesAndProjectScopesUseLocalCustomization(t *testing.T) {
 		t.Fatal(err)
 	}
 	custom := "// locally customized\nexport default function Example() { return null }\n"
-	customFile := filepath.Join(installed.PatternDirectory, "Example", "Example.tsx")
-	if err := os.WriteFile(customFile, []byte(custom), 0o644); err != nil {
+	customFile := filepath.Join(installed.PatternDirectory, "Example", "Example.tsx.md")
+	if err := os.WriteFile(customFile, patterns.EncodeDocument("Example.tsx", []byte(custom)), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	target := filepath.Join(nested, "Admin", "Page.tsx")
@@ -94,6 +95,9 @@ func TestResolveFilesRulesAndProjectScopesUseLocalCustomization(t *testing.T) {
 	files, err := service.GetPatternFiles(context.Background(), PatternFilesInput{Path: "src/pages/Admin/Page.tsx"})
 	if err != nil || files.PatternID != "local/pages-standard@1" || !containsFileContent(files.Files, custom) {
 		t.Fatalf("local customization was not returned: %#v, %v", files, err)
+	}
+	if files.Files[0].Language != "tsx" || !strings.HasSuffix(files.Files[0].Source, ".tsx.md") || strings.Contains(files.Files[0].Content, "```") {
+		t.Fatalf("Markdown leaked into MCP: %#v", files.Files[0])
 	}
 	rules, err := service.GetScopeRules(context.Background(), PathInput{Path: "src/pages/Admin/Page.tsx"})
 	if err != nil || rules.OriginID != "next/page@1234" || len(rules.Rules) != 1 || rules.Rules[0].ID != "architecture/next-modular@1" {
@@ -185,7 +189,7 @@ func TestProjectPathConfinementAndScopeValidation(t *testing.T) {
 			t.Fatal("expected symlink path to fail")
 		}
 	}
-	if err := os.WriteFile(filepath.Join(root, ".archbase", "scope.yaml"), []byte("invalid: true\n"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(root, ".archbase", "scopes.yaml"), []byte("invalid: true\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := service.ListProjectScopes(context.Background(), EmptyInput{}); err == nil {
@@ -299,6 +303,7 @@ func TestScopeRulesReturnsMultipleMatchesAndStopsOnCorruption(t *testing.T) {
 	patternSource, _ := registry.NewEmbeddedSource()
 	patternsResolver, _ := registry.NewResolver(patternSource)
 	workspaceService, _ := workspace.NewService(workspace.OSFileSystem{}, patternsResolver)
+	workspaceService = workspaceService.WithProjectRoot(root)
 	if _, err := workspaceService.Add(context.Background(), "next/page@1234", root); err != nil {
 		t.Fatal(err)
 	}
@@ -328,7 +333,7 @@ func TestListProjectScopesRejectsCorruptedLocalBundle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := os.Remove(filepath.Join(installed.PatternDirectory, "Example", "Example.tsx")); err != nil {
+	if err := os.Remove(filepath.Join(installed.PatternDirectory, "Example", "Example.tsx.md")); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := service.ListProjectScopes(context.Background(), EmptyInput{}); err == nil || !strings.Contains(err.Error(), "required pattern file") {

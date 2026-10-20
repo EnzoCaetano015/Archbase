@@ -55,7 +55,7 @@ func NewService(root string, patterns *registry.Resolver, rules *archrules.Resol
 	if info.Mode()&fs.ModeSymlink != 0 || !info.IsDir() {
 		return nil, fmt.Errorf("MCP project root %q must be a regular directory and not a symlink", absolute)
 	}
-	return &Service{root: absolute, patterns: patterns, rules: rules, workspace: workspaceService, fs: fsys}, nil
+	return &Service{root: absolute, patterns: patterns, rules: rules, workspace: workspaceService.WithProjectRoot(absolute), fs: fsys}, nil
 }
 
 func (s *Service) SearchPatterns(ctx context.Context, input SearchPatternsInput) (SearchPatternsOutput, error) {
@@ -146,6 +146,7 @@ func (s *Service) GetPatternFiles(ctx context.Context, input PatternFilesInput) 
 	files := make([]PatternFileContent, 0, len(pattern.Bundle.Files))
 	for _, file := range pattern.Bundle.Files {
 		item := PatternFileContent{Source: file.Spec.Source, Destination: file.Spec.Destination, Required: file.Spec.Required, Present: file.Present}
+		item.Language = file.Language
 		if file.Present {
 			if utf8.Valid(file.Content) {
 				item.Encoding, item.Content = "utf-8", string(file.Content)
@@ -227,58 +228,24 @@ func makeRuleScopes(values []structScope) []contracts.RuleScope {
 
 func (s *Service) ListProjectScopes(ctx context.Context, _ EmptyInput) (ProjectScopesOutput, error) {
 	result := ProjectScopesOutput{Scopes: make([]ProjectScope, 0)}
-	var walk func(string) error
-	walk = func(directory string) error {
-		if err := ctx.Err(); err != nil {
-			return err
-		}
-		entries, err := s.fs.ReadDir(directory)
-		if err != nil {
-			return fmt.Errorf("list project directory %q: %w", directory, err)
-		}
-		for _, entry := range entries {
-			if entry.Name() == ".git" {
-				continue
-			}
-			current := filepath.Join(directory, entry.Name())
-			info, err := s.fs.Lstat(current)
-			if err != nil {
-				return fmt.Errorf("inspect project path %q: %w", current, err)
-			}
-			if info.Mode()&fs.ModeSymlink != 0 {
-				if entry.Name() == ".archbase" {
-					return fmt.Errorf("project scope %q must not be a symlink", current)
-				}
-				continue
-			}
-			if entry.Name() == ".archbase" {
-				if !info.IsDir() {
-					return fmt.Errorf("project scope %q must be a regular directory", current)
-				}
-				resolved, err := s.workspace.Resolve(ctx, directory)
-				if err != nil {
-					return err
-				}
-				relative, err := s.relativePath(resolved.ScopeDirectory)
-				if err != nil {
-					return err
-				}
-				result.Scopes = append(result.Scopes, ProjectScope{Path: relative, Pattern: resolved.Scope.Pattern, Origin: resolved.Scope.Origin})
-				result.Stale = result.Stale || resolved.Stale
-				result.Warnings = append(result.Warnings, warningStrings(resolved.Warnings)...)
-				continue
-			}
-			if !info.IsDir() {
-				continue
-			}
-			if err := walk(current); err != nil {
-				return err
-			}
-		}
-		return nil
+	if err := ctx.Err(); err != nil {
+		return result, err
 	}
-	if err := walk(s.root); err != nil {
+	if _, err := s.fs.Lstat(filepath.Join(s.root, ".archbase")); errors.Is(err, fs.ErrNotExist) {
+		return result, nil
+	}
+	resolved, err := s.workspace.List(ctx, s.root)
+	if err != nil {
 		return ProjectScopesOutput{}, err
+	}
+	for _, scope := range resolved {
+		relative, err := s.relativePath(scope.ScopeDirectory)
+		if err != nil {
+			return ProjectScopesOutput{}, err
+		}
+		result.Scopes = append(result.Scopes, ProjectScope{Path: relative, Pattern: scope.Scope.Pattern, Origin: scope.Scope.Origin})
+		result.Stale = result.Stale || scope.Stale
+		result.Warnings = append(result.Warnings, warningStrings(scope.Warnings)...)
 	}
 	sort.Slice(result.Scopes, func(i, j int) bool { return result.Scopes[i].Path < result.Scopes[j].Path })
 	result.Warnings = deduplicateStrings(result.Warnings)

@@ -21,9 +21,17 @@ type PatternStructure struct {
 }
 
 type PatternFile struct {
+	Format      string `yaml:"format,omitempty" json:"format,omitempty"`
 	Source      string `yaml:"source" json:"source"`
 	Destination string `yaml:"destination" json:"destination"`
 	Required    bool   `yaml:"required" json:"required"`
+}
+
+// Workspace is the project-wide scope index. Legacy Scope remains a separate contract.
+type Workspace struct {
+	SchemaVersion int      `yaml:"schemaVersion" json:"schemaVersion"`
+	Scopes        []Scope  `yaml:"scopes" json:"scopes"`
+	Metadata      Metadata `yaml:"metadata,omitempty" json:"metadata,omitempty"`
 }
 
 type Scope struct {

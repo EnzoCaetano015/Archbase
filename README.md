@@ -39,7 +39,7 @@ Running `arc` in an interactive terminal opens a full-screen application with th
 
 Direct commands still work in your shell, with formatted help, tables, and readable sections. Use `arc --plain` to keep the welcome screen instead of opening the application, or `arc --plain <command>` for the original text output. Redirected output stays plain automatically. `TERM=dumb` disables the UI and rich formatting; a non-empty `NO_COLOR` disables colors while keeping interactive navigation. Use `arc --help` for the full command reference.
 
-`arc add` stores the pattern in a local `.archbase` scope. `arc resolve` finds the active pattern even when the target file does not exist yet. Use `arc help` for available commands.
+`arc add` and `arc create` use the current directory as the project root; pass `--project-root <path>` to choose another. All scopes live in the single root `.archbase/scopes.yaml`, with independent pattern copies in `.archbase/patterns/<scope-hash>/<pattern-hash>`. Examples such as `Example.tsx.md` contain typed Markdown code blocks, keeping reference code out of project compiler inputs. `arc resolve` selects the most specific scope even when the target file does not exist yet. Use its printed root to locate and edit examples. See [workspace layout](docs/workspace.md).
 
 `arc remove <rule-id>` removes that rule's managed Cursor, Copilot, and `AGENTS.md` exports. `arc remove --all` removes every Archbase-managed rule export in the project while preserving unrelated files and external `AGENTS.md` content.
 

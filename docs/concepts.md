@@ -23,55 +23,36 @@ The same canonical rule can be exported to Cursor, GitHub Copilot, or `AGENTS.md
 
 ## Scopes and resolution
 
-A scope stores its configuration in `.archbase/scope.yaml`. A project can have nested scopes:
+A project stores every scope in the single root `.archbase/scopes.yaml`. Scopes associate project-relative directory paths with patterns; the directories themselves need no metadata folders.
 
 ```text
 project/
 ├── .archbase/
-│   └── scope.yaml
-└── src/
-    └── pages/
-        └── admin/
-            └── .archbase/
-                └── scope.yaml
+│   ├── scopes.yaml
+│   └── patterns/<scope-hash>/<pattern-hash>/
+├── src/pages/
+└── src/pages/admin/
 ```
 
+Run installation commands from the project root:
+
 ```bash
+arc add next/page@1234 src/pages
+arc create pages-standard src/pages/admin --from next/page@1234
 arc resolve src/pages/Home.tsx
 arc resolve src/pages/admin/Dashboard.tsx
 ```
 
-Resolution walks from the requested path toward its ancestors. The nearest `.archbase` scope wins. If that scope is invalid, resolution reports an error instead of falling back to an ancestor. The target file does not need to exist.
-
-Each scope has one active pattern. Activating another preserves stored pattern directories and refuses directory collisions.
+The most specific directory scope wins, respecting path segment boundaries. An invalid selected scope reports an error instead of falling back to a parent. The target file does not need to exist. Each scope has one active pattern; activating another preserves stored bundles and refuses collisions.
 
 ## Local customization
 
-Create a project-owned pattern from a registry pattern:
+Each scope owns its pattern copy, even when another scope uses the same PatternID. Local names become canonical IDs such as `local/pages-standard@1`. The origin retains the registry source, original ID, and version.
+
+Use `arc resolve src/pages/admin/Dashboard.tsx` to find the printed pattern root. Edit the code inside `Example/Example.tsx.md`, preserving the typed Markdown fence. Examples are documents rather than compiler inputs; the loader and MCP expose extracted code without backticks. Local customization takes precedence over registry content and is revalidated on every resolution.
 
 ```bash
-arc create pages-standard ./src/pages --from next/page@1234
+arc inspect src/pages/admin/Dashboard.tsx
 ```
 
-The local name becomes `local/pages-standard@1`. Its files can be edited inside the scope:
-
-```text
-src/pages/.archbase/
-├── scope.yaml
-└── patterns/
-    └── pages-standard/
-        └── Example/
-            ├── Example.tsx
-            ├── Example.hook.ts
-            └── Example.utils.ts
-```
-
-Local customization takes precedence over registry content. The scope retains the original pattern identity as its origin, while resolution uses the local files. Local roots remain confined to `.archbase` and are revalidated during resolution.
-
-To inspect the active local pattern, pass a project path:
-
-```bash
-arc inspect src/pages/Home.tsx
-```
-
-For a complete example, follow [Getting started](getting-started.md). Compatible AI agents can also inspect this context through the [MCP server](mcp.md).
+See [workspace layout and document format](workspace.md), [Getting started](getting-started.md), and the [MCP server](mcp.md).

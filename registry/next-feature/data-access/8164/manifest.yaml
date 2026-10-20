@@ -3,26 +3,27 @@ id: next-feature/data-access@8164
 name: Feature data access
 description: Server-only persistence adapter that owns database queries and maps records to feature model contracts.
 type: pattern
-version: 1.0.0
+version: 1.0.1
 structure:
   root: "{{Name}}"
   files:
-    - source: data.ts
-      destination: "{{Name}}/{{Name}}.ts"
-      required: true
+  - format: markdown-code
+    source: data.ts.md
+    destination: "{{Name}}/{{Name}}.ts"
+    required: true
 allowedChanges:
-  - identifiers
-  - imports
-  - database-client
-  - selects
-  - queries
-  - record-mapping
+- identifiers
+- imports
+- database-client
+- selects
+- queries
+- record-mapping
 preserve:
-  - server-only-boundary
-  - persistence-only-responsibility
-  - explicit-selection
-  - typed-model-result
-  - no-http-or-ui-dependency
+- server-only-boundary
+- persistence-only-responsibility
+- explicit-selection
+- typed-model-result
+- no-http-or-ui-dependency
 metadata:
   framework: next
   layer: data

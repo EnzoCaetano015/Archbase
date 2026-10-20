@@ -14,7 +14,9 @@ import (
 	"time"
 
 	"github.com/EnzoCaetano015/Archbase/internal/cli"
+	"github.com/EnzoCaetano015/Archbase/internal/contracts"
 	archmcp "github.com/EnzoCaetano015/Archbase/internal/mcp"
+	"github.com/EnzoCaetano015/Archbase/internal/patterns"
 	"github.com/EnzoCaetano015/Archbase/internal/registry"
 	archrules "github.com/EnzoCaetano015/Archbase/internal/rules"
 	"github.com/EnzoCaetano015/Archbase/internal/workspace"
@@ -88,14 +90,18 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 			project := filepath.Join(t.TempDir(), "project")
 			copyTree(t, filepath.Join("testdata", scenario.fixture), project)
 			cache := filepath.Join(t.TempDir(), "cache")
-			global := []string{"--registry-url", fileURL(remote), "--registry-ref", "main", "--registry-cache-dir", cache}
+			global := []string{"--project-root", project, "--registry-url", fileURL(remote), "--registry-ref", "main", "--registry-cache-dir", cache}
 			runCLI(t, append(global, "add", scenario.rootPattern, project)...)
 			nested := filepath.Join(project, filepath.FromSlash(scenario.nested))
 			runCLI(t, append(global, "create", scenario.localName, nested, "--from", scenario.rootPattern)...)
 
 			custom := "customized " + scenario.name + " bundle\n"
-			customPath := filepath.Join(nested, ".archbase", "patterns", scenario.localName, filepath.FromSlash(scenario.customFile))
-			if err := os.WriteFile(customPath, []byte(custom), 0o644); err != nil {
+			index, err := contracts.LoadWorkspaceFS(os.DirFS(filepath.Join(project, ".archbase")), "scopes.yaml")
+			if err != nil {
+				t.Fatal(err)
+			}
+			customPath := filepath.Join(project, ".archbase", filepath.FromSlash(index.Scopes[1].Pattern.Root), filepath.FromSlash(scenario.customFile)+".md")
+			if err := os.WriteFile(customPath, patterns.EncodeDocument(scenario.customFile, []byte(custom)), 0o644); err != nil {
 				t.Fatal(err)
 			}
 			resolvedNested := runCLI(t, append(global, "resolve", filepath.Join(project, filepath.FromSlash(scenario.target)))...)

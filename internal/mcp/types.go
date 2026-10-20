@@ -62,6 +62,7 @@ type ResolvedPatternOutput struct {
 }
 
 type PatternFileContent struct {
+	Language    string `json:"language,omitempty"`
 	Source      string `json:"source"`
 	Destination string `json:"destination"`
 	Required    bool   `json:"required"`

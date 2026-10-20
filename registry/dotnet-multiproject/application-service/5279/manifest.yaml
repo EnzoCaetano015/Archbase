@@ -3,29 +3,31 @@ id: dotnet-multiproject/application-service@5279
 name: Application service contract and implementation
 description: Multi-project application service bundle separating its public interface from orchestration implemented against repository contracts.
 type: pattern-bundle
-version: 1.0.0
+version: 1.0.1
 structure:
   root: "{{Name}}"
   files:
-    - source: IExampleService.cs
-      destination: "{{Name}}/Interfaces/I{{Name}}Service.cs"
-      required: true
-    - source: ExampleService.cs
-      destination: "{{Name}}/{{Name}}Service.cs"
-      required: true
+  - format: markdown-code
+    source: IExampleService.cs.md
+    destination: "{{Name}}/Interfaces/I{{Name}}Service.cs"
+    required: true
+  - format: markdown-code
+    source: ExampleService.cs.md
+    destination: "{{Name}}/{{Name}}Service.cs"
+    required: true
 allowedChanges:
-  - identifiers
-  - imports
-  - use-cases
-  - injected-contracts
-  - validation
-  - error-types
+- identifiers
+- imports
+- use-cases
+- injected-contracts
+- validation
+- error-types
 preserve:
-  - interface-implementation-pair
-  - constructor-injection
-  - application-orchestration
-  - repository-contract-dependency
-  - no-http-or-sql-dependency
+- interface-implementation-pair
+- constructor-injection
+- application-orchestration
+- repository-contract-dependency
+- no-http-or-sql-dependency
 metadata:
   framework: dotnet
   layer: application
