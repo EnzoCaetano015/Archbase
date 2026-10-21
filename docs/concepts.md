@@ -29,7 +29,9 @@ A project stores every scope in the single root `.archbase/scopes.yaml`. Scopes 
 project/
 ├── .archbase/
 │   ├── scopes.yaml
-│   └── patterns/<scope-hash>/<pattern-hash>/
+│   └── patterns/
+│       ├── src--pages/next--page--1234/
+│       └── src--pages--admin/local--pages-standard--1/
 ├── src/pages/
 └── src/pages/admin/
 ```

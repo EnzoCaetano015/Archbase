@@ -248,7 +248,26 @@ func (s *Service) install(ctx context.Context, target string, bundle patterns.Bu
 	if err = s.fs.EnsureDir(absolute); err != nil {
 		return result, err
 	}
-	key := fmt.Sprintf("patterns/%x/%x", sha256.Sum256([]byte(scopePath)), sha256.Sum256([]byte(bundle.Manifest.ID)))
+	key := patternStorageRoot(scopePath, bundle.Manifest.ID)
+	for _, existing := range index.Scopes {
+		if existing.Scope.Path != scopePath && scopeStorageLabel(existing.Scope.Path) == scopeStorageLabel(scopePath) {
+			return result, fmt.Errorf("storage name collision between scopes %q and %q", existing.Scope.Path, scopePath)
+		}
+		if existing.Scope.Path == scopePath && existing.Pattern.Source == "local" && existing.Pattern.ID == bundle.Manifest.ID {
+			return result, fmt.Errorf("%w: %s", ErrPatternExists, filepath.Join(dir, filepath.FromSlash(existing.Pattern.Root)))
+		}
+	}
+	// Protect inactive hashed bundles too; reading still follows the indexed root.
+	oldKey := fmt.Sprintf("patterns/%x/%x", sha256.Sum256([]byte(scopePath)), sha256.Sum256([]byte(bundle.Manifest.ID)))
+	oldRoot := filepath.Join(dir, filepath.FromSlash(oldKey))
+	if err = s.checkPath(oldRoot); err != nil {
+		return result, err
+	}
+	if exists, e := s.fs.Exists(oldRoot); e != nil {
+		return result, e
+	} else if exists {
+		return result, fmt.Errorf("%w: %s", ErrPatternExists, oldRoot)
+	}
 	final := filepath.Join(dir, filepath.FromSlash(key))
 	if err = s.checkPath(final); err != nil {
 		return result, err

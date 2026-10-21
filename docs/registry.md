@@ -93,7 +93,7 @@ Environment variables, private-registry authentication, and user-facing cache ma
 
 ## Local installation and identity
 
-`arc add` copies only the validated manifest and declared bundle files into the project root's `.archbase/patterns/<scope-hash>/<pattern-hash>`. Registry README files and undeclared extras are not installed.
+`arc add` copies only the validated manifest and declared bundle files into the project root's `.archbase/patterns/<scope-name>/<pattern-name>`. Registry README files and undeclared extras are not installed.
 
 `arc create pages-standard <scope>` uses the canonical ID `local/pages-standard@1`. It starts from a minimal valid example unless `--from <pattern-id>` derives it from a registry pattern. Derived manifests receive the local identity while the scope entry in `scopes.yaml` records the original registry, ID, and version.
 

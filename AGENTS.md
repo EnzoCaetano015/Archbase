@@ -26,7 +26,7 @@
 - Local names such as `pages-standard` map to canonical IDs such as `local/pages-standard@1`.
 - A scope has one active pattern; activating another preserves stored pattern directories and never overwrites a collision.
 - New add/create commands use the invocation directory as project root unless --project-root explicitly overrides it; do not detect a Git root automatically.
-- Store scopes only in the root .archbase/scopes.yaml and independent bundles under patterns/<sha256(scope path)>/<sha256(PatternID)>.
+- Store scopes only in the root .archbase/scopes.yaml and independent bundles under patterns/<readable-scope-name>/<readable-pattern-name>; keep old hashed roots readable and never overwrite stored bundles.
 - Store textual examples as typed Markdown documents (for example file.ts.md); consumers receive extracted code while installation preserves the Markdown document.
 - Legacy per-directory scopes have no runtime compatibility or migration command in this release.
 - Local pattern roots remain confined to `.archbase` and are fully revalidated during resolution.

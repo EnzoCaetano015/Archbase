@@ -2,7 +2,6 @@ package workspace
 
 import (
 	"context"
-	"crypto/sha256"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -73,7 +72,7 @@ func TestCentralWorkspaceInstallationAndIndependentScopes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := filepath.Join(root, ".archbase", "patterns", fmt.Sprintf("%x", sha256.Sum256([]byte("src/pages"))), fmt.Sprintf("%x", sha256.Sum256([]byte("next/page@1234"))))
+	expected := filepath.Join(root, ".archbase", "patterns", "src--pages", "next--page--1234")
 	if first.PatternDirectory != expected || first.PatternDirectory == second.PatternDirectory {
 		t.Fatalf("wrong storage: %#v %#v", first, second)
 	}
@@ -258,7 +257,7 @@ func TestFailedScopeUpdateRollsBackNewPattern(t *testing.T) {
 	if _, err := faulty.Add(context.Background(), "next/hook@9214", root); err == nil {
 		t.Fatal("failure not injected")
 	}
-	key := fmt.Sprintf("patterns/%x/%x", sha256.Sum256([]byte(".")), sha256.Sum256([]byte("next/hook@9214")))
+	key := patternStorageRoot(".", "next/hook@9214")
 	if _, err := os.Stat(filepath.Join(root, ".archbase", filepath.FromSlash(key))); !errors.Is(err, fs.ErrNotExist) {
 		t.Fatalf("partial bundle %v", err)
 	}

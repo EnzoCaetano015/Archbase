@@ -36,7 +36,7 @@ Install `next/page@1234` at the project root:
 arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.5.0 --registry-subdir registry add next/page@1234 .
 ```
 
-The command creates the root `.archbase/scopes.yaml` and stores the validated bundle under `.archbase/patterns/<scope-hash>/<pattern-hash>`. The scope records the Git source, original PatternID, and version.
+The command creates the root `.archbase/scopes.yaml` and stores the validated bundle under `.archbase/patterns/_root/next--page--1234`. The scope records the Git source, original PatternID, and version.
 
 Inspect the installed scope and the registry pattern:
 

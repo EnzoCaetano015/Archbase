@@ -9,8 +9,8 @@ project/
 │   ├── rules/
 │   │   └── architecture-next-modular-1.md
 │   └── patterns/
-│       └── <scope-key>/
-│           └── <pattern-key>/
+│       └── features--storefront--application/
+│           └── next-feature--application-service--3527/
 │               ├── manifest.yaml
 │               └── application.ts.md
 └── features/
@@ -19,7 +19,11 @@ project/
         └── components/
 ```
 
-`scope-key` is the lowercase full SHA-256 of the normalized project-relative scope path (`.` at the root); `pattern-key` is the lowercase full SHA-256 of its canonical PatternID. Identity and paths remain readable in `scopes.yaml` and `arc resolve`/`arc inspect` output. Use the printed pattern root to find files; do not guess hash paths.
+New installations use readable names: scope `features/storefront/application` becomes `features--storefront--application`, and PatternID `next-feature/application-service@3527` becomes `next-feature--application-service--3527`. The project-wide scope uses `_root`; for example, `.archbase/patterns/_root/next--page--1234`.
+
+Names use `--` between segments. Ordinary lowercase letters, digits, isolated internal hyphens, underscores and dots remain readable. Ambiguous boundary/repeated hyphens, uppercase letters, unsafe/Unicode UTF-8 bytes and literal `~` use lowercase `~xx` escapes. Reserved Windows device names and the literal scope name `_root` escape their first byte. This avoids separator, root-sentinel and case-insensitive aliases without silently changing logical paths or IDs. Labels longer than 120 bytes retain a 96-byte readable prefix plus `~h` and 16 SHA-256 hex digits; colliding scope labels or occupied bundle destinations are refused, never merged or overwritten.
+
+Existing hashed roots continue to resolve through `scopes.yaml`, preserving customizations and inactive bundles. They are not renamed automatically, and reinstalling a stored ID in the same scope is still refused. Names apply to new installations; there is no migration command or YAML schema change. Use `arc resolve`/`arc inspect` to locate the authoritative stored root.
 
 The index has `schemaVersion: 1`, optional `metadata`, and a `scopes` array. Each entry uses the scope contract: `schemaVersion: 1`, `scope.path`, `pattern`, `origin` when applicable, `behavior`, and optional `metadata`. Entries are sorted lexicographically by path. `scope.path` is `.` or a normalized relative directory without globs. Local `pattern.root` is relative to the central `.archbase`.
 
