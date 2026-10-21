@@ -32,7 +32,9 @@ Available commands:
 
 Workspace: add/create use the current directory as the project root.
 Use --project-root to select another root. Scopes live in .archbase/scopes.yaml;
-pattern examples use typed Markdown (.ts.md, .tsx.md, .cs.md).`
+pattern examples use typed Markdown (.ts.md, .tsx.md, .cs.md).
+Rules live in .archbase/rules with synchronized native indices for
+agents, claude, cursor, and copilot. External instructions are preserved.`
 
 type RegistryOptions struct {
 	ProjectRoot  string
@@ -209,10 +211,10 @@ func newRulesAddCommand(dependencies Dependencies, options *RegistryOptions) *co
 		}
 		return executeOperation(cmd, dependencies, *options, request{Action: exportRule, ID: args[0], Path: destination, Format: format, Overwrite: overwrite, Merge: merge})
 	}}
-	command.Flags().StringVar(&format, "format", "", "export format: cursor, copilot, or agents")
+	command.Flags().StringVar(&format, "format", "", "index format: agents, claude, cursor, or copilot")
 	command.Flags().StringVar(&destination, "destination", ".", "project root receiving exported files")
-	command.Flags().BoolVar(&overwrite, "overwrite", false, "replace an existing Cursor or Copilot file")
-	command.Flags().BoolVar(&merge, "merge", false, "merge the managed block into an existing AGENTS.md")
+	command.Flags().BoolVar(&overwrite, "overwrite", false, "replace a changed Archbase-owned rule document")
+	command.Flags().BoolVar(&merge, "merge", false, "deprecated compatibility flag; managed indices are always merged")
 	return command
 }
 

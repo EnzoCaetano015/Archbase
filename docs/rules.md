@@ -4,7 +4,7 @@ Patterns define how a type of code is structured. Rules define where those types
 
 ## Canonical contract
 
-A schema version 1 rule contains an ID, name, optional description, semantic version, one or more path-to-pattern associations, textual architectural restrictions, and optional metadata. The contract deliberately contains no Cursor, GitHub Copilot, or AGENTS-specific fields.
+A schema version 1 rule contains an ID, name, optional description, semantic version, one or more path-to-pattern associations, textual architectural restrictions, and optional metadata. The contract deliberately contains no Cursor, GitHub Copilot, Claude, or AGENTS-specific fields.
 
 Rule paths are relative slash-separated globs such as `src/pages/**`. Paths must be normalized and remain inside the destination project. Every restriction must contain meaningful text, and duplicate path-to-pattern associations are invalid.
 
@@ -25,35 +25,60 @@ The official catalog is embedded and works offline. Directory and public Git reg
 
 ## CLI
 
-- `arc rules list` lists IDs, versions, sources, and descriptions deterministically.
-- `arc rules inspect <rule-id>` displays identity, source, scopes, pattern IDs, and restrictions.
-- `arc rules add <rule-id> --format cursor|copilot|agents` exports a resolved rule. `--destination` defaults to the current directory.
-- `arc remove <rule-id>` removes every managed export of one rule from the destination project.
-- `arc remove --all` removes all managed rule exports from the destination project.
-
-The global Git registry flags apply to rules and patterns together. A configured Git source is tried before the embedded catalog; only a missing ID permits fallback. Valid stale-cache warnings are printed to stderr.
-
-## Export formats and conflicts
-
-The full RuleID becomes a stable filename component: `architecture/next-modular@1` becomes `architecture-next-modular-1`.
-
-- Cursor writes `.cursor/rules/<normalized-id>.mdc` with `description`, `globs`, and `alwaysApply: false` frontmatter.
-- Copilot writes `.github/instructions/<normalized-id>.instructions.md` with `applyTo` frontmatter.
-- AGENTS writes `AGENTS.md` at every static scope prefix, grouping scopes with the same directory. Each generated section is bounded by RuleID-specific Archbase markers.
-
-Cursor and Copilot refuse existing files unless `--overwrite` is explicit. AGENTS rejects `--overwrite`; an existing file requires `--merge`. Merge replaces one complete matching managed block or appends a missing block while preserving external content. Incomplete, reversed, or duplicate markers are errors.
-
-Every generated path is confined to the destination, and symlinked paths are rejected. Multi-file exports are fully prevalidated and rolled back if any write fails. Exported content contains architecture, restrictions, pattern IDs, and commands for inspecting patterns; it never copies pattern example source code.
-
-## Removing exports
-
-Removal is local and does not contact a registry. Use `--destination <path>` to target a project other than the current directory:
-
 ```bash
+arc rules list
+arc rules inspect architecture/next-modular@1
+arc rules add architecture/next-modular@1 --format agents --destination .
+arc rules add architecture/next-modular@1 --format claude --destination .
+arc rules add architecture/next-modular@1 --format cursor --destination .
+arc rules add architecture/next-modular@1 --format copilot --destination .
 arc remove architecture/next-modular@1 --destination .
 arc remove --all --destination .
 ```
 
-Cursor and Copilot exports include a RuleID-specific ownership marker. Archbase deletes only files carrying that marker; exports from older versions are recognized through their exact generated structure and, for a specific removal, the filename derived from the RuleID. Other `.mdc` and `.instructions.md` files are preserved.
+The destination defaults to the invocation directory. Global Git registry flags apply to rules and patterns together: Git precedes embedded, only not-found permits fallback, and stale-cache warnings go to stderr. Removal is entirely offline.
 
-For `AGENTS.md`, removal deletes only complete Archbase-managed blocks. External instructions and blocks belonging to rules not selected for removal remain byte-for-byte intact. Incomplete, overlapping, reversed, or duplicate markers stop the entire operation. All candidate files are prevalidated, symlinks are rejected, and a multi-file failure restores earlier files.
+## One document, four native entry points
+
+Each RuleID is stored once in `.archbase/rules/<normalized-id>.md`. For example, `architecture/next-modular@1` becomes `architecture-next-modular-1.md`. Its frontmatter contains `id`, `name`, `description`, `version`, `source`, and `scopes`; the body contains the complete architecture, pattern references, restrictions, and inspection commands, never pattern example code. An Archbase ownership marker carries the original RuleID. Canonical YAML schemas are unchanged.
+
+| Format | Entry point | Link prefix |
+| --- | --- | --- |
+| `agents` | `AGENTS.md` | `.archbase/rules/` |
+| `claude` | `CLAUDE.md` | `.archbase/rules/` |
+| `copilot` | `.github/copilot-instructions.md` | `../.archbase/rules/` |
+| `cursor` | `.cursor/rules/archbase.mdc` | `../../.archbase/rules/` |
+
+Native locations follow the [Claude memory documentation](https://code.claude.com/docs/en/memory), [GitHub custom instructions](https://docs.github.com/en/copilot/concepts/prompting-and-context/custom-instructions?tool=vscode), and [Cursor rules](https://cursor.com/docs/rules).
+
+Each entry point has one managed index between these exact markers:
+
+```markdown
+<!-- archbase:rules start -->
+...
+<!-- archbase:rules end -->
+```
+
+Entries are sorted by RuleID, with an objective description (falling back to the name), project-relative scope globs, and a relative document link. Markdown metacharacters are escaped. An explicit instruction tells the agent to open every applicable document before editing; a Markdown link is not an automatic import.
+
+Selecting a format creates its entry point or appends its index. Every already activated format is synchronized on additions, updates, and removals. A format is activated only by a complete managed index, not merely by the existence of its file. Activating another format includes all installed rules; other formats are not created automatically. The document remains shared.
+
+New Cursor entry points have `description` and `alwaysApply: true` frontmatter. Existing Cursor frontmatter must be valid YAML with `alwaysApply: true`; otherwise installation fails, even with overwrite. Compatible frontmatter and all external content remain byte-for-byte unchanged, including CRLF.
+
+## Updates, conflicts, and cleanup
+
+Identical documents are reused without rewriting them. A changed document requires `--overwrite` and must belong to the same RuleID. Foreign files and filename collisions between different IDs are never overwritten. Index updates automatically touch only the managed block; `--merge` is accepted in all formats solely as an obsolete, no-op compatibility flag.
+
+A first rule installation also initializes an empty `.archbase/scopes.yaml` in the same transaction, so patterns can be installed later.
+
+Reapplying a rule removes its legacy blocks from `AGENTS.md` and `CLAUDE.md`, including the root, and its recognized individual Cursor/Copilot exports. Other rules and external instructions remain intact. A nested instruction file is deleted only if it consisted solely of the removed blocks and whitespace. No new per-scope instruction files are created, and no migration command is required.
+
+## Removal and safety
+
+`arc remove <id>` removes the central document, matching legacy exports, and references in every active index. `--all` removes all managed rules, preserving patterns, scopes, and foreign files. Removing the final rule strips the index blocks but keeps all four native entry files, even when empty (or containing only Cursor frontmatter). A later installation activates only the selected format because an empty entry file has no managed block.
+
+Removal validates canonical filenames and ownership IDs; links in Markdown never authorize deletion. Older markerless exports are recognized only by their strict generated fingerprint. Malformed, duplicated, reversed, or overlapping markers abort the operation before writes. Legacy discovery skips `.archbase`, dependencies, build output, and nested Git projects.
+
+Paths are confined to the destination and reject symlinks. Patterns and rules share a contextual workspace lock. Document, workspace initialization, indices, and legacy cleanup are prevalidated and applied transactionally: a failure restores changed/deleted files and removes newly created files/directories. Operational outputs list only paths actually changed or removed. A successful no-op does not rewrite files.
+
+The six read-only MCP tools retain their existing semantics; local instruction indices do not change registry-based rule resolution.

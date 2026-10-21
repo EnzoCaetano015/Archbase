@@ -67,7 +67,7 @@ func (o operations) run(ctx context.Context, r request) (operationResult, error)
 		if err != nil {
 			return result, err
 		}
-		removed, err := exporter.Remove(r.ID, archrules.RemoveOptions{Destination: r.Path, All: r.All})
+		removed, err := exporter.RemoveContext(ctx, r.ID, archrules.RemoveOptions{Destination: r.Path, All: r.All})
 		result.Removed = &removed
 		return result, err
 	}
@@ -156,7 +156,7 @@ func (o operations) run(ctx context.Context, r request) (operationResult, error)
 		if err != nil {
 			return result, err
 		}
-		exported, err := exporter.Export(resolved.Rule, format, archrules.ExportOptions{Destination: r.Path, Overwrite: r.Overwrite, Merge: r.Merge})
+		exported, err := exporter.ExportContext(ctx, resolved.Rule, format, archrules.ExportOptions{Destination: r.Path, Overwrite: r.Overwrite, Merge: r.Merge})
 		result.Exported = &exported
 		return result, err
 	default:

@@ -6,6 +6,8 @@ Run `arc add` and `arc create` from the project root. They use the invocation di
 project/
 ├── .archbase/
 │   ├── scopes.yaml
+│   ├── rules/
+│   │   └── architecture-next-modular-1.md
 │   └── patterns/
 │       └── <scope-key>/
 │           └── <pattern-key>/
@@ -72,3 +74,5 @@ The final `.md` is storage-only: `.ts.md` identifies TypeScript; the destination
 Raw registry files remain supported with omitted `format` or `format: raw`. Installation converts UTF-8 text without NUL bytes into typed Markdown. Binary sources remain raw and MCP returns base64. The minimal local pattern uses `Example.txt.md` with language `text`.
 
 During conversion, CRLF becomes LF and trailing newlines are normalized to one final newline. Interior content remains intact. Existing Markdown documents retain their stored bytes; reading extracts LF code with its final newline. Keep manifests, indexes, and READMEs in their native formats.
+
+Rules use the same workspace: a first installation initializes an empty scopes index and stores shared documents in `.archbase/rules`. Native agent files contain only synchronized indices; see [rules](rules.md). Pattern and rule writes use the same cancellable `.archbase.lock` at the project root. Normal exits release it; after an abrupt interruption, verify no writer remains before manually removing a leftover lock.

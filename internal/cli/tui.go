@@ -38,7 +38,7 @@ var uiMenu = []menuItem{
 	{"Create", "Create a customizable local pattern", "create"},
 	{"Inspect local", "Inspect a path or pattern ID", "inspect"},
 	{"Install pattern", "Install a pattern in a scope", "add"},
-	{"Export rule", "Export to Cursor, Copilot or AGENTS", "rules add"},
+	{"Export rule", "Index shared rules for AGENTS, Claude, Cursor or Copilot", "rules add"},
 	{"Remove exports", "Remove Archbase-owned rule exports", "remove"},
 	{"Project & registry", "Change settings for this session", "settings"},
 	{"MCP connection", "Connect an agent over stdio", "mcp"},

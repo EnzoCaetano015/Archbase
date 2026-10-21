@@ -67,7 +67,7 @@ func (m *uiModel) openForm(target, id string) (tea.Model, tea.Cmd) {
 	case "inspect":
 		m.fields = []formField{textField("id", "Path or pattern ID", ".", "A local path or a canonical pattern ID")}
 	case "rules add":
-		m.fields = []formField{textField("id", "Rule ID", id, "Example: architecture/next-modular@1"), choiceField("format", "Export format", "cursor", "copilot", "agents"), path("Destination project"), checkField("overwrite", "Overwrite an existing Cursor/Copilot export", "Explicit opt-in; disabled by default"), checkField("merge", "Merge the managed block into AGENTS.md", "Explicit opt-in; preserves external content")}
+		m.fields = []formField{textField("id", "Rule ID", id, "Example: architecture/next-modular@1"), choiceField("format", "Agent index", "agents", "claude", "cursor", "copilot"), path("Destination project"), checkField("overwrite", "Replace a changed Archbase rule document", "Only documents owned by the same RuleID; external instructions are preserved")}
 	case "remove":
 		m.fields = []formField{textField("id", "Rule ID", id, "Leave empty only when removing all managed exports"), path("Destination project"), checkField("all", "Remove ALL managed rule exports", "Only Archbase-owned files and blocks may be removed")}
 	case "settings":
@@ -184,11 +184,8 @@ func (m *uiModel) buildRequest() (request, error) {
 		if _, err := archrules.ParseRuleID(r.ID); err != nil {
 			return r, err
 		}
-		if r.Format == "agents" && r.Overwrite {
-			return r, fmt.Errorf("AGENTS exports use Merge, not Overwrite")
-		}
-		if r.Format != "agents" && r.Merge {
-			return r, fmt.Errorf("Merge applies only to AGENTS exports")
+		if _, err := archrules.ParseFormat(r.Format); err != nil {
+			return r, err
 		}
 	case removeRule:
 		if r.All && r.ID != "" {

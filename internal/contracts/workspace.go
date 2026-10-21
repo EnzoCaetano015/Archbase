@@ -13,7 +13,13 @@ func LoadWorkspaceFS(fsys fs.FS, file string) (Workspace, error) {
 	if err != nil {
 		return result, &ValidationError{Kind: WorkspaceKind, Path: file, Cause: err}
 	}
-	if err = decodeAndValidate(WorkspaceKind, file, data, &result); err == nil {
+	return LoadWorkspaceBytes(file, data)
+}
+
+func LoadWorkspaceBytes(file string, data []byte) (Workspace, error) {
+	var result Workspace
+	err := decodeAndValidate(WorkspaceKind, file, data, &result)
+	if err == nil {
 		err = validateWorkspace(file, result)
 	}
 	return result, err

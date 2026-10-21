@@ -82,16 +82,16 @@ arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref
 arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.5.0 --registry-subdir registry rules add architecture/next-modular@1 --format cursor --destination .
 ```
 
-The export creates `.cursor/rules/architecture-next-modular-1.mdc`. It references the four Next PatternIDs and their scopes without copying pattern source examples.
+The export creates `.archbase/rules/architecture-next-modular-1.md` and an always-applied index in `.cursor/rules/archbase.mdc`. The central document references the four Next PatternIDs without copying examples.
 
-Copilot and hierarchical AGENTS exports use the same canonical rule:
+Activate other native entry points using the same shared document:
 
 ```bash
 arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.5.0 --registry-subdir registry rules add architecture/next-modular@1 --format copilot --destination .
 arc --registry-url https://github.com/EnzoCaetano015/Archbase.git --registry-ref v0.5.0 --registry-subdir registry rules add architecture/next-modular@1 --format agents --destination .
 ```
 
-If an `AGENTS.md` already exists, repeat the AGENTS command with `--merge`. Cursor and Copilot require `--overwrite` when intentionally replacing their generated files.
+Activate Claude with `arc rules add architecture/next-modular@1 --format claude --destination .`. AGENTS and Claude use root files; Copilot uses `.github/copilot-instructions.md`. All active indices stay synchronized. Existing framework instructions are preserved automatically; `--merge` is obsolete. A changed owned central document requires `--overwrite`; identical documents are reused. See [conflicts and Cursor frontmatter](rules.md).
 
 ## 5. Connect an MCP client
 

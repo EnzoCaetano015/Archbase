@@ -1,10 +1,10 @@
 package rules
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/fs"
-	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -19,176 +19,93 @@ type RemoveOptions struct {
 	Destination string
 	All         bool
 }
-
 type RemoveResult struct {
 	Paths         []string
 	RuleIDs       []string
 	LegacyExports int
 }
 
-type removalAction struct {
-	path     string
-	original []byte
-	updated  []byte
-	remove   bool
-	ruleIDs  []string
-	legacy   bool
+func (e *Exporter) Remove(id string, options RemoveOptions) (RemoveResult, error) {
+	return e.RemoveContext(context.Background(), id, options)
 }
 
-// Remove deletes owned Cursor and Copilot exports and removes only managed
-// Archbase blocks from AGENTS.md files.
-func (e *Exporter) Remove(rawID string, options RemoveOptions) (RemoveResult, error) {
+func (e *Exporter) RemoveContext(ctx context.Context, id string, options RemoveOptions) (RemoveResult, error) {
+	if options.All {
+		if id != "" {
+			return RemoveResult{}, errors.New("a rule ID cannot be combined with --all")
+		}
+	} else if _, err := ParseRuleID(id); err != nil {
+		return RemoveResult{}, err
+	}
 	if options.Destination == "" {
 		options.Destination = "."
 	}
-	if options.All {
-		if rawID != "" {
-			return RemoveResult{}, errors.New("a rule ID cannot be combined with --all")
-		}
-	} else if _, err := ParseRuleID(rawID); err != nil {
-		return RemoveResult{}, err
-	}
-
 	root, err := filepath.Abs(options.Destination)
 	if err != nil {
-		return RemoveResult{}, &archfs.PathError{Op: "resolve removal destination", Path: options.Destination, Err: err}
+		return RemoveResult{}, err
 	}
 	exists, err := e.fs.Exists(root)
 	if err != nil {
 		return RemoveResult{}, err
 	}
 	if !exists {
-		return RemoveResult{}, &archfs.PathError{Op: "remove rules", Path: root, Err: fs.ErrNotExist}
+		return RemoveResult{}, fmt.Errorf("remove rules at %q: %w", root, fs.ErrNotExist)
 	}
-	if err := e.validateRoot(root); err != nil {
+	if err = e.validateRoot(root); err != nil {
 		return RemoveResult{}, err
 	}
-	for _, relative := range []string{filepath.Join(".cursor", "rules"), filepath.Join(".github", "instructions")} {
-		target := filepath.Join(root, relative)
-		if err := e.rejectSymlinkPath(root, target); err != nil {
-			return RemoveResult{}, err
-		}
-	}
-
-	actions := make([]removalAction, 0)
-	err = e.fs.WalkDir(root, func(current string, entry fs.DirEntry, walkErr error) error {
-		if walkErr != nil {
-			return &archfs.PathError{Op: "scan rule exports", Path: current, Err: walkErr}
-		}
-		if current == root {
-			return nil
-		}
-		relative, err := filepath.Rel(root, current)
-		if err != nil {
-			return &archfs.PathError{Op: "resolve rule export", Path: current, Err: err}
-		}
-		slashed := filepath.ToSlash(relative)
-		if entry.IsDir() {
-			if entry.Name() == ".git" || entry.Name() == ".archbase" || entry.Name() == "node_modules" {
-				return fs.SkipDir
-			}
-			return nil
-		}
-		candidate := isAgentsPath(slashed) || isOwnedExportPath(slashed)
-		if !candidate {
-			return nil
-		}
-		if entry.Type()&os.ModeSymlink != 0 {
-			return &archfs.PathError{Op: "remove rule export", Path: current, Err: archfs.ErrSymlink}
-		}
-		info, err := entry.Info()
-		if err != nil {
-			return &archfs.PathError{Op: "inspect rule export", Path: current, Err: err}
-		}
-		if !info.Mode().IsRegular() {
-			return &archfs.PathError{Op: "remove rule export", Path: current, Err: errors.New("target is not a regular file")}
-		}
-		content, err := e.fs.ReadFile(current)
-		if err != nil {
-			return err
-		}
-		if isAgentsPath(slashed) {
-			updated, ids, changed, err := removeManagedBlocks(content, rawID, options.All)
-			if err != nil {
-				return &archfs.PathError{Op: "remove managed rule block", Path: current, Err: err}
-			}
-			if changed {
-				actions = append(actions, removalAction{path: current, original: content, updated: updated, ruleIDs: ids})
-			}
-			return nil
-		}
-		id, owned, err := ownedExportRuleID(content)
-		if err != nil {
-			return &archfs.PathError{Op: "inspect managed rule export", Path: current, Err: err}
-		}
-		if owned && (options.All || id == rawID) {
-			actions = append(actions, removalAction{path: current, original: content, remove: true, ruleIDs: []string{id}})
-		} else if !owned && isLegacyManagedExport(content, slashed) && (options.All || slashed == expectedExportPath(rawID, slashed)) {
-			ids := []string(nil)
-			if !options.All {
-				ids = []string{rawID}
-			}
-			actions = append(actions, removalAction{path: current, original: content, remove: true, ruleIDs: ids, legacy: true})
-		}
-		return nil
-	})
+	unlock, err := archfs.AcquireWorkspaceLock(ctx, root, e.fs)
 	if err != nil {
 		return RemoveResult{}, err
 	}
-
-	sort.Slice(actions, func(left, right int) bool { return actions[left].path < actions[right].path })
-	applied := make([]removalAction, 0, len(actions))
-	for _, action := range actions {
-		var actionErr error
-		if action.remove {
-			actionErr = e.fs.Remove(action.path)
-		} else {
-			actionErr = e.fs.WriteFileAtomic(action.path, action.updated, true)
+	defer unlock()
+	for _, p := range []string{".cursor/rules", ".github/instructions"} {
+		if err = e.rejectSymlinkPath(root, filepath.Join(root, filepath.FromSlash(p))); err != nil {
+			return RemoveResult{}, err
 		}
-		if actionErr != nil {
-			rollbackErr := e.rollbackRemovals(append(applied, action))
-			if rollbackErr != nil {
-				return RemoveResult{}, fmt.Errorf("remove rules at %q: %w (rollback failed: %v)", action.path, actionErr, rollbackErr)
-			}
-			return RemoveResult{}, fmt.Errorf("remove rules at %q: %w", action.path, actionErr)
-		}
-		applied = append(applied, action)
 	}
-
-	result := RemoveResult{Paths: make([]string, 0, len(actions))}
-	ids := map[string]bool{}
-	for _, action := range actions {
-		result.Paths = append(result.Paths, action.path)
-		for _, id := range action.ruleIDs {
-			ids[id] = true
+	documents, files, err := e.loadDocuments(ctx, root)
+	if err != nil {
+		return RemoveResult{}, err
+	}
+	changes, err := e.scanLegacy(ctx, root, id, options.All)
+	if err != nil {
+		return RemoveResult{}, err
+	}
+	for found, c := range files {
+		if options.All || found == id {
+			c.remove = true
+			c.ids = []string{found}
+			changes[c.path] = c
+			delete(documents, found)
 		}
-		if action.legacy {
+	}
+	if err = e.synchronizeIndices(root, "", documents, changes); err != nil {
+		return RemoveResult{}, err
+	}
+	paths, err := e.applyChanges(ctx, root, changes)
+	if err != nil {
+		return RemoveResult{}, err
+	}
+	result := RemoveResult{Paths: paths}
+	ids := map[string]bool{}
+	for _, p := range paths {
+		c := changes[p]
+		for _, found := range c.ids {
+			ids[found] = true
+		}
+		if c.legacy {
 			result.LegacyExports++
 		}
 	}
-	for id := range ids {
-		result.RuleIDs = append(result.RuleIDs, id)
+	if len(paths) > 0 && !options.All {
+		ids[id] = true
+	}
+	for found := range ids {
+		result.RuleIDs = append(result.RuleIDs, found)
 	}
 	sort.Strings(result.RuleIDs)
 	return result, nil
-}
-
-func (e *Exporter) rollbackRemovals(actions []removalAction) error {
-	var failures []error
-	for index := len(actions) - 1; index >= 0; index-- {
-		action := actions[index]
-		exists, err := e.fs.Exists(action.path)
-		if err == nil {
-			err = e.fs.EnsureDir(filepath.Dir(action.path))
-		}
-		if err == nil {
-			err = e.fs.WriteFileAtomic(action.path, action.original, exists)
-		}
-		if err != nil {
-			failures = append(failures, err)
-		}
-	}
-	return errors.Join(failures...)
 }
 
 func isAgentsPath(relative string) bool {

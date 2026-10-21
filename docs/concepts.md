@@ -19,7 +19,7 @@ The first command stores the validated bundle in a project scope. The second ins
 
 Rules define where code belongs, layer responsibilities, and allowed dependency directions. They associate relative paths such as `src/pages/**` with pattern IDs without copying pattern source examples.
 
-The same canonical rule can be exported to Cursor, GitHub Copilot, or `AGENTS.md`. See the [rules guide](rules.md) for commands, formats, and conflict handling.
+The same canonical rule is stored once in `.archbase/rules` and indexed by Cursor, GitHub Copilot, Claude, or `AGENTS.md`. Activated agent indices stay synchronized. See the [rules guide](rules.md) for commands, formats, and conflict handling.
 
 ## Scopes and resolution
 

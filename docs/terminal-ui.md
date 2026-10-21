@@ -33,7 +33,7 @@ The footer shows the shortcuts for the current screen. `Ctrl+C` during a confirm
 
 Installation, creation, export, and removal show a review screen before changing files. Read the ID, resolved destination, export format, and options, then press `Enter` to apply or `Esc` to edit. Review screens can be scrolled when paths or summaries are long.
 
-Overwrite and merge are disabled by default. Enable overwrite only to replace an existing Cursor or Copilot export; enable merge to update an Archbase-managed block in an existing `AGENTS.md`. Rule removal accepts one RuleID or an explicit **ALL managed rule exports** selection. It preserves external files and external content in `AGENTS.md`.
+Choose agents, claude, cursor, or copilot. Rules share a central document and every activated native index stays synchronized; unrelated agent files are not activated automatically. Overwrite is disabled by default and authorizes replacement only of a changed owned document for the same RuleID. Managed indices update automatically, so there is no merge checkbox. Rule removal accepts one RuleID or an explicit **ALL managed rule exports** selection; it preserves external instructions, native entry files, patterns, and scopes.
 
 Failures open a scrollable message. Press `Esc` to return to the form with your values preserved. Existing scope precedence, validation, local customization, conflict protection, and rollback rules apply equally to the UI and shell commands.
 

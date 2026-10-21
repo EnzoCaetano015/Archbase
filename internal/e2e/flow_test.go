@@ -43,47 +43,47 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 		{
 			name: "astro", fixture: "astro", rootPattern: "astro/page@5904", nested: "src/pages", localName: "pages-standard",
 			customFile: "Example.astro", target: "src/pages/admin/index.astro", outsideTarget: "src/components/Card.astro",
-			ruleID: "architecture/astro-content-site@1", exported: ".cursor/rules/architecture-astro-content-site-1.mdc",
+			ruleID: "architecture/astro-content-site@1", exported: ".cursor/rules/archbase.mdc",
 		},
 		{
 			name: "next", fixture: "next", rootPattern: "next/page@1234", nested: "src/pages", localName: "pages-standard",
 			customFile: "Example/Example.tsx", target: "src/pages/Admin/Page.tsx", outsideTarget: "src/components/Card.tsx",
-			ruleID: "architecture/next-modular@1", exported: ".cursor/rules/architecture-next-modular-1.mdc",
+			ruleID: "architecture/next-modular@1", exported: ".cursor/rules/archbase.mdc",
 		},
 		{
 			name: "next-feature", fixture: "next-feature", rootPattern: "next-feature/page@1846", nested: "app/(platform)/items", localName: "feature-pages-standard",
 			customFile: "page.tsx", target: "app/(platform)/items/[id]/page.tsx", outsideTarget: "features/catalog/components/item-card.tsx",
-			ruleID: "architecture/next-feature-app-router@1", exported: ".cursor/rules/architecture-next-feature-app-router-1.mdc",
+			ruleID: "architecture/next-feature-app-router@1", exported: ".cursor/rules/archbase.mdc",
 		},
 		{
 			name: "dotnet", fixture: "dotnet", rootPattern: "dotnet/controller@7743", nested: "src/Controllers", localName: "controllers-standard",
 			customFile: "ExampleController.cs", target: "src/Controllers/AdminController.cs", outsideTarget: "src/Services/ExampleService.cs",
-			ruleID: "architecture/dotnet-layered@1", exported: ".cursor/rules/architecture-dotnet-layered-1.mdc",
+			ruleID: "architecture/dotnet-layered@1", exported: ".cursor/rules/archbase.mdc",
 		},
 		{
 			name: "dotnet-multiproject", fixture: "dotnet-multiproject", rootPattern: "dotnet-multiproject/controller@2947", nested: "src/Example.Api/Controllers", localName: "api-controllers-standard",
 			customFile: "ExampleController.cs", target: "src/Example.Api/Controllers/AdminController.cs", outsideTarget: "src/Example.Application/ItemService.cs",
-			ruleID: "architecture/dotnet-multiproject@1", exported: ".cursor/rules/architecture-dotnet-multiproject-1.mdc",
+			ruleID: "architecture/dotnet-multiproject@1", exported: ".cursor/rules/archbase.mdc",
 		},
 		{
 			name: "nestjs", fixture: "nestjs", rootPattern: "nestjs/controller@2864", nested: "src/features/items", localName: "controllers-standard",
 			customFile: "example.controller.ts", target: "src/features/items/admin.controller.ts", outsideTarget: "src/features/users/users.service.ts",
-			ruleID: "architecture/nestjs-prisma-modular@1", exported: ".cursor/rules/architecture-nestjs-prisma-modular-1.mdc",
+			ruleID: "architecture/nestjs-prisma-modular@1", exported: ".cursor/rules/archbase.mdc",
 		},
 		{
 			name: "react", fixture: "react", rootPattern: "react/page@6325", nested: "src/pages", localName: "pages-standard",
 			customFile: "Example/Example.tsx", target: "src/pages/Admin/Admin.tsx", outsideTarget: "src/components/Card/Card.tsx",
-			ruleID: "architecture/react-vite-modular@1", exported: ".cursor/rules/architecture-react-vite-modular-1.mdc",
+			ruleID: "architecture/react-vite-modular@1", exported: ".cursor/rules/archbase.mdc",
 		},
 		{
 			name: "react-tailwind", fixture: "react", rootPattern: "react-tailwind/page@6592", nested: "src/pages", localName: "tailwind-pages-standard",
 			customFile: "Example/Example.tsx", target: "src/pages/Forms/Example.tsx", outsideTarget: "src/components/ui/button.tsx",
-			ruleID: "architecture/react-tailwind-modular@1", exported: ".cursor/rules/architecture-react-tailwind-modular-1.mdc",
+			ruleID: "architecture/react-tailwind-modular@1", exported: ".cursor/rules/archbase.mdc",
 		},
 		{
 			name: "spring-boot", fixture: "spring-boot", rootPattern: "spring-boot/controller@2841", nested: "src/main/java/com/example/api/controller", localName: "controllers-standard",
 			customFile: "ExampleController.java", target: "src/main/java/com/example/api/controller/AdminController.java", outsideTarget: "src/main/java/com/example/api/service/ItemService.java",
-			ruleID: "architecture/spring-boot-layered@1", exported: ".cursor/rules/architecture-spring-boot-layered-1.mdc",
+			ruleID: "architecture/spring-boot-layered@1", exported: ".cursor/rules/archbase.mdc",
 		},
 	} {
 		t.Run(scenario.name, func(t *testing.T) {
@@ -117,6 +117,16 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 				t.Fatalf("rule export missing: %v", err)
 			}
 
+			for _, format := range []string{"agents", "claude", "copilot"} {
+				runCLI(t, append(global, "rules", "add", scenario.ruleID, "--format", format, "--destination", project)...)
+			}
+			doc := strings.NewReplacer("/", "-", "@", "-").Replace(scenario.ruleID) + ".md"
+			for _, entry := range []string{"AGENTS.md", "CLAUDE.md", ".github/copilot-instructions.md", ".cursor/rules/archbase.mdc"} {
+				content, err := os.ReadFile(filepath.Join(project, filepath.FromSlash(entry)))
+				if err != nil || !strings.Contains(string(content), ".archbase/rules/"+doc) {
+					t.Fatalf("central index %s: %s %v", entry, content, err)
+				}
+			}
 			service := newGitMCPService(t, project, remote, cache)
 			client, closeClient := connectMCP(t, service)
 			defer closeClient()
@@ -135,6 +145,18 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 			scopes := callTool[archmcp.ProjectScopesOutput](t, client, "list_project_scopes", map[string]any{})
 			if len(scopes.Scopes) != 2 || scopes.Scopes[0].Path != "." || scopes.Scopes[1].Path != scenario.nested {
 				t.Fatalf("unexpected MCP scopes: %#v", scopes.Scopes)
+			}
+			// Removal is offline, updates every activated index, and leaves patterns usable.
+			runCLI(t, "remove", scenario.ruleID, "--destination", project)
+			for _, entry := range []string{"AGENTS.md", "CLAUDE.md", ".github/copilot-instructions.md", ".cursor/rules/archbase.mdc"} {
+				content, err := os.ReadFile(filepath.Join(project, filepath.FromSlash(entry)))
+				if err != nil || strings.Contains(string(content), "archbase:rules") {
+					t.Fatalf("index removal %s: %s %v", entry, content, err)
+				}
+			}
+			files = callTool[archmcp.PatternFilesOutput](t, client, "get_pattern_files", map[string]any{"path": scenario.target})
+			if !hasContent(files, custom) {
+				t.Fatal("rule removal changed the local pattern")
 			}
 		})
 	}

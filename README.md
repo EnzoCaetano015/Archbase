@@ -14,7 +14,7 @@ Archbase is an open-source Go CLI (`arc`) for sharing code patterns and architec
 - **Rules** define paths, responsibilities, and dependency constraints.
 - **Scopes** select the active pattern for each part of a project.
 
-The built-in catalog works offline. Local patterns can be customized, rules can be exported to Cursor, GitHub Copilot, and `AGENTS.md`, and compatible agents can inspect project context through read-only MCP tools.
+The built-in catalog works offline. Local patterns can be customized, rules share central documents indexed by Cursor, GitHub Copilot, Claude, and `AGENTS.md`, and compatible agents can inspect project context through read-only MCP tools.
 
 ## Quick start
 
@@ -32,6 +32,7 @@ arc version
 arc add next/page@1234 .
 arc resolve src/pages/Home.tsx
 arc inspect next/page@1234
+arc rules add architecture/next-modular@1 --format agents
 arc remove architecture/next-modular@1
 ```
 
@@ -41,9 +42,11 @@ Direct commands still work in your shell, with formatted help, tables, and reada
 
 `arc add` and `arc create` use the current directory as the project root; pass `--project-root <path>` to choose another. All scopes live in the single root `.archbase/scopes.yaml`, with independent pattern copies in `.archbase/patterns/<scope-hash>/<pattern-hash>`. Examples such as `Example.tsx.md` contain typed Markdown code blocks, keeping reference code out of project compiler inputs. `arc resolve` selects the most specific scope even when the target file does not exist yet. Use its printed root to locate and edit examples. See [workspace layout](docs/workspace.md).
 
-`arc remove <rule-id>` removes that rule's managed Cursor, Copilot, and `AGENTS.md` exports. `arc remove --all` removes every Archbase-managed rule export in the project while preserving unrelated files and external `AGENTS.md` content.
+`arc remove <rule-id>` removes that rule's central document, references in all activated agent indices, and managed legacy exports. `arc remove --all` removes every Archbase-managed rule export in the project while preserving patterns, scopes, unrelated files, and external agent instructions.
 
 macOS and Windows are available as **unsigned previews**. See the [installation guide](docs/installation.md) for requirements, manual installation, and removal.
+
+Rules live once in `.archbase/rules`. Use `--format agents|claude|cursor|copilot` to activate a native entry point; later additions synchronize every activated format. Index updates preserve framework/user instructions. Identical documents are reused; changed owned documents require `--overwrite`.
 
 ## Documentation
 
@@ -54,7 +57,7 @@ macOS and Windows are available as **unsigned previews**. See the [installation 
 | [Terminal UI](docs/terminal-ui.md) | Interactive navigation, forms, long documents, and plain output. |
 | [Concepts](docs/concepts.md) | Patterns, nested scopes, resolution, and local customization. |
 | [Registry](docs/registry.md) | Pattern catalog, public Git sources, caching, and validation. |
-| [Architecture rules](docs/rules.md) | Rule catalog and exports for Cursor, Copilot, and `AGENTS.md`. |
+| [Architecture rules](docs/rules.md) | Shared rules and synchronized indices for AGENTS, Claude, Cursor, and Copilot. |
 | [MCP](docs/mcp.md) | Read-only tools, client configuration, and project boundaries. |
 | [Schemas](docs/schemas.md) | Public YAML contracts and versioning. |
 | [Development](docs/development.md) | Build, validation, contributions, and release workflow. |

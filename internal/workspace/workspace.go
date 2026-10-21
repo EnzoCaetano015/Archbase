@@ -9,10 +9,8 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"runtime"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/EnzoCaetano015/Archbase/internal/contracts"
 	archfs "github.com/EnzoCaetano015/Archbase/internal/filesystem"
@@ -37,6 +35,7 @@ type FileSystem interface {
 	RemoveAll(string) error
 	DirFS(string) fs.FS
 	CreateExclusive(string) error
+	Remove(string) error
 }
 type OSFileSystem struct{}
 
@@ -50,17 +49,8 @@ func (OSFileSystem) MkdirTemp(p, n string) (string, error) { return os.MkdirTemp
 func (OSFileSystem) Rename(a, b string) error              { return os.Rename(a, b) }
 func (OSFileSystem) RemoveAll(p string) error              { return os.RemoveAll(p) }
 func (OSFileSystem) DirFS(p string) fs.FS                  { return os.DirFS(p) }
-func (OSFileSystem) CreateExclusive(p string) error {
-	f, err := os.OpenFile(p, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
-	if err != nil {
-		return err
-	}
-	if err := f.Close(); err != nil {
-		_ = os.Remove(p)
-		return err
-	}
-	return nil
-}
+func (OSFileSystem) Remove(p string) error                 { return os.Remove(p) }
+func (OSFileSystem) CreateExclusive(p string) error        { return archfs.CreateExclusive(p) }
 
 type Service struct {
 	fs          FileSystem
@@ -200,47 +190,8 @@ func (s *Service) load(root string) (contracts.Workspace, error) {
 	return value, nil
 }
 
-// The owner removes the lock on normal exit. A crashed writer requires manual lock removal.
 func (s *Service) lock(ctx context.Context, root string) (func(), error) {
-	lock := filepath.Join(root, ".archbase.lock")
-	timer := time.NewTicker(20 * time.Millisecond)
-	defer timer.Stop()
-	permissionRetries := 0
-	for {
-		if err := ctx.Err(); err != nil {
-			return nil, err
-		}
-		err := s.fs.CreateExclusive(lock)
-		if err == nil {
-			return func() { _ = s.fs.RemoveAll(lock) }, nil
-		}
-		if !errors.Is(err, fs.ErrExist) {
-			// Windows may briefly report ACCESS_DENIED while the previous lock
-			// is delete-pending. Retry that race, but do not hide persistent ACL errors.
-			if runtime.GOOS == "windows" && errors.Is(err, fs.ErrPermission) && permissionRetries < 10 {
-				permissionRetries++
-				select {
-				case <-ctx.Done():
-					return nil, ctx.Err()
-				case <-timer.C:
-				}
-				continue
-			}
-			return nil, fmt.Errorf("lock workspace %q: %w", lock, err)
-		}
-		permissionRetries = 0
-		if err := s.checkPath(lock); err != nil {
-			return nil, err
-		}
-		if info, err := s.fs.Lstat(lock); err == nil && !info.Mode().IsRegular() {
-			return nil, fmt.Errorf("workspace lock %q must be a regular file", lock)
-		}
-		select {
-		case <-ctx.Done():
-			return nil, ctx.Err()
-		case <-timer.C:
-		}
-	}
+	return archfs.AcquireWorkspaceLock(ctx, root, s.fs)
 }
 func (s *Service) install(ctx context.Context, target string, bundle patterns.Bundle, origin *contracts.Origin, warnings []error) (result Installed, returnedErr error) {
 	if err := rejectTraversal(target); err != nil {

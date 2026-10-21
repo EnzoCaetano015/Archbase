@@ -32,8 +32,11 @@
 - Local pattern roots remain confined to `.archbase` and are fully revalidated during resolution.
 - Canonical rules remain agent-neutral and reference patterns by ID instead of copying their source examples.
 - Rule registries use `rules/index.yaml`; entries remain sorted and every referenced rule document must validate.
-- Cursor and Copilot rule exports require explicit overwrite on conflict; AGENTS exports update only RuleID-specific managed blocks with explicit merge.
+- Rules are stored once in `.archbase/rules`; AGENTS, Claude, Cursor, and Copilot use synchronized managed indices in their native entry files. Activate only the selected format and synchronize every already active format.
+- Identical owned rule documents are reused; changing one requires explicit overwrite for the same RuleID. Never overwrite foreign files or slug collisions. Merge is a deprecated no-op; index updates preserve all external bytes.
+- Cursor index frontmatter must be valid with alwaysApply true; incompatible external frontmatter is a conflict.
 - Every rule export path remains confined to its destination and multi-file exports must roll back on failure.
-- Rule removal may delete only Archbase-owned Cursor/Copilot exports and matching managed blocks in AGENTS.md; external content must be preserved and multi-file removals must roll back on failure.
+- Rule removal is offline and may delete only owned central documents and recognized legacy exports/blocks. Synchronize active indices, preserve external bytes and the native entry files, and never infer deletion authority from Markdown links.
+- Pattern and rule writes share the project workspace lock with cancellation; document, indices, scopes initialization, and legacy cleanup must roll back together.
 - MCP tools are read-only, use stdio, and must keep protocol output isolated on stdout.
 - MCP project paths remain confined to the configured project root and must reject traversal and symlinks.

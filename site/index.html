@@ -557,7 +557,7 @@
 
     .agents-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px
     }
 
@@ -1303,7 +1303,7 @@
           <p class="eyebrow">03 / AI agents</p>
           <h2 class="metallic" id="agents-title">One canonical source. Every agent.</h2>
           <p class="intro">ArchBase rules are agent-neutral. Export the same canonical architecture rule for the tools
-            you already use.</p>
+            you already use. Each rule lives once in .archbase/rules; activated native indices stay synchronized.</p>
         </div>
         <div class="agents-grid">
           <article class="card">
@@ -1314,7 +1314,7 @@
               <pre><code>arc rules add architecture/next-modular@1 --format cursor</code></pre><button class="copy"
                 type="button" aria-label="Copy Cursor export command">copy</button>
             </div>
-            <p class="destination">→ .cursor/rules/</p>
+            <p class="destination">→ .cursor/rules/archbase.mdc</p>
           </article>
           <article class="card">
             <div class="agent-label"><span aria-hidden="true">⌘</span>
@@ -1324,17 +1324,25 @@
               <pre><code>arc rules add architecture/next-modular@1 --format copilot</code></pre><button class="copy"
                 type="button" aria-label="Copy Copilot export command">copy</button>
             </div>
-            <p class="destination">→ .github/instructions/</p>
+            <p class="destination">→ .github/copilot-instructions.md</p>
           </article>
           <article class="card">
             <div class="agent-label"><span aria-hidden="true">A</span>
               <h3>AGENTS.md</h3>
             </div>
             <div class="command">
-              <pre><code>arc rules add architecture/next-modular@1 --format agents --merge</code></pre><button
+              <pre><code>arc rules add architecture/next-modular@1 --format agents</code></pre><button
                 class="copy" type="button" aria-label="Copy AGENTS.md export command">copy</button>
             </div>
-            <p class="destination">→ merges without touching unrelated content</p>
+            <p class="destination">→ AGENTS.md — preserves external instructions</p>
+          </article>
+          <article class="card">
+            <div class="agent-label"><span aria-hidden="true">C</span><h3>Claude</h3></div>
+            <div class="command">
+              <pre><code>arc rules add architecture/next-modular@1 --format claude</code></pre><button class="copy"
+                type="button" aria-label="Copy Claude export command">copy</button>
+            </div>
+            <p class="destination">→ CLAUDE.md — shared central rules</p>
           </article>
         </div>
         <article class="card mcp">

@@ -1,13 +1,12 @@
 package rules
 
 import (
+	"context"
 	"errors"
-	"fmt"
 	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	archfs "github.com/EnzoCaetano015/Archbase/internal/filesystem"
@@ -21,9 +20,12 @@ type ExportFileSystem interface {
 	Lstat(string) (fs.FileInfo, error)
 	Remove(string) error
 	WalkDir(string, fs.WalkDirFunc) error
+	CreateExclusive(string) error
 }
 
 type OSExportFileSystem struct{}
+
+func (OSExportFileSystem) CreateExclusive(p string) error { return archfs.CreateExclusive(p) }
 
 func (OSExportFileSystem) Exists(value string) (bool, error) { return archfs.Exists(value) }
 func (OSExportFileSystem) EnsureDir(value string) error      { return archfs.EnsureDir(value) }
@@ -65,131 +67,40 @@ func NewExporter(fsys ExportFileSystem) (*Exporter, error) {
 }
 
 func (e *Exporter) Export(rule Rule, format Format, options ExportOptions) (ExportResult, error) {
+	return e.ExportContext(context.Background(), rule, format, options)
+}
+
+func (e *Exporter) ExportContext(ctx context.Context, rule Rule, format Format, options ExportOptions) (ExportResult, error) {
+	if _, err := ParseFormat(string(format)); err != nil {
+		return ExportResult{}, err
+	}
 	if options.Destination == "" {
 		options.Destination = "."
 	}
-	if format == FormatAgents && options.Overwrite {
-		return ExportResult{}, errors.New("--overwrite is not supported for agents; use --merge")
-	}
-	if format != FormatAgents && options.Merge {
-		return ExportResult{}, fmt.Errorf("--merge is only supported for agents, not %s", format)
-	}
-	artifacts, err := Render(rule, format)
+	root, err := filepath.Abs(options.Destination)
 	if err != nil {
 		return ExportResult{}, err
 	}
-	paths, err := e.writeArtifacts(options.Destination, artifacts, format, options)
+	if err = e.validateRoot(root); err != nil {
+		return ExportResult{}, err
+	}
+	if err = ctx.Err(); err != nil {
+		return ExportResult{}, err
+	}
+	if err = e.fs.EnsureDir(root); err != nil {
+		return ExportResult{}, err
+	}
+	unlock, err := archfs.AcquireWorkspaceLock(ctx, root, e.fs)
 	if err != nil {
 		return ExportResult{}, err
 	}
-	return ExportResult{Format: format, Paths: paths}, nil
-}
-
-type preparedArtifact struct {
-	path     string
-	content  []byte
-	existed  bool
-	original []byte
-}
-
-func (e *Exporter) writeArtifacts(destination string, artifacts []Artifact, format Format, options ExportOptions) ([]string, error) {
-	root, err := filepath.Abs(destination)
+	defer unlock()
+	changes, err := e.prepareInstallation(ctx, root, rule, format, options)
 	if err != nil {
-		return nil, &archfs.PathError{Op: "resolve export destination", Path: destination, Err: err}
+		return ExportResult{}, err
 	}
-	if err := e.validateRoot(root); err != nil {
-		return nil, err
-	}
-	prepared := make([]preparedArtifact, 0, len(artifacts))
-	for _, artifact := range artifacts {
-		target, err := confinedTarget(root, artifact.RelativePath)
-		if err != nil {
-			return nil, err
-		}
-		if err := e.rejectSymlinkPath(root, target); err != nil {
-			return nil, err
-		}
-		item := preparedArtifact{path: target, content: artifact.Content}
-		item.existed, err = e.fs.Exists(target)
-		if err != nil {
-			return nil, err
-		}
-		if item.existed {
-			info, statErr := e.fs.Lstat(target)
-			if statErr != nil {
-				return nil, &archfs.PathError{Op: "inspect export target", Path: target, Err: statErr}
-			}
-			if info.Mode()&os.ModeSymlink != 0 {
-				return nil, &archfs.PathError{Op: "export", Path: target, Err: archfs.ErrSymlink}
-			}
-			if !info.Mode().IsRegular() {
-				return nil, &archfs.PathError{Op: "export", Path: target, Err: errors.New("destination is not a regular file")}
-			}
-			item.original, err = e.fs.ReadFile(target)
-			if err != nil {
-				return nil, err
-			}
-			if format == FormatAgents {
-				if !options.Merge {
-					return nil, &archfs.PathError{Op: "export", Path: target, Err: errors.New("AGENTS.md exists; use --merge")}
-				}
-				item.content, err = mergeManagedBlock(item.original, artifact)
-				if err != nil {
-					return nil, &archfs.PathError{Op: "merge", Path: target, Err: err}
-				}
-			} else if !options.Overwrite {
-				return nil, &archfs.PathError{Op: "export", Path: target, Err: archfs.ErrConflict}
-			}
-		}
-		prepared = append(prepared, item)
-	}
-	if err := e.fs.EnsureDir(root); err != nil {
-		return nil, err
-	}
-	written := make([]preparedArtifact, 0, len(prepared))
-	for _, item := range prepared {
-		writeErr := e.fs.EnsureDir(filepath.Dir(item.path))
-		if writeErr == nil {
-			writeErr = e.fs.WriteFileAtomic(item.path, item.content, item.existed)
-		}
-		if writeErr != nil {
-			rollbackSet := written
-			// An overwrite implementation may have replaced or removed the
-			// current destination before reporting its commit failure.
-			if item.existed {
-				rollbackSet = append(append([]preparedArtifact(nil), written...), item)
-			}
-			rollbackErr := e.rollback(rollbackSet)
-			if rollbackErr != nil {
-				return nil, fmt.Errorf("export %q: %w (rollback failed: %v)", item.path, writeErr, rollbackErr)
-			}
-			return nil, fmt.Errorf("export %q: %w", item.path, writeErr)
-		}
-		written = append(written, item)
-	}
-	paths := make([]string, 0, len(prepared))
-	for _, item := range prepared {
-		paths = append(paths, item.path)
-	}
-	sort.Strings(paths)
-	return paths, nil
-}
-
-func (e *Exporter) rollback(written []preparedArtifact) error {
-	var failures []error
-	for index := len(written) - 1; index >= 0; index-- {
-		item := written[index]
-		var err error
-		if item.existed {
-			err = e.fs.WriteFileAtomic(item.path, item.original, true)
-		} else {
-			err = e.fs.Remove(item.path)
-		}
-		if err != nil {
-			failures = append(failures, err)
-		}
-	}
-	return errors.Join(failures...)
+	paths, err := e.applyChanges(ctx, root, changes)
+	return ExportResult{Format: format, Paths: paths}, err
 }
 
 func (e *Exporter) validateRoot(root string) error {
@@ -251,39 +162,4 @@ func confinedTarget(root, relative string) (string, error) {
 		return "", &archfs.PathError{Op: "export", Path: relative, Err: errors.New("path escapes export destination")}
 	}
 	return target, nil
-}
-
-func mergeManagedBlock(existing []byte, artifact Artifact) ([]byte, error) {
-	if artifact.StartMarker == "" || artifact.EndMarker == "" {
-		return nil, errors.New("managed block markers are required")
-	}
-	text := string(existing)
-	startCount := strings.Count(text, artifact.StartMarker)
-	endCount := strings.Count(text, artifact.EndMarker)
-	if startCount == 0 && endCount == 0 {
-		separator := ""
-		if len(existing) > 0 {
-			separator = "\n"
-			if !strings.HasSuffix(text, "\n") {
-				separator = "\n\n"
-			}
-		}
-		return []byte(text + separator + string(artifact.Content)), nil
-	}
-	if startCount != 1 || endCount != 1 {
-		return nil, errors.New("managed block markers are incomplete or duplicated")
-	}
-	start := strings.Index(text, artifact.StartMarker)
-	end := strings.Index(text, artifact.EndMarker)
-	if end < start {
-		return nil, errors.New("managed block markers are out of order")
-	}
-	end += len(artifact.EndMarker)
-	if end < len(text) && text[end] == '\r' {
-		end++
-	}
-	if end < len(text) && text[end] == '\n' {
-		end++
-	}
-	return []byte(text[:start] + string(artifact.Content) + text[end:]), nil
 }

@@ -164,8 +164,8 @@ func TestRulesListInspectAndAddCommands(t *testing.T) {
 			t.Fatalf("arc %v: code=%d stdout=%q stderr=%q", test.args, code, stdout.String(), stderr.String())
 		}
 	}
-	target := filepath.Join(root, ".cursor", "rules", "architecture-next-modular-1.mdc")
-	if content, err := os.ReadFile(target); err != nil || !strings.Contains(string(content), "alwaysApply: false") {
+	target := filepath.Join(root, ".cursor", "rules", "archbase.mdc")
+	if content, err := os.ReadFile(target); err != nil || !strings.Contains(string(content), "alwaysApply: true") {
 		t.Fatalf("unexpected Cursor export: %q err=%v", content, err)
 	}
 }
@@ -175,8 +175,6 @@ func TestRulesAddValidatesArgumentsFlagsAndConflicts(t *testing.T) {
 	for _, args := range [][]string{
 		{"rules", "add", "architecture/next-modular@1"},
 		{"rules", "add", "architecture/next-modular@1", "--format", "unknown"},
-		{"rules", "add", "architecture/next-modular@1", "--format", "cursor", "--merge"},
-		{"rules", "add", "architecture/next-modular@1", "--format", "agents", "--overwrite"},
 		{"rules", "inspect", "architecture/missing@1"},
 	} {
 		var stdout, stderr bytes.Buffer
@@ -188,6 +186,19 @@ func TestRulesAddValidatesArgumentsFlagsAndConflicts(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	if code := Execute(args, &stdout, &stderr, "dev"); code != 0 {
 		t.Fatal(stderr.String())
+	}
+	stdout.Reset()
+	stderr.Reset()
+	if code := Execute(args, &stdout, &stderr, "dev"); code != 0 {
+		t.Fatal(stderr.String())
+	}
+	target := filepath.Join(root, ".archbase", "rules", "architecture-next-modular-1.md")
+	data, err := os.ReadFile(target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(target, append(data, []byte("\nUser modification\n")...), 0600); err != nil {
+		t.Fatal(err)
 	}
 	stdout.Reset()
 	stderr.Reset()
@@ -218,8 +229,8 @@ func TestRemoveSpecificAndAllManagedRules(t *testing.T) {
 	if code != 0 || !strings.Contains(stdout, "architecture/next-modular@1") {
 		t.Fatalf("specific remove: code=%d stdout=%q stderr=%q", code, stdout, stderr)
 	}
-	removed := filepath.Join(root, ".cursor", "rules", "architecture-next-modular-1.mdc")
-	remaining := filepath.Join(root, ".cursor", "rules", "architecture-dotnet-layered-1.mdc")
+	removed := filepath.Join(root, ".archbase", "rules", "architecture-next-modular-1.md")
+	remaining := filepath.Join(root, ".archbase", "rules", "architecture-dotnet-layered-1.md")
 	if _, err := os.Stat(removed); !errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("specific export survived: %v", err)
 	}
@@ -245,6 +256,27 @@ func TestRemoveValidatesArguments(t *testing.T) {
 		var stdout, stderr bytes.Buffer
 		if code := Execute(args, &stdout, &stderr, "dev"); code == 0 {
 			t.Fatalf("arc %v unexpectedly succeeded: %s", args, stdout.String())
+		}
+	}
+}
+
+func TestRulesAllFormatsAcceptCompatibilityMergeAndSync(t *testing.T) {
+	root := t.TempDir()
+	for _, format := range []string{"agents", "claude", "cursor", "copilot"} {
+		var stdout, stderr bytes.Buffer
+		args := []string{"rules", "add", "architecture/next-modular@1", "--format", format, "--merge", "--overwrite", "--destination", root}
+		if code := Execute(args, &stdout, &stderr, "dev"); code != 0 {
+			t.Fatalf("%s: %s", format, stderr.String())
+		}
+	}
+	var stdout, stderr bytes.Buffer
+	if code := Execute([]string{"rules", "add", "architecture/dotnet-layered@1", "--format", "claude", "--destination", root}, &stdout, &stderr, "dev"); code != 0 {
+		t.Fatal(stderr.String())
+	}
+	for _, entry := range []string{"AGENTS.md", "CLAUDE.md", ".cursor/rules/archbase.mdc", ".github/copilot-instructions.md"} {
+		content, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(entry)))
+		if err != nil || !strings.Contains(string(content), "architecture/dotnet-layered@1") {
+			t.Fatalf("%s: %s %v", entry, content, err)
 		}
 	}
 }

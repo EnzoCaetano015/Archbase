@@ -112,47 +112,33 @@ func TestUICatalogToInstallAndResolve(t *testing.T) {
 	}
 }
 
-func TestUIExportMergeRemovePreservesExternalContent(t *testing.T) {
+func TestUIExportAllFormatsAndRemovePreservesExternalContent(t *testing.T) {
 	m := testUI(t)
-	agents := filepath.Join(m.project, "src", "pages", "AGENTS.md")
-	if err := os.MkdirAll(filepath.Dir(agents), 0700); err != nil {
+	agents := filepath.Join(m.project, "AGENTS.md")
+	if err := os.WriteFile(agents, []byte("# My instructions\r\nPreserve this content.\r\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(agents, []byte("# My instructions\n\nPreserve this content.\n"), 0600); err != nil {
-		t.Fatal(err)
-	}
-	m.openForm("rules add", "architecture/next-modular@1")
-	setField(t, m, "format", "agents")
-	if m.formValue("merge") != "false" || m.formValue("overwrite") != "false" {
-		t.Fatal("overwrite and merge must be opt-in")
-	}
-	m.reviewForm()
-	_, cmd := m.Update(keyPress(tea.KeyEnter))
-	msg := finishOperation(t, m, cmd)
-	if msg.err == nil || m.screen != messageScreen {
-		t.Fatal("existing content must require merge")
-	}
-	m.Update(keyPress(tea.KeyEscape))
-	if m.screen != formScreen || m.formValue("id") != "architecture/next-modular@1" {
-		t.Fatal("failed operation lost the form")
-	}
-	setField(t, m, "merge", "true")
-	m.reviewForm()
-	_, cmd = m.Update(keyPress(tea.KeyEnter))
-	msg = finishOperation(t, m, cmd)
-	if msg.err != nil {
-		t.Fatal(msg.err)
+	for _, format := range []string{"agents", "claude", "cursor", "copilot"} {
+		m.openForm("rules add", "architecture/next-modular@1")
+		setField(t, m, "format", format)
+		if m.formValue("overwrite") != "false" {
+			t.Fatal("overwrite must be opt-in")
+		}
+		m.reviewForm()
+		_, cmd := m.Update(keyPress(tea.KeyEnter))
+		if msg := finishOperation(t, m, cmd); msg.err != nil {
+			t.Fatal(msg.err)
+		}
 	}
 	m.openForm("remove", "architecture/next-modular@1")
 	m.reviewForm()
-	_, cmd = m.Update(keyPress(tea.KeyEnter))
-	msg = finishOperation(t, m, cmd)
-	if msg.err != nil {
+	_, cmd := m.Update(keyPress(tea.KeyEnter))
+	if msg := finishOperation(t, m, cmd); msg.err != nil {
 		t.Fatal(msg.err)
 	}
 	data, err := os.ReadFile(agents)
-	if err != nil || !bytes.Contains(data, []byte("Preserve this content.")) || bytes.Contains(data, []byte("archbase:rule")) {
-		t.Fatalf("external instructions changed: %q (%v)", data, err)
+	if err != nil || !bytes.Contains(data, []byte("Preserve this content.\r\n")) || bytes.Contains(data, []byte("archbase:rule")) {
+		t.Fatalf("external changed: %q %v", data, err)
 	}
 }
 

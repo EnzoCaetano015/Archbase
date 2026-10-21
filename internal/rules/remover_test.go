@@ -2,144 +2,127 @@ package rules
 
 import (
 	"bytes"
+	"context"
 	"errors"
+	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
-	"runtime"
+	"reflect"
 	"strings"
 	"testing"
 )
 
-func TestRemoveSpecificRuleAcrossFormats(t *testing.T) {
+func TestRemoveSpecificAndAllUnifiedFormats(t *testing.T) {
 	root := t.TempDir()
-	rule := exportTestRule()
-	exporter, _ := NewExporter(OSExportFileSystem{})
-
-	for _, relative := range []string{"src/features/AGENTS.md", "src/pages/AGENTS.md"} {
-		target := filepath.Join(root, filepath.FromSlash(relative))
-		if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(target, []byte("# External instructions\n"), 0o644); err != nil {
-			t.Fatal(err)
-		}
+	e, _ := NewExporter(OSExportFileSystem{})
+	r := exportTestRule()
+	other := exportTestRule()
+	other.Definition.ID = "architecture/other@1"
+	for _, f := range formats {
+		install(t, e, root, r, f)
 	}
-	if _, err := exporter.Export(rule, FormatCursor, ExportOptions{Destination: root}); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := exporter.Export(rule, FormatCopilot, ExportOptions{Destination: root}); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := exporter.Export(rule, FormatAgents, ExportOptions{Destination: root, Merge: true}); err != nil {
-		t.Fatal(err)
-	}
-
-	result, err := exporter.Remove(rule.Definition.ID, RemoveOptions{Destination: root})
+	install(t, e, root, other, FormatClaude)
+	put(t, root, ".archbase/patterns/keep.txt", []byte("pattern"))
+	put(t, root, ".archbase/rules/foreign.md", []byte("external"))
+	put(t, root, ".cursor/rules/team.mdc", []byte("external"))
+	scopes := get(t, root, ".archbase/scopes.yaml")
+	res, err := e.Remove(r.Definition.ID, RemoveOptions{Destination: root})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(result.Paths) != 4 || len(result.RuleIDs) != 1 || result.RuleIDs[0] != rule.Definition.ID {
-		t.Fatalf("unexpected removal result: %#v", result)
+	if len(res.Paths) != 5 || len(res.RuleIDs) != 1 {
+		t.Fatalf("%#v", res)
 	}
-	for _, target := range []string{
-		filepath.Join(root, ".cursor", "rules", "architecture-example-1.mdc"),
-		filepath.Join(root, ".github", "instructions", "architecture-example-1.instructions.md"),
-	} {
-		if _, err := os.Stat(target); !errors.Is(err, os.ErrNotExist) {
-			t.Fatalf("owned export survived removal at %s: %v", target, err)
+	for _, f := range formats {
+		c := string(get(t, root, entryPaths[f]))
+		if strings.Contains(c, r.Definition.ID) || !strings.Contains(c, other.Definition.ID) {
+			t.Fatal(c)
 		}
 	}
-	for _, relative := range []string{"src/features/AGENTS.md", "src/pages/AGENTS.md"} {
-		content, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(relative)))
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !bytes.Contains(content, []byte("# External instructions")) || bytes.Contains(content, []byte("archbase:rule")) {
-			t.Fatalf("external AGENTS.md content was not preserved: %q", content)
-		}
-	}
-
-	again, err := exporter.Remove(rule.Definition.ID, RemoveOptions{Destination: root})
-	if err != nil || len(again.Paths) != 0 {
-		t.Fatalf("idempotent removal: result=%#v err=%v", again, err)
-	}
-}
-
-func TestRemoveAllManagedRulesPreservesForeignFiles(t *testing.T) {
-	root := t.TempDir()
-	exporter, _ := NewExporter(OSExportFileSystem{})
-	first := exportTestRule()
-	second := exportTestRule()
-	second.Definition.ID = "architecture/second@1"
-	second.Definition.Name = "Second architecture"
-
-	for _, rule := range []Rule{first, second} {
-		if _, err := exporter.Export(rule, FormatCursor, ExportOptions{Destination: root}); err != nil {
-			t.Fatal(err)
-		}
-		if _, err := exporter.Export(rule, FormatCopilot, ExportOptions{Destination: root}); err != nil {
-			t.Fatal(err)
-		}
-	}
-	if _, err := exporter.Export(first, FormatAgents, ExportOptions{Destination: root}); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := exporter.Export(second, FormatAgents, ExportOptions{Destination: root, Merge: true}); err != nil {
-		t.Fatal(err)
-	}
-	foreign := filepath.Join(root, ".cursor", "rules", "team.mdc")
-	if err := os.WriteFile(foreign, []byte("team-owned\n"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	result, err := exporter.Remove("", RemoveOptions{Destination: root, All: true})
+	res, err = e.Remove("", RemoveOptions{Destination: root, All: true})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(result.RuleIDs) != 2 || result.RuleIDs[0] != first.Definition.ID || result.RuleIDs[1] != second.Definition.ID {
-		t.Fatalf("unexpected removed IDs: %#v", result.RuleIDs)
+	if len(res.RuleIDs) != 1 || res.RuleIDs[0] != other.Definition.ID {
+		t.Fatalf("%#v", res)
 	}
-	if content, err := os.ReadFile(foreign); err != nil || string(content) != "team-owned\n" {
-		t.Fatalf("foreign Cursor rule was changed: %q err=%v", content, err)
-	}
-	for _, relative := range []string{"src/features/AGENTS.md", "src/pages/AGENTS.md"} {
-		content, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(relative)))
-		if err != nil {
-			t.Fatal(err)
+	for _, f := range formats {
+		if strings.Contains(string(get(t, root, entryPaths[f])), "archbase:rules") {
+			t.Fatal("index survived", f)
 		}
-		if strings.Contains(string(content), "archbase:rule") {
-			t.Fatalf("managed blocks survived in %s: %q", relative, content)
+	}
+	if !bytes.Equal(scopes, get(t, root, ".archbase/scopes.yaml")) || string(get(t, root, ".archbase/patterns/keep.txt")) != "pattern" || string(get(t, root, ".archbase/rules/foreign.md")) != "external" || string(get(t, root, ".cursor/rules/team.mdc")) != "external" {
+		t.Fatal("external/workspace changed")
+	}
+	res, err = e.Remove("", RemoveOptions{Destination: root, All: true})
+	if err != nil || len(res.Paths) != 0 {
+		t.Fatalf("idempotence: %#v %v", res, err)
+	}
+}
+func TestRemoveMissingDocumentAndPreservesEntryBytes(t *testing.T) {
+	root := t.TempDir()
+	e, _ := NewExporter(OSExportFileSystem{})
+	r := exportTestRule()
+	for _, f := range formats {
+		content := []byte("external\r\n")
+		if f == FormatCursor {
+			content = []byte("---\r\ndescription: Team\r\nalwaysApply: true\r\n---\r\n\r\nexternal\r\n")
+		}
+		put(t, root, entryPaths[f], content)
+		install(t, e, root, r, f)
+	}
+	if err := os.Remove(filepath.Join(root, filepath.FromSlash(documentPath(r.Definition.ID)))); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := e.Remove(r.Definition.ID, RemoveOptions{Destination: root}); err != nil {
+		t.Fatal(err)
+	}
+	for _, f := range formats {
+		c := get(t, root, entryPaths[f])
+		if !bytes.Contains(c, []byte("external\r\n")) || bytes.Contains(c, []byte("archbase:rules")) {
+			t.Fatal(string(c))
 		}
 	}
 }
-
-func TestRemoveSupportsLegacyExportsWithStrictFingerprint(t *testing.T) {
+func TestRemoveLegacyOfflineAndStrictOwnership(t *testing.T) {
 	root := t.TempDir()
-	exporter, _ := NewExporter(OSExportFileSystem{})
-	rule := exportTestRule()
-	for _, format := range []Format{FormatCursor, FormatCopilot} {
-		result, err := exporter.Export(rule, format, ExportOptions{Destination: root})
-		if err != nil {
-			t.Fatal(err)
-		}
-		content, err := os.ReadFile(result.Paths[0])
-		if err != nil {
-			t.Fatal(err)
-		}
-		legacy := strings.Replace(string(content), ownershipMarker(rule.Definition.ID)+"\n\n", "", 1)
-		if err := os.WriteFile(result.Paths[0], []byte(legacy), 0o644); err != nil {
-			t.Fatal(err)
-		}
-	}
-	result, err := exporter.Remove(rule.Definition.ID, RemoveOptions{Destination: root})
+	e, _ := NewExporter(OSExportFileSystem{})
+	r := exportTestRule()
+	copilot, err := renderCopilot(r)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if result.LegacyExports != 2 || len(result.Paths) != 2 || len(result.RuleIDs) != 1 {
-		t.Fatalf("unexpected legacy removal: %#v", result)
+	for _, a := range append(renderCursor(r), copilot...) {
+		legacy := strings.Replace(string(a.Content), ownershipMarker(r.Definition.ID)+"\n\n", "", 1)
+		put(t, root, a.RelativePath, []byte(legacy))
+	}
+	agents := renderAgents(r)
+	put(t, root, "src/AGENTS.md", agents[0].Content)
+	put(t, root, "src/CLAUDE.md", append([]byte("external\r\n"), agents[0].Content...))
+	res, err := e.Remove(r.Definition.ID, RemoveOptions{Destination: root})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.LegacyExports != 2 || len(res.Paths) != 4 {
+		t.Fatalf("%#v", res)
+	}
+	if _, err := os.Stat(filepath.Join(root, "src/AGENTS.md")); !errors.Is(err, fs.ErrNotExist) {
+		t.Fatal(err)
+	}
+	if string(get(t, root, "src/CLAUDE.md")) != "external\r\n" {
+		t.Fatal("external changed")
+	}
+	// A marker belonging to a different ID at this ID's filename is not ours to delete.
+	a := renderCursor(r)[0]
+	a.Content = []byte(ownershipMarker("architecture/foreign@1") + "\nforeign")
+	put(t, root, a.RelativePath, a.Content)
+	if _, err := e.Remove(r.Definition.ID, RemoveOptions{Destination: root}); err == nil {
+		if _, stat := os.Stat(filepath.Join(root, filepath.FromSlash(a.RelativePath))); stat != nil {
+			t.Fatal("mismatched file deleted")
+		}
 	}
 }
-
 func TestRemoveManagedBlocksPreservesOtherRulesAndRejectsCorruption(t *testing.T) {
 	firstStart, firstEnd := managedMarkers("architecture/first@1")
 	secondStart, secondEnd := managedMarkers("architecture/second@1")
@@ -189,54 +172,141 @@ func TestRemovePrevalidatesMarkersBeforeChangingFiles(t *testing.T) {
 	}
 }
 
-type failingRemoveFS struct {
+type failingTransactionFS struct {
 	OSExportFileSystem
-	removes int
-	failAt  int
+	operations, failAt int
 }
 
-func (f *failingRemoveFS) Remove(path string) error {
-	f.removes++
-	if f.removes == f.failAt {
-		return errors.New("injected remove failure")
+func (f *failingTransactionFS) fail() error {
+	f.operations++
+	if f.operations == f.failAt {
+		return errors.New("injected transaction failure")
 	}
-	return f.OSExportFileSystem.Remove(path)
+	return nil
 }
-
-func TestRemoveRollsBackEarlierFiles(t *testing.T) {
-	root := t.TempDir()
-	rule := exportTestRule()
-	writer, _ := NewExporter(OSExportFileSystem{})
-	cursor, err := writer.Export(rule, FormatCursor, ExportOptions{Destination: root})
-	if err != nil {
-		t.Fatal(err)
+func (f *failingTransactionFS) WriteFileAtomic(p string, d []byte, o bool) error {
+	if err := f.fail(); err != nil {
+		return err
 	}
-	copilot, err := writer.Export(rule, FormatCopilot, ExportOptions{Destination: root})
-	if err != nil {
-		t.Fatal(err)
-	}
-	remover, _ := NewExporter(&failingRemoveFS{failAt: 2})
-	if _, err := remover.Remove(rule.Definition.ID, RemoveOptions{Destination: root}); err == nil {
-		t.Fatal("expected injected remove failure")
-	}
-	for _, target := range []string{cursor.Paths[0], copilot.Paths[0]} {
-		if _, err := os.Stat(target); err != nil {
-			t.Fatalf("rollback did not restore %s: %v", target, err)
+	return f.OSExportFileSystem.WriteFileAtomic(p, d, o)
+}
+func (f *failingTransactionFS) Remove(p string) error {
+	if filepath.Base(p) != ".archbase.lock" {
+		if err := f.fail(); err != nil {
+			return err
 		}
 	}
+	return f.OSExportFileSystem.Remove(p)
 }
-
-func TestRemoveRejectsSymlinkedManagedTarget(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("creating symlinks commonly requires elevated Windows privileges")
+func TestRemoveRollbackEveryStage(t *testing.T) {
+	for stage := 1; stage <= 5; stage++ {
+		t.Run(fmt.Sprint(stage), func(t *testing.T) {
+			root := t.TempDir()
+			writer, _ := NewExporter(OSExportFileSystem{})
+			for _, f := range formats {
+				install(t, writer, root, exportTestRule(), f)
+			}
+			before := snapshot(t, root)
+			e, _ := NewExporter(&failingTransactionFS{failAt: stage})
+			if _, err := e.Remove("", RemoveOptions{Destination: root, All: true}); err == nil {
+				t.Fatal("expected failure")
+			}
+			if !reflect.DeepEqual(before, snapshot(t, root)) {
+				t.Fatal("rollback changed files")
+			}
+		})
 	}
+}
+func TestRemoveContextAndSymlinks(t *testing.T) {
 	root := t.TempDir()
-	target := filepath.Join(root, ".cursor")
-	if err := os.Symlink(t.TempDir(), target); err != nil {
+	e, _ := NewExporter(OSExportFileSystem{})
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := e.RemoveContext(ctx, "", RemoveOptions{Destination: root, All: true}); !errors.Is(err, context.Canceled) {
 		t.Fatal(err)
 	}
-	exporter, _ := NewExporter(OSExportFileSystem{})
-	if _, err := exporter.Remove("", RemoveOptions{Destination: root, All: true}); err == nil {
-		t.Fatal("expected symlinked export directory to be rejected")
+	target := filepath.Join(root, ".cursor")
+	if err := os.Symlink(t.TempDir(), target); err != nil {
+		t.Skipf("symlinks unavailable: %v", err)
+	}
+	if _, err := e.Remove("", RemoveOptions{Destination: root, All: true}); err == nil {
+		t.Fatal("symlink accepted")
+	}
+}
+
+func TestUpdateAndLegacyCleanupRollbackEveryStage(t *testing.T) {
+	for stage := 1; stage <= 9; stage++ {
+		t.Run(fmt.Sprint(stage), func(t *testing.T) {
+			root := t.TempDir()
+			r := exportTestRule()
+			writer, _ := NewExporter(OSExportFileSystem{})
+			for _, f := range formats {
+				install(t, writer, root, r, f)
+			}
+			legacy := renderAgents(r)[0].Content
+			put(t, root, "nested/AGENTS.md", legacy)
+			put(t, root, "nested/CLAUDE.md", append([]byte("external\r\n"), legacy...))
+			copilot, _ := renderCopilot(r)
+			for _, a := range append(renderCursor(r), copilot...) {
+				put(t, root, a.RelativePath, a.Content)
+			}
+			before := snapshot(t, root)
+			r.Definition.Description = "Updated objective description."
+			e, _ := NewExporter(&failingTransactionFS{failAt: stage})
+			if _, err := e.Export(r, FormatAgents, ExportOptions{Destination: root, Overwrite: true}); err == nil {
+				t.Fatal("expected failure")
+			}
+			if !reflect.DeepEqual(before, snapshot(t, root)) {
+				t.Fatal("update/legacy cleanup rollback changed files")
+			}
+		})
+	}
+}
+
+type cancelAfterWriteFS struct {
+	OSExportFileSystem
+	cancel context.CancelFunc
+}
+
+func (f *cancelAfterWriteFS) WriteFileAtomic(p string, data []byte, overwrite bool) error {
+	err := f.OSExportFileSystem.WriteFileAtomic(p, data, overwrite)
+	f.cancel()
+	return err
+}
+func TestCancellationDuringWriteRollsBack(t *testing.T) {
+	root := t.TempDir()
+	put(t, root, "AGENTS.md", []byte("External instructions\r\n"))
+	before := snapshot(t, root)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	e, _ := NewExporter(&cancelAfterWriteFS{cancel: cancel})
+	if _, err := e.ExportContext(ctx, exportTestRule(), FormatAgents, ExportOptions{Destination: root}); !errors.Is(err, context.Canceled) {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(before, snapshot(t, root)) {
+		t.Fatal("cancelled write left changes")
+	}
+}
+
+type lateDirectoryFailureFS struct{ OSExportFileSystem }
+
+func (f lateDirectoryFailureFS) EnsureDir(p string) error {
+	if err := f.OSExportFileSystem.EnsureDir(p); err != nil {
+		return err
+	}
+	if filepath.Base(p) == "rules" {
+		return errors.New("late directory creation failure")
+	}
+	return nil
+}
+func TestDirectoryCreationFailureRollsBack(t *testing.T) {
+	root := t.TempDir()
+	e, _ := NewExporter(lateDirectoryFailureFS{})
+	if _, err := e.Export(exportTestRule(), FormatAgents, ExportOptions{Destination: root}); err == nil {
+		t.Fatal("expected failure")
+	}
+	entries, err := os.ReadDir(root)
+	if err != nil || len(entries) != 0 {
+		t.Fatalf("partial workspace: %v %v", entries, err)
 	}
 }
