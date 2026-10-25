@@ -21,6 +21,7 @@
 - The SignPath integration must remain inactive until a future application is approved; do not add attribution, credentials, secret placeholders, or claim an affiliation or signed release before signature validation succeeds.
 - Registry authentication, package-manager distribution, attestations, and non-stdio MCP transports remain out of scope.
 - Existing files must never be overwritten unless the caller explicitly opts in.
+- Self-update is explicit through arc update only: use official stable GitHub releases over HTTPS, verify SHA-256 and the downloaded executable version, and replace only the invoked installation. Never downgrade, elevate automatically, modify projects/PATH, or introduce background update checks. Preserve recovery copies when rollback fails.
 - Changes to public YAML contracts require matching schema, tests, and documentation updates.
 - Registry entries must remain sorted by ID and every declared required file must pass bundle validation.
 - Local names such as `pages-standard` map to canonical IDs such as `local/pages-standard@1`.

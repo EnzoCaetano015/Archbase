@@ -53,6 +53,7 @@ func renderWelcome(output io.Writer, version string, color bool) error {
 	text.WriteString("  Get started\n")
 	text.WriteString("    arc add next/page@1234 .    Install your first pattern\n")
 	text.WriteString("    arc rules list             Explore architecture rules\n")
+	text.WriteString("    arc update                 Install the latest stable CLI\n")
 	text.WriteString("    arc --help                 See all commands and options\n\n")
 	_, err := io.WriteString(output, text.String())
 	return err

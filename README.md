@@ -29,6 +29,7 @@ Open a new terminal, then run these commands from your project directory:
 ```bash
 arc
 arc version
+arc update --check
 arc add next/page@1234 .
 arc resolve src/pages/Home.tsx
 arc inspect next/page@1234
@@ -45,6 +46,8 @@ Direct commands still work in your shell, with formatted help, tables, and reada
 `arc remove <rule-id>` removes that rule's central document, references in all activated agent indices, and managed legacy exports. `arc remove --all` removes every Archbase-managed rule export in the project while preserving patterns, scopes, unrelated files, and external agent instructions.
 
 macOS and Windows are available as **unsigned previews**. See the [installation guide](docs/installation.md) for requirements, manual installation, and removal.
+
+Already installed? Run `arc update` to install the latest stable release, or `arc update --check` to check without changing files. Downloads are checksum-verified and the executable is replaced in its current location, without touching your projects or PATH. Older binaries that do not recognize `update` need one installer reinstall with force; see [updating the CLI](docs/installation.md#updating-an-installed-cli).
 
 Rules live once in `.archbase/rules`. Use `--format agents|claude|cursor|copilot` to activate a native entry point; later additions synchronize every activated format. Index updates preserve framework/user instructions. Identical documents are reused; changed owned documents require `--overwrite`.
 

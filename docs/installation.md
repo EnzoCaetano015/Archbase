@@ -34,6 +34,28 @@ curl -fsSL https://archbase.caetanodev.com/install.sh | sh -s -- --force
 
 Available options: `--version`, `--install-dir`, `--force`, and `--help`.
 
+## Updating an installed CLI
+
+```bash
+arc update --check
+arc update
+arc version
+```
+
+`arc update` installs the latest published stable release from the official GitHub repository for the running binary's OS/architecture. It updates the actual executable in place (following launcher symlinks), including custom installation directories. No Go, Git, shell installer, global configuration, project changes, or PATH changes are required.
+
+Release discovery uses the public [GitHub Releases API](https://docs.github.com/en/rest/releases/releases#get-the-latest-release); no authentication is configured. GitHub rate limits or unavailable release assets produce an error without replacing the installed binary.
+
+`--check` only queries release metadata; it does not download assets or modify the installation. An already-current or newer stable build is left untouched. `--version vMAJOR.MINOR.PATCH` selects a published stable release explicitly, but downgrades are refused. `--force` permits replacing an unversioned development build or reinstalling the same stable version; it never enables downgrades. `arc update` itself is the explicit opt-in to replace the installed executable.
+
+The updater verifies the archive's SHA-256 checksum, accepts exactly one regular executable without extracting arbitrary archive paths, and runs its `version` command before replacing the current installation. Downloads and extracted executables are size-limited; HTTPS redirects cannot downgrade to HTTP. Staging is beside the executable, with an exclusive `.update.lock` to prevent concurrent self-updates. A changed installation detected during download is not overwritten. Errors before promotion preserve the existing installation; Windows promotion failures attempt rollback. If rollback also fails, the error reports the recovery copy, which is retained.
+
+The installation directory must be writable. The updater never elevates privileges automatically. On Windows, an old running executable may remain in a reported `.arc-update-*` backup directory; remove that specific directory after closing old `arc`/MCP processes. macOS and Windows remain unsigned previews: security policies may block the staged version check or the replacement. Do not disable security protections. After updating, restart running MCP servers or other long-lived `arc` processes, then run `arc version` in a new invocation.
+
+There is no background update check. Press Ctrl+C to cancel downloading/validation. A forced process termination may leave a lock or staging directory: ensure no update is running before removing the specifically reported installation's lock/temporary files.
+
+If your existing binary reports `unknown command "update"`, reinstall once using the official installer with `--force` (POSIX) or `-Force` (PowerShell), or manually replace it with a release containing this command. Subsequent updates use `arc update`.
+
 ## macOS preview (unsigned)
 
 The Intel and Apple silicon builds are unsigned and not notarized. Gatekeeper may warn about or block them. Do not disable macOS security protections to run Archbase; continue only after inspecting the installer and verifying that you trust this repository.

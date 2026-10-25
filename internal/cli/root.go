@@ -14,6 +14,7 @@ import (
 	archmcp "github.com/EnzoCaetano015/Archbase/internal/mcp"
 	"github.com/EnzoCaetano015/Archbase/internal/registry"
 	archrules "github.com/EnzoCaetano015/Archbase/internal/rules"
+	"github.com/EnzoCaetano015/Archbase/internal/update"
 	"github.com/EnzoCaetano015/Archbase/internal/workspace"
 	"github.com/spf13/cobra"
 )
@@ -29,6 +30,7 @@ Available commands:
   arc remove     Remove one or all managed rule exports
   arc mcp serve  Start the project-scoped MCP server over stdio
   arc version    Show the CLI version
+  arc update     Update Archbase to the latest stable release
 
 Workspace: add/create use the current directory as the project root.
 Use --project-root to select another root. Scopes live in .archbase/scopes.yaml;
@@ -52,12 +54,14 @@ type Dependencies struct {
 	ResolverFactory     func(context.Context, RegistryOptions) (*registry.Resolver, error)
 	RuleResolverFactory func(context.Context, RegistryOptions, *registry.Resolver) (*archrules.Resolver, error)
 	MCPRunner           func(context.Context, *archmcp.Service, string) error
+	UpdateRunner        func(context.Context, string, update.Options) (update.Result, error)
 }
 
 func defaultDependencies() Dependencies {
 	return Dependencies{
 		FileSystem: workspace.OSFileSystem{}, RuleFileSystem: archrules.OSExportFileSystem{}, MCPFileSystem: archmcp.OSFileSystem{},
 		ResolverFactory: defaultResolver, RuleResolverFactory: defaultRuleResolver, MCPRunner: archmcp.RunStdio,
+		UpdateRunner: update.New().Run,
 	}
 }
 
@@ -122,6 +126,9 @@ func NewRootCommand(cliVersion string, supplied ...Dependencies) *cobra.Command 
 		if dependencies.MCPRunner == nil {
 			dependencies.MCPRunner = archmcp.RunStdio
 		}
+		if dependencies.UpdateRunner == nil {
+			dependencies.UpdateRunner = update.New().Run
+		}
 	}
 	var plain bool
 	options := RegistryOptions{Ref: "main", CacheRoot: defaultCacheRoot(), TTL: registry.DefaultGitCacheTTL}
@@ -148,6 +155,7 @@ func NewRootCommand(cliVersion string, supplied ...Dependencies) *cobra.Command 
 	flags.StringVar(&options.CacheRoot, "registry-cache-dir", options.CacheRoot, "absolute registry cache directory")
 	flags.DurationVar(&options.TTL, "registry-ttl", registry.DefaultGitCacheTTL, "registry cache time to live")
 	root.AddCommand(newAddCommand(dependencies, &options), newCreateCommand(dependencies, &options), newResolveCommand(dependencies, &options), newInspectCommand(dependencies, &options), newRulesCommand(dependencies, &options), newRemoveCommand(dependencies), newMCPCommand(dependencies, &options, cliVersion))
+	root.AddCommand(newUpdateCommand(dependencies, cliVersion))
 	root.AddCommand(&cobra.Command{Use: "version", Short: "Show the CLI version", Args: cobra.NoArgs, Run: func(cmd *cobra.Command, _ []string) {
 		fmt.Fprintf(cmd.OutOrStdout(), "arc %s\n", cliVersion)
 	}})
