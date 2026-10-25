@@ -1,0 +1,32 @@
+schemaVersion: 1
+id: discordjs/lyrics-command@5187
+name: Discord.js lyrics-command
+description: Deferred slash command wrapping external lyrics lookup with queue guards and bounded embed output.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: lyrics.js.md
+    destination: "{{Name}}/lyrics.js"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- command-metadata
+- response-content
+- integration-options
+- configuration
+preserve:
+- data-execute-contract
+- voice-and-queue-guards
+- deferred-network-work
+- bounded-response
+- external-credentials
+metadata:
+  framework: discord.js
+  language: javascript-commonjs
+  player: discord-player-5
+  reference: ribby-bot
+  maturity: foundation-sample

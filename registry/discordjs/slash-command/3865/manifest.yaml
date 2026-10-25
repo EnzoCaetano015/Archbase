@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: discordjs/slash-command@3865
+name: Discord.js slash-command
+description: CommonJS slash-command module pairing builder metadata with an asynchronous interaction handler.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: example.js.md
+    destination: "{{Name}}/example.js"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- command-metadata
+- response-content
+- integration-options
+- configuration
+preserve:
+- data-execute-contract
+- per-invocation-response-builder
+- no-login-or-publication-side-effects
+metadata:
+  framework: discord.js
+  language: javascript-commonjs
+  player: discord-player-5
+  reference: ribby-bot
+  maturity: foundation-sample

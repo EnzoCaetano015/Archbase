@@ -1,0 +1,31 @@
+schemaVersion: 1
+id: discordjs/bootstrap@1683
+name: Discord.js bootstrap
+description: CommonJS Discord client composition with validated command discovery and acknowledgement-aware dispatch.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: index.js.md
+    destination: "{{Name}}/index.js"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- command-metadata
+- response-content
+- integration-options
+- configuration
+preserve:
+- single-composition-root
+- shared-player
+- validated-command-discovery
+- safe-interaction-dispatch
+metadata:
+  framework: discord.js
+  language: javascript-commonjs
+  player: discord-player-5
+  reference: ribby-bot
+  maturity: foundation-sample

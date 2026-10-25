@@ -20,6 +20,30 @@ patterns:
   version: 1.0.1
   path: astro/util/2386
   description: Pure typed utility for conflict-safe Tailwind class composition.
+- id: discordjs/bootstrap@1683
+  version: 1.0.0
+  path: discordjs/bootstrap/1683
+  description: CommonJS Discord client composition with validated command discovery and acknowledgement-aware dispatch.
+- id: discordjs/command-deploy@2794
+  version: 1.0.0
+  path: discordjs/command-deploy/2794
+  description: Explicit REST publication of discovered slash-command definitions with runtime-compatible validation.
+- id: discordjs/lyrics-command@5187
+  version: 1.0.0
+  path: discordjs/lyrics-command/5187
+  description: Deferred slash command wrapping external lyrics lookup with queue guards and bounded embed output.
+- id: discordjs/music-command@4976
+  version: 1.0.0
+  path: discordjs/music-command/4976
+  description: Guild-scoped music command coordinating voice validation, search, queue updates, and playback.
+- id: discordjs/player-events@6298
+  version: 1.0.0
+  path: discordjs/player-events/6298
+  description: Registered player event boundary producing per-event embeds through queue channel metadata.
+- id: discordjs/slash-command@3865
+  version: 1.0.0
+  path: discordjs/slash-command/3865
+  description: CommonJS slash-command module pairing builder metadata with an asynchronous interaction handler.
 - id: dotnet-multiproject/application-service@5279
   version: 1.0.1
   path: dotnet-multiproject/application-service/5279

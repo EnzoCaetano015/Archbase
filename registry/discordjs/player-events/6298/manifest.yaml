@@ -1,0 +1,31 @@
+schemaVersion: 1
+id: discordjs/player-events@6298
+name: Discord.js player-events
+description: Registered player event boundary producing per-event embeds through queue channel metadata.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: player.js.md
+    destination: "{{Name}}/player.js"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- command-metadata
+- response-content
+- integration-options
+- configuration
+preserve:
+- explicit-event-registration
+- queue-metadata-routing
+- per-event-response-builder
+- handled-send-failures
+metadata:
+  framework: discord.js
+  language: javascript-commonjs
+  player: discord-player-5
+  reference: ribby-bot
+  maturity: foundation-sample

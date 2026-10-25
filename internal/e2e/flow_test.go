@@ -46,6 +46,11 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 			ruleID: "architecture/astro-content-site@1", exported: ".cursor/rules/archbase.mdc",
 		},
 		{
+			name: "discordjs", fixture: "discordjs", rootPattern: "discordjs/slash-command@3865", nested: "commands", localName: "commands-standard",
+			customFile: "example.js", target: "commands/admin.js", outsideTarget: "events/player.js",
+			ruleID: "architecture/discordjs-music-bot@1", exported: ".cursor/rules/archbase.mdc",
+		},
+		{
 			name: "next", fixture: "next", rootPattern: "next/page@1234", nested: "src/pages", localName: "pages-standard",
 			customFile: "Example/Example.tsx", target: "src/pages/Admin/Page.tsx", outsideTarget: "src/components/Card.tsx",
 			ruleID: "architecture/next-modular@1", exported: ".cursor/rules/archbase.mdc",

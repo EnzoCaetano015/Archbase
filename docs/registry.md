@@ -11,6 +11,12 @@ The binary embeds the initial catalog:
 - `astro/layout@6813`
 - `astro/page@5904`
 - `astro/util@2386`
+- `discordjs/bootstrap@1683`
+- `discordjs/command-deploy@2794`
+- `discordjs/lyrics-command@5187`
+- `discordjs/music-command@4976`
+- `discordjs/player-events@6298`
+- `discordjs/slash-command@3865`
 - `dotnet-multiproject/application-service@5279`
 - `dotnet-multiproject/background-job@8094`
 - `dotnet-multiproject/bootstrap@1624`
@@ -83,6 +89,19 @@ The binary embeds the initial catalog:
 Patterns describe code structure rather than application features. Registry entries are sorted by ID and validated against their manifests and declared files when a source is opened.
 
 The same registry may include an independent `rules/index.yaml` catalog. Rule entries point to directories containing `rule.yaml`; IDs, versions, ordering, path confinement, symlinks, and the complete canonical document are validated. A registry without a `rules/` directory remains a valid pattern-only registry.
+
+## Ribby Bot variant
+
+The `discordjs` family follows Ribby Bot's CommonJS command modules and shared Discord player. Six patterns cover startup, command publication, slash commands, playback, lyrics lookup, and player events. The matching rule is `architecture/discordjs-music-bot@1`.
+
+From a consuming project root:
+
+```bash
+arc add discordjs/slash-command@3865 commands
+arc rules add architecture/discordjs-music-bot@1 --format agents --destination .
+```
+
+These commands store structural references in `.archbase`. They do not connect to Discord or publish bot commands. See the [reference notes](../registry/rules/architecture/discordjs-music-bot/1/README.md) for historical dependency versions and documented adaptations.
 
 ## Horizon Java API variant
 

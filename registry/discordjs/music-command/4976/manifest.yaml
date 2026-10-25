@@ -1,0 +1,31 @@
+schemaVersion: 1
+id: discordjs/music-command@4976
+name: Discord.js music-command
+description: Guild-scoped music command coordinating voice validation, search, queue updates, and playback.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: play.js.md
+    destination: "{{Name}}/play.js"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- command-metadata
+- response-content
+- integration-options
+- configuration
+preserve:
+- data-execute-contract
+- guild-scoped-player-access
+- voice-channel-guards
+- deferred-network-work
+metadata:
+  framework: discord.js
+  language: javascript-commonjs
+  player: discord-player-5
+  reference: ribby-bot
+  maturity: foundation-sample

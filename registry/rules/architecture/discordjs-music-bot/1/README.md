@@ -1,0 +1,11 @@
+# Discord.js modular music bot architecture
+
+Derived from the supplied Ribby Bot source: JavaScript CommonJS, Discord.js 14.7.1, discord-player 5.3.2, and genius-lyrics-api 3.2.0 dependency ranges. These versions identify the reference and are not a recommendation to install historical dependencies.
+
+Six independent patterns describe the composition root, explicit application-command publication, the data/execute command contract, asynchronous playback orchestration, external lyrics lookup, and player notifications. Rules reference pattern IDs rather than copying example code. Resolve the nearest local scope before using a pattern. The general commands glob describes the module contract; play.js and lyrics.js identify specialized patterns, not additional active patterns for a scope.
+
+The reference places playback listeners in index.js; the examples extract them to events/player.js. They also require both command capabilities, reject duplicate names, anchor discovery to __dirname, synchronize ignore handling, request only the demonstrated intents, use environment credentials, guard missing voice state, acknowledge network work early, and handle dispatch and notification failures. The playback example demonstrates one track rather than duplicating playlist and provider-specific URL branches. The lyrics sample retains the reference title-based lookup and conservative response-length guard. No music library, full bot feature set, config.json, credentials, dependency manifests, or lockfiles are installed.
+
+Player examples intentionally retain the reference version-5 getQueue/createQueue API. The showNowPlaying property is initialized explicitly and remains shared across the process, as in the reference design. Adapting to another player major version or server-specific preferences requires explicit changes. Publishing deploy.js replaces the global application-command set and is a separate operator action; catalog validation never logs into Discord, publishes commands, plays audio, or calls Genius.
+
+The examples are structural references. Catalog and JavaScript syntax validation do not prove live Discord permissions, interaction timing, provider availability, audio playback, or compatibility with a consumer's installed dependency versions.

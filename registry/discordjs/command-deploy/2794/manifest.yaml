@@ -1,0 +1,31 @@
+schemaVersion: 1
+id: discordjs/command-deploy@2794
+name: Discord.js command-deploy
+description: Explicit REST publication of discovered slash-command definitions with runtime-compatible validation.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: deploy.js.md
+    destination: "{{Name}}/deploy.js"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- command-metadata
+- response-content
+- integration-options
+- configuration
+preserve:
+- separate-publication-entrypoint
+- builder-serialization
+- external-credentials
+- consistent-discovery-policy
+metadata:
+  framework: discord.js
+  language: javascript-commonjs
+  player: discord-player-5
+  reference: ribby-bot
+  maturity: foundation-sample

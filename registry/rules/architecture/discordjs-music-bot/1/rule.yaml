@@ -1,0 +1,39 @@
+schemaVersion: 1
+id: architecture/discordjs-music-bot@1
+name: Discord.js modular music bot architecture
+description: CommonJS bot with discovered slash-command modules, explicit command publication, shared player state, and playback event notifications.
+version: 1.0.0
+scopes:
+  - path: index.js
+    pattern: discordjs/bootstrap@1683
+  - path: deploy.js
+    pattern: discordjs/command-deploy@2794
+  - path: commands/*.js
+    pattern: discordjs/slash-command@3865
+  - path: commands/play.js
+    pattern: discordjs/music-command@4976
+  - path: commands/lyrics.js
+    pattern: discordjs/lyrics-command@5187
+  - path: events/player.js
+    pattern: discordjs/player-events@6298
+rules:
+  - Keep the CommonJS entrypoint responsible for client composition, command discovery, interaction dispatch, player construction, and login; do not implement command workflows in it.
+  - Command modules export builder data and an async execute function and remain free of login or publication side effects so discovery can safely import them.
+  - Discover flat JavaScript command modules relative to the entrypoint directory, require both command data and execution capabilities, reject duplicate names, and apply the same ignore policy at runtime and publication.
+  - Keep global application-command publication in deploy.js, serialize each builder, and invoke it explicitly because the REST operation replaces the application command set.
+  - Request only the gateway intents required by the installed commands and read credentials from external configuration without copying tokens or config.json into patterns.
+  - Commands obtain the shared player through interaction.client and use guild-scoped queues; guard guild, queue, and voice-channel state before playback operations.
+  - Acknowledge long-running interactions before network work and complete them with editReply; dispatch errors must respect replied and deferred states and hide implementation details from users.
+  - Allocate embeds per invocation or player event and never mutate a shared response builder across concurrent interactions.
+  - Keep playback notifications in a registered player-event module using queue metadata to address the destination channel and handle rejected sends.
+  - External lyrics lookup belongs to its command boundary, uses external credentials, and handles missing or oversized results before building an embed.
+  - Preserve the reference discord-player 5 API family consistently; do not mix createQueue and getQueue examples with incompatible newer APIs without an explicit migration.
+  - Treat the showNowPlaying flag as process-wide reference behavior; use guild-keyed state if independent server preferences are required.
+metadata:
+  stack: discordjs
+  language: javascript-commonjs
+  framework: discord.js-14
+  player: discord-player-5
+  organization: command-modules
+  reference: ribby-bot
+  maturity: foundation
