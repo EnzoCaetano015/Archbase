@@ -1,0 +1,31 @@
+schemaVersion: 1
+id: dotnet-efcore/db-context@3725
+name: EF Core layered db-context
+description: EF Core persistence boundary declaring model sets and explicitly keyless DTO projections.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: ApplicationDbContext.cs.md
+    destination: "{{Name}}/ApplicationDbContext.cs"
+    required: true
+allowedChanges:
+- identifiers
+- namespaces
+- imports
+- domain-fields
+- routes
+- persistence-queries
+- configuration
+preserve:
+- injected-context-options
+- explicit-keyless-projections
+- no-web-workflows
+metadata:
+  framework: aspnet-core
+  runtime: net6.0-reference
+  persistence: ef-core-sql-server
+  reference: pequenos-talentos-api
+  maturity: foundation-sample

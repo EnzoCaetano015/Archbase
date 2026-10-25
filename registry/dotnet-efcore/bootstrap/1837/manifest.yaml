@@ -1,0 +1,32 @@
+schemaVersion: 1
+id: dotnet-efcore/bootstrap@1837
+name: EF Core layered bootstrap
+description: ASP.NET Core composition root registering JWT, SQL Server EF Core, layered services, and a typed HTTP client.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: Program.cs.md
+    destination: "{{Name}}/Program.cs"
+    required: true
+allowedChanges:
+- identifiers
+- namespaces
+- imports
+- domain-fields
+- routes
+- persistence-queries
+- configuration
+preserve:
+- explicit-middleware-order
+- scoped-db-context
+- constructor-injection
+- external-configuration
+metadata:
+  framework: aspnet-core
+  runtime: net6.0-reference
+  persistence: ef-core-sql-server
+  reference: pequenos-talentos-api
+  maturity: foundation-sample

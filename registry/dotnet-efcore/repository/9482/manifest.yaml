@@ -1,0 +1,36 @@
+schemaVersion: 1
+id: dotnet-efcore/repository@9482
+name: EF Core layered repository
+description: Repository contract and EF Core implementation with parameterized SQL and explicit write transactions.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: IItemRepository.cs.md
+    destination: "{{Name}}/Interfaces/IItemRepository.cs"
+    required: true
+  - format: markdown-code
+    source: ItemRepository.cs.md
+    destination: "{{Name}}/ItemRepository.cs"
+    required: true
+allowedChanges:
+- identifiers
+- namespaces
+- imports
+- domain-fields
+- routes
+- persistence-queries
+- configuration
+preserve:
+- interface-implementation-pair
+- parameterized-sql
+- transaction-rollback
+- cancellation-propagation
+metadata:
+  framework: aspnet-core
+  runtime: net6.0-reference
+  persistence: ef-core-sql-server
+  reference: pequenos-talentos-api
+  maturity: foundation-sample

@@ -1,0 +1,56 @@
+schemaVersion: 1
+id: architecture/dotnet-efcore-layered@1
+name: Multi-project EF Core API architecture
+description: Separates ASP.NET Core APP and Admin controllers, application services, EF Core repositories, and shared model contracts.
+version: 1.0.0
+scopes:
+  - path: '*.Api/Program.cs'
+    pattern: dotnet-efcore/bootstrap@1837
+  - path: '*.Api/Controllers/APP/**'
+    pattern: dotnet-efcore/controller@2614
+  - path: '*.Api/Controllers/Admin/**'
+    pattern: dotnet-efcore/controller@2614
+  - path: '*.Service/*Service.cs'
+    pattern: dotnet-efcore/service@1594
+  - path: '*.Service/Interfaces/**'
+    pattern: dotnet-efcore/service@1594
+  - path: '*.Service/*ExternoService.cs'
+    pattern: dotnet-efcore/http-client@5716
+  - path: '*.Service/Interfaces/I*ExternoService.cs'
+    pattern: dotnet-efcore/http-client@5716
+  - path: '*.Repository/*Repository.cs'
+    pattern: dotnet-efcore/repository@9482
+  - path: '*.Repository/Interfaces/**'
+    pattern: dotnet-efcore/repository@9482
+  - path: '*.Repository/ApplicationDbContext.cs'
+    pattern: dotnet-efcore/db-context@3725
+  - path: '*.Model/*.cs'
+    pattern: dotnet-efcore/model@4836
+  - path: '*.Model/DTO/**'
+    pattern: dotnet-efcore/dto@5947
+  - path: '*.Model/Enum/**'
+    pattern: dotnet-efcore/enum@6158
+  - path: '*.Model/Request/**'
+    pattern: dotnet-efcore/request@7269
+  - path: '*.Model/Response/**'
+    pattern: dotnet-efcore/response@8371
+rules:
+  - Keep sibling Api, Service, Repository, and Model projects and acyclic references flowing from Api to Service to Repository to Model; Api may reference persistence implementations for composition only.
+  - Keep APP and Admin HTTP routes distinct; controller folder names and route prefixes do not grant authorization and privileged actions require explicit policy in the consuming API.
+  - Controllers inject service interfaces, bind request contracts, propagate cancellation, and map response-envelope status to actual HTTP status without executing SQL or constructing repositories.
+  - Services expose interfaces, validate use cases, coordinate repository contracts, and return shared Response or Response<T> envelopes without depending on controllers or HTTP response objects.
+  - Models, DTO projections, request payloads, response envelopes, and explicit numeric enums remain in separate Model directories without dependencies on service or persistence implementations.
+  - Generic Request<T> wraps Dados; never derive caller identity or authorization solely from identifiers supplied in a request body, and allowlist fields for writes rather than binding persistence entities directly.
+  - EF Core repositories own parameterized SQL Server queries, scoped DbContext usage, explicit write transactions, rollback, and nullable SQL parameter conversion; never interpolate caller data into SQL text.
+  - ApplicationDbContext in Repository is the active persistence context; explicitly configure keyless query-only DTOs and never write them as tracked entities or introduce a second active context accidentally.
+  - Response envelopes expose safe operation messages; log original exceptions internally and propagate cancellation rather than turning it into a successful or generic business result.
+  - Typed HttpClient adapters own external JSON translation and status validation, use externally configured endpoints and timeouts, and do not leak third-party payloads into controllers.
+  - Startup owns scoped registrations, configured CORS origins, validated JWT issuer/audience/lifetime/signing key, and authentication-before-authorization ordering; never log bearer tokens or full authentication headers.
+  - The reference custom-token hook requires an explicitly designed verifier; do not copy bespoke cryptography, activate unused middleware, or replace token validation with a route-prefix bypass.
+metadata:
+  stack: dotnet-efcore
+  runtime: net6.0-reference
+  persistence: ef-core-6-sql-server
+  organization: sibling-project-layered
+  reference: pequenos-talentos-api
+  maturity: foundation

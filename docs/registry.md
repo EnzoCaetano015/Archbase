@@ -17,6 +17,17 @@ The binary embeds the initial catalog:
 - `discordjs/music-command@4976`
 - `discordjs/player-events@6298`
 - `discordjs/slash-command@3865`
+- `dotnet-efcore/bootstrap@1837`
+- `dotnet-efcore/controller@2614`
+- `dotnet-efcore/db-context@3725`
+- `dotnet-efcore/dto@5947`
+- `dotnet-efcore/enum@6158`
+- `dotnet-efcore/http-client@5716`
+- `dotnet-efcore/model@4836`
+- `dotnet-efcore/repository@9482`
+- `dotnet-efcore/request@7269`
+- `dotnet-efcore/response@8371`
+- `dotnet-efcore/service@1594`
 - `dotnet-multiproject/application-service@5279`
 - `dotnet-multiproject/background-job@8094`
 - `dotnet-multiproject/bootstrap@1624`
@@ -102,6 +113,17 @@ The binary embeds the initial catalog:
 Patterns describe code structure rather than application features. Registry entries are sorted by ID and validated against their manifests and declared files when a source is opened.
 
 The same registry may include an independent `rules/index.yaml` catalog. Rule entries point to directories containing `rule.yaml`; IDs, versions, ordering, path confinement, symlinks, and the complete canonical document are validated. A registry without a `rules/` directory remains a valid pattern-only registry.
+
+## PequenosTalentos API variant
+
+The eleven `dotnet-efcore` patterns follow the PequenosTalentos API sibling-project layout: Api, Service, Repository, and Model. They cover APP/Admin controller boundaries, service/repository interfaces, EF Core SQL Server persistence, typed schemas, Dados request wrappers, response envelopes, and external HTTP integration. The matching rule is `architecture/dotnet-efcore-layered@1`.
+
+```bash
+arc add dotnet-efcore/controller@2614 Example.Api/Controllers/APP
+arc rules add architecture/dotnet-efcore-layered@1 --format agents --destination .
+```
+
+Only C# examples are installed; no environment settings, credentials, publish profiles, project manifests, or database schema are copied. See the [architecture and adaptation notes](../registry/rules/architecture/dotnet-efcore-layered/1/README.md), especially the differences in HTTP status mapping and application-specific token validation.
 
 ## Flutter Dart-only variant
 

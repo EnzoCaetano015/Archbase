@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: dotnet-efcore/enum@6158
+name: EF Core layered enum
+description: Explicit numeric domain enum independent of web, service, and persistence frameworks.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: TipoUsuarioEnum.cs.md
+    destination: "{{Name}}/TipoUsuarioEnum.cs"
+    required: true
+allowedChanges:
+- identifiers
+- namespaces
+- imports
+- domain-fields
+- routes
+- persistence-queries
+- configuration
+preserve:
+- explicit-numeric-identities
+- no-framework-dependencies
+metadata:
+  framework: aspnet-core
+  runtime: net6.0-reference
+  persistence: ef-core-sql-server
+  reference: pequenos-talentos-api
+  maturity: foundation-sample

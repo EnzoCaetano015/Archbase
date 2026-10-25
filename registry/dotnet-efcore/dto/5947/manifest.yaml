@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: dotnet-efcore/dto@5947
+name: EF Core layered dto
+description: Mutable C# projection contract kept separate from persisted models and input payloads.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: ItemResumoDTO.cs.md
+    destination: "{{Name}}/ItemResumoDTO.cs"
+    required: true
+allowedChanges:
+- identifiers
+- namespaces
+- imports
+- domain-fields
+- routes
+- persistence-queries
+- configuration
+preserve:
+- projection-only-contract
+- no-service-or-api-dependencies
+metadata:
+  framework: aspnet-core
+  runtime: net6.0-reference
+  persistence: ef-core-sql-server
+  reference: pequenos-talentos-api
+  maturity: foundation-sample

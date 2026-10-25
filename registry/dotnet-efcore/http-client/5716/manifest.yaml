@@ -1,0 +1,36 @@
+schemaVersion: 1
+id: dotnet-efcore/http-client@5716
+name: EF Core layered http-client
+description: Typed HttpClient service contract and adapter validating an external JSON envelope.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: IAnaliseExternoService.cs.md
+    destination: "{{Name}}/Interfaces/IAnaliseExternoService.cs"
+    required: true
+  - format: markdown-code
+    source: AnaliseExternoService.cs.md
+    destination: "{{Name}}/AnaliseExternoService.cs"
+    required: true
+allowedChanges:
+- identifiers
+- namespaces
+- imports
+- domain-fields
+- routes
+- persistence-queries
+- configuration
+preserve:
+- typed-http-client
+- external-endpoint-configuration
+- validated-external-envelope
+- cancellation-propagation
+metadata:
+  framework: aspnet-core
+  runtime: net6.0-reference
+  persistence: ef-core-sql-server
+  reference: pequenos-talentos-api
+  maturity: foundation-sample

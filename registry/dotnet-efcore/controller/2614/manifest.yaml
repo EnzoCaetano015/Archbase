@@ -1,0 +1,32 @@
+schemaVersion: 1
+id: dotnet-efcore/controller@2614
+name: EF Core layered controller
+description: Authorized APP or Admin controller delegating to service contracts and mapping envelope status to HTTP.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: ItemController.cs.md
+    destination: "{{Name}}/ItemController.cs"
+    required: true
+allowedChanges:
+- identifiers
+- namespaces
+- imports
+- domain-fields
+- routes
+- persistence-queries
+- configuration
+preserve:
+- service-interface-delegation
+- authorization-boundary
+- http-status-mapping
+- no-database-access
+metadata:
+  framework: aspnet-core
+  runtime: net6.0-reference
+  persistence: ef-core-sql-server
+  reference: pequenos-talentos-api
+  maturity: foundation-sample

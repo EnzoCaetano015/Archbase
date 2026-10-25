@@ -1,0 +1,31 @@
+schemaVersion: 1
+id: dotnet-efcore/model@4836
+name: EF Core layered model
+description: Plain mutable C# persistence model with identity and nullable audit timestamps.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: Item.cs.md
+    destination: "{{Name}}/Item.cs"
+    required: true
+allowedChanges:
+- identifiers
+- namespaces
+- imports
+- domain-fields
+- routes
+- persistence-queries
+- configuration
+preserve:
+- plain-model-contract
+- nullable-audit-fields
+- no-web-workflows
+metadata:
+  framework: aspnet-core
+  runtime: net6.0-reference
+  persistence: ef-core-sql-server
+  reference: pequenos-talentos-api
+  maturity: foundation-sample

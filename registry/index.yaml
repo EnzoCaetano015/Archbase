@@ -44,6 +44,50 @@ patterns:
   version: 1.0.0
   path: discordjs/slash-command/3865
   description: CommonJS slash-command module pairing builder metadata with an asynchronous interaction handler.
+- id: dotnet-efcore/bootstrap@1837
+  version: 1.0.0
+  path: dotnet-efcore/bootstrap/1837
+  description: ASP.NET Core composition root registering JWT, SQL Server EF Core, layered services, and a typed HTTP client.
+- id: dotnet-efcore/controller@2614
+  version: 1.0.0
+  path: dotnet-efcore/controller/2614
+  description: Authorized APP or Admin controller delegating to service contracts and mapping envelope status to HTTP.
+- id: dotnet-efcore/db-context@3725
+  version: 1.0.0
+  path: dotnet-efcore/db-context/3725
+  description: EF Core persistence boundary declaring model sets and explicitly keyless DTO projections.
+- id: dotnet-efcore/dto@5947
+  version: 1.0.0
+  path: dotnet-efcore/dto/5947
+  description: Mutable C# projection contract kept separate from persisted models and input payloads.
+- id: dotnet-efcore/enum@6158
+  version: 1.0.0
+  path: dotnet-efcore/enum/6158
+  description: Explicit numeric domain enum independent of web, service, and persistence frameworks.
+- id: dotnet-efcore/http-client@5716
+  version: 1.0.0
+  path: dotnet-efcore/http-client/5716
+  description: Typed HttpClient service contract and adapter validating an external JSON envelope.
+- id: dotnet-efcore/model@4836
+  version: 1.0.0
+  path: dotnet-efcore/model/4836
+  description: Plain mutable C# persistence model with identity and nullable audit timestamps.
+- id: dotnet-efcore/repository@9482
+  version: 1.0.0
+  path: dotnet-efcore/repository/9482
+  description: Repository contract and EF Core implementation with parameterized SQL and explicit write transactions.
+- id: dotnet-efcore/request@7269
+  version: 1.0.0
+  path: dotnet-efcore/request/7269
+  description: Generic Dados request envelope paired with a validated feature-specific input contract.
+- id: dotnet-efcore/response@8371
+  version: 1.0.0
+  path: dotnet-efcore/response/8371
+  description: Generic and non-generic C# response envelopes carrying success, message, status, and optional data.
+- id: dotnet-efcore/service@1594
+  version: 1.0.0
+  path: dotnet-efcore/service/1594
+  description: Application service contract and implementation validating input and mapping repository outcomes into response envelopes.
 - id: dotnet-multiproject/application-service@5279
   version: 1.0.1
   path: dotnet-multiproject/application-service/5279

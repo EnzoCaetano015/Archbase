@@ -1,0 +1,35 @@
+schemaVersion: 1
+id: dotnet-efcore/request@7269
+name: EF Core layered request
+description: Generic Dados request envelope paired with a validated feature-specific input contract.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: Request.cs.md
+    destination: "{{Name}}/Request.cs"
+    required: true
+  - format: markdown-code
+    source: CriarItemRequest.cs.md
+    destination: "{{Name}}/CriarItemRequest.cs"
+    required: true
+allowedChanges:
+- identifiers
+- namespaces
+- imports
+- domain-fields
+- routes
+- persistence-queries
+- configuration
+preserve:
+- generic-input-envelope
+- dedicated-input-contract
+- no-client-authorization-authority
+metadata:
+  framework: aspnet-core
+  runtime: net6.0-reference
+  persistence: ef-core-sql-server
+  reference: pequenos-talentos-api
+  maturity: foundation-sample

@@ -1,0 +1,31 @@
+schemaVersion: 1
+id: dotnet-efcore/response@8371
+name: EF Core layered response
+description: Generic and non-generic C# response envelopes carrying success, message, status, and optional data.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: Response.cs.md
+    destination: "{{Name}}/Response.cs"
+    required: true
+allowedChanges:
+- identifiers
+- namespaces
+- imports
+- domain-fields
+- routes
+- persistence-queries
+- configuration
+preserve:
+- shared-response-envelope
+- explicit-operation-status
+- safe-public-messages
+metadata:
+  framework: aspnet-core
+  runtime: net6.0-reference
+  persistence: ef-core-sql-server
+  reference: pequenos-talentos-api
+  maturity: foundation-sample

@@ -71,6 +71,11 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 			ruleID: "architecture/dotnet-layered@1", exported: ".cursor/rules/archbase.mdc",
 		},
 		{
+			name: "dotnet-efcore", fixture: "dotnet-efcore", rootPattern: "dotnet-efcore/controller@2614", nested: "Example.Api/Controllers/APP", localName: "app-controllers-standard",
+			customFile: "ItemController.cs", target: "Example.Api/Controllers/APP/AdminController.cs", outsideTarget: "Example.Service/ItemService.cs",
+			ruleID: "architecture/dotnet-efcore-layered@1", exported: ".cursor/rules/archbase.mdc",
+		},
+		{
 			name: "dotnet-multiproject", fixture: "dotnet-multiproject", rootPattern: "dotnet-multiproject/controller@2947", nested: "src/Example.Api/Controllers", localName: "api-controllers-standard",
 			customFile: "ExampleController.cs", target: "src/Example.Api/Controllers/AdminController.cs", outsideTarget: "src/Example.Application/ItemService.cs",
 			ruleID: "architecture/dotnet-multiproject@1", exported: ".cursor/rules/archbase.mdc",

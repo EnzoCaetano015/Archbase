@@ -1,0 +1,36 @@
+schemaVersion: 1
+id: dotnet-efcore/service@1594
+name: EF Core layered service
+description: Application service contract and implementation validating input and mapping repository outcomes into response envelopes.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: IItemService.cs.md
+    destination: "{{Name}}/Interfaces/IItemService.cs"
+    required: true
+  - format: markdown-code
+    source: ItemService.cs.md
+    destination: "{{Name}}/ItemService.cs"
+    required: true
+allowedChanges:
+- identifiers
+- namespaces
+- imports
+- domain-fields
+- routes
+- persistence-queries
+- configuration
+preserve:
+- interface-implementation-pair
+- repository-contract-dependency
+- safe-error-envelopes
+- cancellation-propagation
+metadata:
+  framework: aspnet-core
+  runtime: net6.0-reference
+  persistence: ef-core-sql-server
+  reference: pequenos-talentos-api
+  maturity: foundation-sample
