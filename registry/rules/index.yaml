@@ -40,3 +40,7 @@ rules:
     version: 1.0.0
     path: architecture/spring-boot-layered/1
     description: Layered Java 21 Spring Boot architecture with MVC, JPA, MapStruct, JWT security, and global response policies.
+  - id: architecture/spring-boot-reactive-mongo@1
+    version: 1.0.0
+    path: architecture/spring-boot-reactive-mongo/1
+    description: Layered Horizon-style API with reactive MongoDB persistence, service interfaces, and separate request and response contracts.

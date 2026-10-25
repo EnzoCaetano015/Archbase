@@ -1,0 +1,27 @@
+schemaVersion: 1
+id: spring-boot-reactive-mongo/exception@7842
+name: Reactive MongoDB exception
+description: Resource-not-found exception with an explicit HTTP status mapping.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: ItemNotFoundException.java.md
+    destination: "{{Name}}/ItemNotFoundException.java"
+    required: true
+allowedChanges:
+- package
+- identifiers
+- imports
+- contracts
+- documentation
+preserve:
+- not-found-status
+- safe-public-reason
+metadata:
+  framework: spring-boot
+  persistence: reactive-mongodb
+  reference: horizon-java-api
+  maturity: foundation-sample

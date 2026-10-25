@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: spring-boot-reactive-mongo/controller@2938
+name: Reactive MongoDB controller
+description: Spring MVC controller returning Reactor publishers and delegating to a service interface.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: ItemController.java.md
+    destination: "{{Name}}/ItemController.java"
+    required: true
+allowedChanges:
+- package
+- identifiers
+- imports
+- contracts
+- documentation
+preserve:
+- constructor-injection
+- service-interface-delegation
+- reactive-return-types
+- no-repository-access
+metadata:
+  framework: spring-boot
+  persistence: reactive-mongodb
+  reference: horizon-java-api
+  maturity: foundation-sample

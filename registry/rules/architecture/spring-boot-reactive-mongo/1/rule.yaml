@@ -1,0 +1,43 @@
+schemaVersion: 1
+id: architecture/spring-boot-reactive-mongo@1
+name: Spring Boot reactive MongoDB architecture
+description: Layered Horizon-style API with reactive MongoDB persistence, service interfaces, and separate request and response contracts.
+version: 1.0.0
+scopes:
+  - path: src/main/java/**/*Application.java
+    pattern: spring-boot-reactive-mongo/bootstrap@1562
+  - path: src/main/java/**/controller/**
+    pattern: spring-boot-reactive-mongo/controller@2938
+  - path: src/main/java/**/domain/**
+    pattern: spring-boot-reactive-mongo/document@4261
+  - path: src/main/java/**/exception/**
+    pattern: spring-boot-reactive-mongo/exception@7842
+  - path: src/main/java/**/repository/**
+    pattern: spring-boot-reactive-mongo/repository@5384
+  - path: src/main/java/**/request/**
+    pattern: spring-boot-reactive-mongo/request@9153
+  - path: src/main/java/**/response/**
+    pattern: spring-boot-reactive-mongo/response@6472
+  - path: src/main/java/**/service/**
+    pattern: spring-boot-reactive-mongo/service@3726
+rules:
+  - Keep the application class at the component-discovery root and limit it to startup and API metadata.
+  - Controllers declare HTTP routes and OpenAPI operations and delegate to service interfaces without accessing persistence directly.
+  - Keep service interfaces in service and their constructor-injected implementations in service/impl; both expose Mono or Flux contracts.
+  - Compose repository publishers with map, switchIfEmpty, and other Reactor operators; do not block or subscribe within controllers, services, or repositories.
+  - Repositories extend ReactiveMongoRepository and own parameterized persistence queries; partial updates must preserve unrelated document fields.
+  - Domain documents own MongoDB collection and identity mappings and must not depend on controllers or transport contracts.
+  - Keep mutable request DTOs in request and constructor-initialized response projections in response; map documents to responses in the service implementation.
+  - Lombok NonNull is not a substitute for request-boundary validation; define validation appropriate to each public input before production use.
+  - Model missing resources as explicit errors in the publisher chain and map known exceptions to safe HTTP statuses and messages.
+  - Preserve the reference Spring MVC transport with Reactor return values; do not infer a WebFlux runtime solely from Mono and Flux signatures.
+  - Dependencies flow from controller to service interface to implementation to repository; keep credentials and environment-specific MongoDB configuration external.
+metadata:
+  stack: spring-boot-reactive-mongo
+  runtime: java-22
+  framework: spring-boot-3.3
+  transport: spring-mvc
+  persistence: reactive-mongodb
+  organization: layered-service-interface
+  reference: horizon-java-api
+  maturity: foundation

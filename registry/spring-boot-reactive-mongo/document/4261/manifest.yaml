@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: spring-boot-reactive-mongo/document@4261
+name: Reactive MongoDB document
+description: Lombok MongoDB document with a string identity and explicit collection mapping.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: Item.java.md
+    destination: "{{Name}}/Item.java"
+    required: true
+allowedChanges:
+- package
+- identifiers
+- imports
+- contracts
+- documentation
+preserve:
+- mongodb-document-mapping
+- string-identity
+- no-web-dependencies
+metadata:
+  framework: spring-boot
+  persistence: reactive-mongodb
+  reference: horizon-java-api
+  maturity: foundation-sample

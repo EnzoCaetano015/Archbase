@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: spring-boot-reactive-mongo/response@6472
+name: Reactive MongoDB response
+description: Constructor-initialized Lombok response projection with read-only accessors.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: GetItemResponse.java.md
+    destination: "{{Name}}/GetItemResponse.java"
+    required: true
+allowedChanges:
+- package
+- identifiers
+- imports
+- contracts
+- documentation
+preserve:
+- response-only-projection
+- no-persistence-mapping
+- no-setters
+metadata:
+  framework: spring-boot
+  persistence: reactive-mongodb
+  reference: horizon-java-api
+  maturity: foundation-sample

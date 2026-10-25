@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: spring-boot-reactive-mongo/bootstrap@1562
+name: Reactive MongoDB bootstrap
+description: Spring Boot composition root with OpenAPI metadata.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: ExampleApplication.java.md
+    destination: "{{Name}}/ExampleApplication.java"
+    required: true
+allowedChanges:
+- package
+- identifiers
+- imports
+- contracts
+- documentation
+preserve:
+- component-discovery-root
+- openapi-metadata
+- no-feature-workflows
+metadata:
+  framework: spring-boot
+  persistence: reactive-mongodb
+  reference: horizon-java-api
+  maturity: foundation-sample

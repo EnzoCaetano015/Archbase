@@ -224,6 +224,38 @@ patterns:
   version: 1.0.1
   path: react/util/3469
   description: Pure typed frontend utility without React or browser state.
+- id: spring-boot-reactive-mongo/bootstrap@1562
+  version: 1.0.0
+  path: spring-boot-reactive-mongo/bootstrap/1562
+  description: Spring Boot composition root with OpenAPI metadata.
+- id: spring-boot-reactive-mongo/controller@2938
+  version: 1.0.0
+  path: spring-boot-reactive-mongo/controller/2938
+  description: Spring MVC controller returning Reactor publishers and delegating to a service interface.
+- id: spring-boot-reactive-mongo/document@4261
+  version: 1.0.0
+  path: spring-boot-reactive-mongo/document/4261
+  description: Lombok MongoDB document with a string identity and explicit collection mapping.
+- id: spring-boot-reactive-mongo/exception@7842
+  version: 1.0.0
+  path: spring-boot-reactive-mongo/exception/7842
+  description: Resource-not-found exception with an explicit HTTP status mapping.
+- id: spring-boot-reactive-mongo/repository@5384
+  version: 1.0.0
+  path: spring-boot-reactive-mongo/repository/5384
+  description: Reactive MongoDB repository with a parameterized partial-update query.
+- id: spring-boot-reactive-mongo/request@9153
+  version: 1.0.0
+  path: spring-boot-reactive-mongo/request/9153
+  description: Mutable Lombok request contract separated from persistence and response types.
+- id: spring-boot-reactive-mongo/response@6472
+  version: 1.0.0
+  path: spring-boot-reactive-mongo/response/6472
+  description: Constructor-initialized Lombok response projection with read-only accessors.
+- id: spring-boot-reactive-mongo/service@3726
+  version: 1.0.0
+  path: spring-boot-reactive-mongo/service/3726
+  description: Reactive service interface and implementation coordinating MongoDB access and response mapping.
 - id: spring-boot/api-advice@7634
   version: 1.0.1
   path: spring-boot/api-advice/7634

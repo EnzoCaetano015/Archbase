@@ -1,0 +1,27 @@
+schemaVersion: 1
+id: spring-boot-reactive-mongo/request@9153
+name: Reactive MongoDB request
+description: Mutable Lombok request contract separated from persistence and response types.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: UpdateItemRequest.java.md
+    destination: "{{Name}}/UpdateItemRequest.java"
+    required: true
+allowedChanges:
+- package
+- identifiers
+- imports
+- contracts
+- documentation
+preserve:
+- request-only-contract
+- no-persistence-mapping
+metadata:
+  framework: spring-boot
+  persistence: reactive-mongodb
+  reference: horizon-java-api
+  maturity: foundation-sample

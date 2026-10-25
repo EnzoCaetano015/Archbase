@@ -20,6 +20,7 @@ Rule paths are relative slash-separated globs such as `src/pages/**`. Paths must
 - `architecture/react-tailwind-modular@1` separates Tailwind pages, shadcn-style primitives, domain components, endpoint paths, typed query controllers, and a page registry.
 - `architecture/react-vite-modular@1` separates React pages, reusable UI, typed API access, contracts, shared hooks, utilities, and centralized routes.
 - `architecture/spring-boot-layered@1` separates Spring MVC controllers, transactional services, JPA repositories, audited entities, validated records, MapStruct mappers, JWT security, and global response policies.
+- `architecture/spring-boot-reactive-mongo@1` follows the Horizon Java API structure with reactive MongoDB repositories, service interfaces and implementations, and separate request and response contracts. See the [reference notes](../registry/rules/architecture/spring-boot-reactive-mongo/1/README.md) for scope and adaptations.
 
 The official catalog is embedded and works offline. Directory and public Git registries may provide their own `rules/index.yaml`; configured sources are ordered and the first source containing an ID wins. A resolved rule is usable only when all referenced pattern IDs resolve through the configured pattern sources.
 

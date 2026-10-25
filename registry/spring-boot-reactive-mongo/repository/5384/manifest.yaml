@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: spring-boot-reactive-mongo/repository@5384
+name: Reactive MongoDB repository
+description: Reactive MongoDB repository with a parameterized partial-update query.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: ItemRepository.java.md
+    destination: "{{Name}}/ItemRepository.java"
+    required: true
+allowedChanges:
+- package
+- identifiers
+- imports
+- contracts
+- documentation
+preserve:
+- reactive-mongo-repository
+- parameterized-query
+- partial-update
+- no-web-workflows
+metadata:
+  framework: spring-boot
+  persistence: reactive-mongodb
+  reference: horizon-java-api
+  maturity: foundation-sample

@@ -62,6 +62,14 @@ The binary embeds the initial catalog:
 - `react/page@6325`
 - `react/routes@1973`
 - `react/util@3469`
+- `spring-boot-reactive-mongo/bootstrap@1562`
+- `spring-boot-reactive-mongo/controller@2938`
+- `spring-boot-reactive-mongo/document@4261`
+- `spring-boot-reactive-mongo/exception@7842`
+- `spring-boot-reactive-mongo/repository@5384`
+- `spring-boot-reactive-mongo/request@9153`
+- `spring-boot-reactive-mongo/response@6472`
+- `spring-boot-reactive-mongo/service@3726`
 - `spring-boot/api-advice@7634`
 - `spring-boot/bootstrap@1258`
 - `spring-boot/controller@2841`
@@ -75,6 +83,19 @@ The binary embeds the initial catalog:
 Patterns describe code structure rather than application features. Registry entries are sorted by ID and validated against their manifests and declared files when a source is opened.
 
 The same registry may include an independent `rules/index.yaml` catalog. Rule entries point to directories containing `rule.yaml`; IDs, versions, ordering, path confinement, symlinks, and the complete canonical document are validated. A registry without a `rules/` directory remains a valid pattern-only registry.
+
+## Horizon Java API variant
+
+The `spring-boot-reactive-mongo` family follows the supplied Horizon Java API: Spring MVC controllers returning Reactor publishers, reactive MongoDB documents and repositories, separate request/response DTOs, and service interfaces with implementations in `service/impl`. Its eight patterns are independent structural references. The matching rule is `architecture/spring-boot-reactive-mongo@1`.
+
+For example, from a consuming project root:
+
+```bash
+arc add spring-boot-reactive-mongo/controller@2938 src/main/java/com/example/api/controller
+arc rules add architecture/spring-boot-reactive-mongo@1 --format agents --destination .
+```
+
+See the [reference notes](../registry/rules/architecture/spring-boot-reactive-mongo/1/README.md) for adaptations and validation limits. Installing patterns stores examples in `.archbase`; it does not generate a Java application or install dependencies.
 
 ## Git sources
 

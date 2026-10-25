@@ -1,0 +1,34 @@
+schemaVersion: 1
+id: spring-boot-reactive-mongo/service@3726
+name: Reactive MongoDB service
+description: Reactive service interface and implementation coordinating MongoDB access and response mapping.
+type: pattern-bundle
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: ItemService.java.md
+    destination: "{{Name}}/ItemService.java"
+    required: true
+  - format: markdown-code
+    source: ItemServiceImpl.java.md
+    destination: "{{Name}}/impl/ItemServiceImpl.java"
+    required: true
+allowedChanges:
+- package
+- identifiers
+- imports
+- contracts
+- documentation
+preserve:
+- interface-implementation-boundary
+- constructor-injection
+- publisher-composition
+- no-block-or-subscribe
+- explicit-response-mapping
+metadata:
+  framework: spring-boot
+  persistence: reactive-mongodb
+  reference: horizon-java-api
+  maturity: foundation-sample

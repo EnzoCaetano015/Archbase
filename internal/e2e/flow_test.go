@@ -85,6 +85,11 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 			customFile: "ExampleController.java", target: "src/main/java/com/example/api/controller/AdminController.java", outsideTarget: "src/main/java/com/example/api/service/ItemService.java",
 			ruleID: "architecture/spring-boot-layered@1", exported: ".cursor/rules/archbase.mdc",
 		},
+		{
+			name: "spring-boot-reactive-mongo", fixture: "spring-boot-reactive-mongo", rootPattern: "spring-boot-reactive-mongo/controller@2938", nested: "src/main/java/com/example/api/controller", localName: "reactive-controllers-standard",
+			customFile: "ItemController.java", target: "src/main/java/com/example/api/controller/AdminController.java", outsideTarget: "src/main/java/com/example/api/service/ItemService.java",
+			ruleID: "architecture/spring-boot-reactive-mongo@1", exported: ".cursor/rules/archbase.mdc",
+		},
 	} {
 		t.Run(scenario.name, func(t *testing.T) {
 			project := filepath.Join(t.TempDir(), "project")
