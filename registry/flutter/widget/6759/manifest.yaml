@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: flutter/widget@6759
+name: Flutter widget
+description: Reusable Flutter presentation widget with immutable constructor inputs and explicit callbacks.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: item_card.dart.md
+    destination: "{{Name}}/item_card.dart"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- domain-fields
+- routes
+- presentation
+- configuration
+preserve:
+- immutable-widget-inputs
+- explicit-callbacks
+- no-http-or-session-ownership
+metadata:
+  framework: flutter
+  language: dart
+  reference: pwa-dart-source
+  maturity: foundation-sample

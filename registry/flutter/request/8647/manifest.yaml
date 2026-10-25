@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: flutter/request@8647
+name: Flutter request
+description: Dart request payload with required constructor fields and explicit JSON conversion.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: create_item_request.dart.md
+    destination: "{{Name}}/create_item_request.dart"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- domain-fields
+- routes
+- presentation
+- configuration
+preserve:
+- request-only-contract
+- explicit-serialization
+- no-framework-dependencies
+metadata:
+  framework: flutter
+  language: dart
+  reference: pwa-dart-source
+  maturity: foundation-sample

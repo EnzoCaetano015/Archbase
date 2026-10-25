@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: flutter/enum@5182
+name: Flutter enum
+description: Dart numeric enum mapping domain identifiers to explicit display labels.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: role_enum.dart.md
+    destination: "{{Name}}/role_enum.dart"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- domain-fields
+- routes
+- presentation
+- configuration
+preserve:
+- explicit-numeric-values
+- unknown-value-handling
+- no-framework-dependencies
+metadata:
+  framework: flutter
+  language: dart
+  reference: pwa-dart-source
+  maturity: foundation-sample

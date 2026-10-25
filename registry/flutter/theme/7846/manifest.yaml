@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: flutter/theme@7846
+name: Flutter theme
+description: ValueNotifier brightness preferences and centralized Flutter theme construction.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: themes.dart.md
+    destination: "{{Name}}/themes.dart"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- domain-fields
+- routes
+- presentation
+- configuration
+preserve:
+- observable-brightness
+- central-theme-construction
+- no-feature-dependencies
+metadata:
+  framework: flutter
+  language: dart
+  reference: pwa-dart-source
+  maturity: foundation-sample

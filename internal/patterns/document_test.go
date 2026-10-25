@@ -10,13 +10,28 @@ import (
 )
 
 func TestDocumentRoundTrip(t *testing.T) {
-	for _, name := range []string{"file.ts", "file.tsx", "file.cs", "file.py", "file.java", "file.astro", "file.yaml", "file.md", "file.unknown"} {
+	for _, name := range []string{"file.ts", "file.tsx", "file.cs", "file.py", "file.java", "file.dart", "file.astro", "file.yaml", "file.md", "file.unknown"} {
 		code := []byte("// Olá 世界\nconst backticks = \"```\";\n")
 		doc := EncodeDocument(name, code)
 		actual, lang, err := DecodeDocument(name+".md", doc)
 		if err != nil || string(actual) != string(code) || lang != LanguageFor(name) {
 			t.Fatalf("%s: %q %q %v", name, actual, lang, err)
 		}
+	}
+}
+
+func TestDartDocumentLanguage(t *testing.T) {
+	code := []byte("class Example {}\n")
+	document := EncodeDocument("example.dart", code)
+	if !strings.HasPrefix(string(document), "```dart\n") {
+		t.Fatalf("Dart document has the wrong language: %s", document)
+	}
+	decoded, language, err := DecodeDocument("example.dart.md", document)
+	if err != nil || language != "dart" || string(decoded) != string(code) {
+		t.Fatalf("Dart extraction: %q %s %v", decoded, language, err)
+	}
+	if _, _, err := DecodeDocument("example.dart.md", []byte("```text\nclass Example {}\n```\n")); err == nil {
+		t.Fatal("accepted a Dart document with the wrong language")
 	}
 }
 func TestRejectMalformedMarkdown(t *testing.T) {

@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: flutter/auth-provider@1473
+name: Flutter auth-provider
+description: ChangeNotifier session state coordinating named preference keys and login or logout notifications.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: notificacao_provider.dart.md
+    destination: "{{Name}}/notificacao_provider.dart"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- domain-fields
+- routes
+- presentation
+- configuration
+preserve:
+- observable-session-state
+- named-preference-keys
+- single-session-owner
+metadata:
+  framework: flutter
+  language: dart
+  reference: pwa-dart-source
+  maturity: foundation-sample

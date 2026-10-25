@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: flutter/api-client@7361
+name: Flutter api-client
+description: Serialized bearer-authenticated HTTP transport with explicit JSON encoding and session invalidation.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: api_service.dart.md
+    destination: "{{Name}}/api_service.dart"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- domain-fields
+- routes
+- presentation
+- configuration
+preserve:
+- centralized-bearer-headers
+- settled-queued-futures
+- configured-origin
+- shared-session-state
+metadata:
+  framework: flutter
+  language: dart
+  reference: pwa-dart-source
+  maturity: foundation-sample

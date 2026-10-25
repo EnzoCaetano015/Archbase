@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: flutter/dto@9536
+name: Flutter dto
+description: Immutable Dart response projection with explicit map decoding and JSON serialization.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: item_statusDTO.model.dart.md
+    destination: "{{Name}}/item_statusDTO.model.dart"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- domain-fields
+- routes
+- presentation
+- configuration
+preserve:
+- immutable-contract
+- explicit-serialization
+- no-widget-or-service-dependencies
+metadata:
+  framework: flutter
+  language: dart
+  reference: pwa-dart-source
+  maturity: foundation-sample

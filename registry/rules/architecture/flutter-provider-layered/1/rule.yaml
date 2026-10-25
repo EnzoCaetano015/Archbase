@@ -1,0 +1,55 @@
+schemaVersion: 1
+id: architecture/flutter-provider-layered@1
+name: Flutter Provider layered architecture
+description: Dart-only Flutter reference separating feature pages, shared widgets, API services, schemas, session state, route guards, and theme preferences.
+version: 1.0.0
+scopes:
+  - path: lib/main.dart
+    pattern: flutter/bootstrap@1695
+  - path: lib/routes.dart
+    pattern: flutter/routes@3875
+  - path: lib/pages/**/*.dart
+    pattern: flutter/page@2964
+  - path: lib/shared/**/*.dart
+    pattern: flutter/widget@6759
+  - path: lib/services/*_service.dart
+    pattern: flutter/service@6258
+  - path: lib/services/api_service.dart
+    pattern: flutter/api-client@7361
+  - path: lib/schemas/*.dart
+    pattern: flutter/model@4328
+  - path: lib/schemas/DTO/*.dart
+    pattern: flutter/dto@9536
+  - path: lib/schemas/request/*.dart
+    pattern: flutter/request@8647
+  - path: lib/schemas/enum/*.dart
+    pattern: flutter/enum@5182
+  - path: lib/notificacao_provider.dart
+    pattern: flutter/auth-provider@1473
+  - path: lib/auth*.dart
+    pattern: flutter/auth-guard@2584
+  - path: lib/un_auth_guard.dart
+    pattern: flutter/auth-guard@2584
+  - path: lib/style/*.dart
+    pattern: flutter/theme@7846
+rules:
+  - Use main.dart as the composition root for binding initialization, session hydration, Provider registration, shared HTTP lifetime, MaterialApp configuration, and platform observers.
+  - Organize pages by feature below lib/pages, keep lifecycle and local loading or filtering state in the page State, and delegate HTTP and JSON work to services and schemas.
+  - Reuse widgets under shared with explicit constructor inputs and callbacks; cards, form fields, filters, menu items, and dialogs must not create independent HTTP or session lifetimes.
+  - Keep route identifiers and routing decisions centralized, validate URI segments and typed arguments, and apply navigation guards before building protected pages.
+  - Maintain one observable AuthProvider for session transitions and named preference keys; local session presence and role guards control navigation only and never replace backend authentication or authorization.
+  - Centralize authenticated JSON transport and bearer headers in ApiService, serialize queued requests without leaving unresolved futures after errors, and keep requests within the configured API origin.
+  - Feature services decode the reference sucesso/dados envelope into typed schemas and propagate failures so pages can distinguish failed requests from successful empty results.
+  - Keep models, DTO projections, request payloads, and numeric enums separate; schemas own fromMap or fromJson and toJson conversion without importing widgets or services.
+  - Do not start requests in build; check mounted before updating state after an await and release controllers, listeners, observers, and HTTP clients according to ownership.
+  - Keep brightness preferences and theme tokens under style and rebuild through ValueListenableBuilder without introducing feature or transport dependencies there.
+  - Preserve the reference page/service/schema/Provider organization rather than inferring Clean Architecture, BLoC, or Riverpod layers absent from the Dart source.
+  - All declared examples and destinations must be Dart code; exclude assets, web and native platform files, pubspec files, lockfiles, generated Firebase options, and deployment configuration from this family.
+metadata:
+  stack: flutter
+  language: dart
+  state: provider-change-notifier
+  transport: http-json
+  organization: pages-services-schemas-shared-style
+  reference: pwa-dart-source
+  maturity: foundation

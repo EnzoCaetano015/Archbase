@@ -88,6 +88,58 @@ patterns:
   version: 1.0.1
   path: dotnet/service/1172
   description: Application service with constructor-injected repository.
+- id: flutter/api-client@7361
+  version: 1.0.0
+  path: flutter/api-client/7361
+  description: Serialized bearer-authenticated HTTP transport with explicit JSON encoding and session invalidation.
+- id: flutter/auth-guard@2584
+  version: 1.0.0
+  path: flutter/auth-guard/2584
+  description: Provider-aware builder guard scheduling a single post-frame authentication redirect.
+- id: flutter/auth-provider@1473
+  version: 1.0.0
+  path: flutter/auth-provider/1473
+  description: ChangeNotifier session state coordinating named preference keys and login or logout notifications.
+- id: flutter/bootstrap@1695
+  version: 1.0.0
+  path: flutter/bootstrap/1695
+  description: Flutter composition root with hydrated session state, Provider dependencies, routing, and theme observation.
+- id: flutter/dto@9536
+  version: 1.0.0
+  path: flutter/dto/9536
+  description: Immutable Dart response projection with explicit map decoding and JSON serialization.
+- id: flutter/enum@5182
+  version: 1.0.0
+  path: flutter/enum/5182
+  description: Dart numeric enum mapping domain identifiers to explicit display labels.
+- id: flutter/model@4328
+  version: 1.0.0
+  path: flutter/model/4328
+  description: Immutable Dart model with nullable dates and explicit fromMap and toJson conversion.
+- id: flutter/page@2964
+  version: 1.0.0
+  path: flutter/page/2964
+  description: Stateful Flutter page with asynchronous loading, local filtering, explicit result states, and responsive shared widgets.
+- id: flutter/request@8647
+  version: 1.0.0
+  path: flutter/request/8647
+  description: Dart request payload with required constructor fields and explicit JSON conversion.
+- id: flutter/routes@3875
+  version: 1.0.0
+  path: flutter/routes/3875
+  description: Central Flutter route catalog with guarded builders and validated dynamic URI segments.
+- id: flutter/service@6258
+  version: 1.0.0
+  path: flutter/service/6258
+  description: Typed feature service decoding the sucesso/dados API envelope through a shared HTTP adapter.
+- id: flutter/theme@7846
+  version: 1.0.0
+  path: flutter/theme/7846
+  description: ValueNotifier brightness preferences and centralized Flutter theme construction.
+- id: flutter/widget@6759
+  version: 1.0.0
+  path: flutter/widget/6759
+  description: Reusable Flutter presentation widget with immutable constructor inputs and explicit callbacks.
 - id: nestjs/bootstrap@1437
   version: 1.0.1
   path: nestjs/bootstrap/1437

@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: flutter/routes@3875
+name: Flutter routes
+description: Central Flutter route catalog with guarded builders and validated dynamic URI segments.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: routes.dart.md
+    destination: "{{Name}}/routes.dart"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- domain-fields
+- routes
+- presentation
+- configuration
+preserve:
+- central-route-identifiers
+- guarded-route-builders
+- validated-route-parameters
+metadata:
+  framework: flutter
+  language: dart
+  reference: pwa-dart-source
+  maturity: foundation-sample

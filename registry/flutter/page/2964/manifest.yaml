@@ -1,0 +1,31 @@
+schemaVersion: 1
+id: flutter/page@2964
+name: Flutter page
+description: Stateful Flutter page with asynchronous loading, local filtering, explicit result states, and responsive shared widgets.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: items_page.dart.md
+    destination: "{{Name}}/items_page.dart"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- domain-fields
+- routes
+- presentation
+- configuration
+preserve:
+- page-local-state
+- service-delegation
+- mounted-after-await
+- responsive-layout
+- distinct-error-and-empty-states
+metadata:
+  framework: flutter
+  language: dart
+  reference: pwa-dart-source
+  maturity: foundation-sample

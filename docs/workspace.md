@@ -65,6 +65,7 @@ Edit the code inside the fence and preserve its language and delimiters. The doc
 | `.cs` | `csharp` | `cs` |
 | `.py` | `python` | — |
 | `.java` | `java` | — |
+| `.dart` | `dart` | — |
 | `.astro` | `astro` | — |
 | `.yaml`, `.yml` | `yaml` | `yml` |
 | `.json` | `json` | — |

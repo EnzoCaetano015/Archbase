@@ -50,7 +50,7 @@ func TestEmbeddedCatalogResolvesOfficialRulesAndPatterns(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"architecture/astro-content-site@1", "architecture/discordjs-music-bot@1", "architecture/dotnet-layered@1", "architecture/dotnet-multiproject@1", "architecture/nestjs-prisma-modular@1", "architecture/next-feature-app-router@1", "architecture/next-modular@1", "architecture/python-fastapi-modular@1", "architecture/react-tailwind-modular@1", "architecture/react-vite-modular@1", "architecture/spring-boot-layered@1", "architecture/spring-boot-reactive-mongo@1"}
+	want := []string{"architecture/astro-content-site@1", "architecture/discordjs-music-bot@1", "architecture/dotnet-layered@1", "architecture/dotnet-multiproject@1", "architecture/flutter-provider-layered@1", "architecture/nestjs-prisma-modular@1", "architecture/next-feature-app-router@1", "architecture/next-modular@1", "architecture/python-fastapi-modular@1", "architecture/react-tailwind-modular@1", "architecture/react-vite-modular@1", "architecture/spring-boot-layered@1", "architecture/spring-boot-reactive-mongo@1"}
 	if len(listed.Entries) != len(want) {
 		t.Fatalf("unexpected rules: %#v", listed.Entries)
 	}
@@ -89,7 +89,7 @@ func TestOfficialRulesHaveReadmesWithoutPatternSourceCopies(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if readmes != 12 {
+	if readmes != 13 {
 		t.Fatalf("expected one README for each official rule, got %d", readmes)
 	}
 }

@@ -10,6 +10,7 @@ Rule paths are relative slash-separated globs such as `src/pages/**`. Paths must
 
 ## Official rules
 
+- `architecture/flutter-provider-layered@1` follows the Dart-only PWA reference with feature pages, API services, schemas, shared widgets, Provider session state, guards, routes, and theme preferences. See the [source and adaptation notes](../registry/rules/architecture/flutter-provider-layered/1/README.md).
 - `architecture/astro-content-site@1` separates Astro file routes, document layouts, server-rendered components, validated content collections, and pure utilities.
 - `architecture/discordjs-music-bot@1` organizes CommonJS Discord bots into command modules, a client composition root, explicit command publication, and player events. See the [Ribby Bot reference notes](../registry/rules/architecture/discordjs-music-bot/1/README.md).
 - `architecture/dotnet-multiproject@1` separates ASP.NET Core composition, application contracts and services, persistence, shared contracts, global failures, and scheduled jobs across projects.

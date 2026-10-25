@@ -32,6 +32,19 @@ The binary embeds the initial catalog:
 - `dotnet/controller@7743`
 - `dotnet/repository@5532`
 - `dotnet/service@1172`
+- `flutter/api-client@7361`
+- `flutter/auth-guard@2584`
+- `flutter/auth-provider@1473`
+- `flutter/bootstrap@1695`
+- `flutter/dto@9536`
+- `flutter/enum@5182`
+- `flutter/model@4328`
+- `flutter/page@2964`
+- `flutter/request@8647`
+- `flutter/routes@3875`
+- `flutter/service@6258`
+- `flutter/theme@7846`
+- `flutter/widget@6759`
 - `nestjs/bootstrap@1437`
 - `nestjs/controller@2864`
 - `nestjs/dto@9175`
@@ -89,6 +102,17 @@ The binary embeds the initial catalog:
 Patterns describe code structure rather than application features. Registry entries are sorted by ID and validated against their manifests and declared files when a source is opened.
 
 The same registry may include an independent `rules/index.yaml` catalog. Rule entries point to directories containing `rule.yaml`; IDs, versions, ordering, path confinement, symlinks, and the complete canonical document are validated. A registry without a `rules/` directory remains a valid pattern-only registry.
+
+## Flutter Dart-only variant
+
+The thirteen `flutter` patterns are derived exclusively from Dart source in PWA.zip. The matching rule `architecture/flutter-provider-layered@1` preserves the reference pages/services/schemas/shared/style layout with Provider state and route guards. See the [architecture notes](../registry/rules/architecture/flutter-provider-layered/1/README.md) for adaptations and validation limits.
+
+```bash
+arc add flutter/page@2964 lib/pages/items
+arc rules add architecture/flutter-provider-layered@1 --format agents --destination .
+```
+
+All declared example sources are typed `.dart.md` documents and all destinations end in `.dart`. No pubspec, assets, web/native platform files, or Firebase configuration is installed. This is a structural catalog rather than a complete Flutter application.
 
 ## Ribby Bot variant
 

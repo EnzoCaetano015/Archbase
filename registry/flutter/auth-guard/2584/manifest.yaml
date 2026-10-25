@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: flutter/auth-guard@2584
+name: Flutter auth-guard
+description: Provider-aware builder guard scheduling a single post-frame authentication redirect.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: auth_guard.dart.md
+    destination: "{{Name}}/auth_guard.dart"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- domain-fields
+- routes
+- presentation
+- configuration
+preserve:
+- builder-boundary
+- observable-session
+- post-frame-navigation
+- mounted-check
+metadata:
+  framework: flutter
+  language: dart
+  reference: pwa-dart-source
+  maturity: foundation-sample

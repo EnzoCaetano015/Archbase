@@ -45,6 +45,19 @@ func TestEmbeddedSourceContainsAllFoundationPatterns(t *testing.T) {
 		"dotnet/controller@7743",
 		"dotnet/repository@5532",
 		"dotnet/service@1172",
+		"flutter/api-client@7361",
+		"flutter/auth-guard@2584",
+		"flutter/auth-provider@1473",
+		"flutter/bootstrap@1695",
+		"flutter/dto@9536",
+		"flutter/enum@5182",
+		"flutter/model@4328",
+		"flutter/page@2964",
+		"flutter/request@8647",
+		"flutter/routes@3875",
+		"flutter/service@6258",
+		"flutter/theme@7846",
+		"flutter/widget@6759",
 		"nestjs/bootstrap@1437",
 		"nestjs/controller@2864",
 		"nestjs/dto@9175",
@@ -118,6 +131,9 @@ func TestEmbeddedSourceContainsAllFoundationPatterns(t *testing.T) {
 			t.Fatalf("manifest mismatch for %s", rawID)
 		}
 		for _, file := range result.Pattern.Bundle.Files {
+			if strings.HasPrefix(rawID, "flutter/") && (!strings.HasSuffix(file.Spec.Source, ".dart.md") || !strings.HasSuffix(file.Spec.Destination, ".dart") || file.Language != "dart") {
+				t.Fatalf("Flutter example must contain only typed Dart code: %#v", file.Spec)
+			}
 			if file.Spec.Format != "markdown-code" || !strings.HasSuffix(file.Spec.Source, ".md") || (file.Present && (file.Language == "" || len(file.DocumentContent) == 0)) {
 				t.Fatalf("untyped official example %s", file.Spec.Source)
 			}

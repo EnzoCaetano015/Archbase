@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: flutter/bootstrap@1695
+name: Flutter bootstrap
+description: Flutter composition root with hydrated session state, Provider dependencies, routing, and theme observation.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: main.dart.md
+    destination: "{{Name}}/main.dart"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- domain-fields
+- routes
+- presentation
+- configuration
+preserve:
+- binding-initialization
+- provider-composition
+- shared-http-lifetime
+- observer-cleanup
+metadata:
+  framework: flutter
+  language: dart
+  reference: pwa-dart-source
+  maturity: foundation-sample

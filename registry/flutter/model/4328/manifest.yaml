@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: flutter/model@4328
+name: Flutter model
+description: Immutable Dart model with nullable dates and explicit fromMap and toJson conversion.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: item.model.dart.md
+    destination: "{{Name}}/item.model.dart"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- domain-fields
+- routes
+- presentation
+- configuration
+preserve:
+- immutable-fields
+- explicit-map-decoding
+- iso-date-serialization
+metadata:
+  framework: flutter
+  language: dart
+  reference: pwa-dart-source
+  maturity: foundation-sample

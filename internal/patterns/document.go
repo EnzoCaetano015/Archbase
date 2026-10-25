@@ -24,6 +24,8 @@ func LanguageFor(name string) string {
 		return "csharp"
 	case ".java":
 		return "java"
+	case ".dart":
+		return "dart"
 	case ".py":
 		return "python"
 	case ".astro":

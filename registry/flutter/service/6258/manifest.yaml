@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: flutter/service@6258
+name: Flutter service
+description: Typed feature service decoding the sucesso/dados API envelope through a shared HTTP adapter.
+type: pattern
+version: 1.0.0
+structure:
+  root: "{{Name}}"
+  files:
+  - format: markdown-code
+    source: items_service.dart.md
+    destination: "{{Name}}/items_service.dart"
+    required: true
+allowedChanges:
+- identifiers
+- imports
+- domain-fields
+- routes
+- presentation
+- configuration
+preserve:
+- shared-api-service
+- typed-schema-mapping
+- explicit-failure-propagation
+metadata:
+  framework: flutter
+  language: dart
+  reference: pwa-dart-source
+  maturity: foundation-sample

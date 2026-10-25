@@ -51,6 +51,11 @@ func TestPrimaryFlowAcrossOfficialStacks(t *testing.T) {
 			ruleID: "architecture/discordjs-music-bot@1", exported: ".cursor/rules/archbase.mdc",
 		},
 		{
+			name: "flutter", fixture: "flutter", rootPattern: "flutter/page@2964", nested: "lib/pages/items", localName: "pages-standard",
+			customFile: "items_page.dart", target: "lib/pages/items/admin_page.dart", outsideTarget: "lib/shared/cards/item_card.dart",
+			ruleID: "architecture/flutter-provider-layered@1", exported: ".cursor/rules/archbase.mdc",
+		},
+		{
 			name: "next", fixture: "next", rootPattern: "next/page@1234", nested: "src/pages", localName: "pages-standard",
 			customFile: "Example/Example.tsx", target: "src/pages/Admin/Page.tsx", outsideTarget: "src/components/Card.tsx",
 			ruleID: "architecture/next-modular@1", exported: ".cursor/rules/archbase.mdc",
