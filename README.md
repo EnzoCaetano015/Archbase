@@ -8,6 +8,12 @@
   <strong>Architecture that AI coding agents can actually follow.</strong>
 </p>
 
+<p align="center">
+  <a href="https://github.com/EnzoCaetano015/Archbase/releases/latest"><img src="https://img.shields.io/github/v/release/EnzoCaetano015/Archbase?logo=github" alt="Latest stable release"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/github/license/EnzoCaetano015/Archbase" alt="MIT license"></a>
+  <a href="https://hub.xerj.org/contributors/EnzoCaetano015"><img src="https://hub.xerj.org/contributors/EnzoCaetano015/badge.svg" alt="XERJ Corpus Hub contributor"></a>
+</p>
+
 Archbase is an open-source Go CLI (`arc`) for sharing code patterns and architecture rules with developers and AI coding agents.
 
 - **Patterns** define how a type of code is structured.
