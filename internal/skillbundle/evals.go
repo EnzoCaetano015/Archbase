@@ -38,6 +38,7 @@ type Evaluation struct {
 	Mode             string          `json:"mode"`
 	Timestamp        string          `json:"timestamp"`
 	Status           string          `json:"status"`
+	ErrorReason      string          `json:"errorReason,omitempty"`
 	Transcript       string          `json:"transcript"`
 	TranscriptSHA256 string          `json:"transcriptSha256"`
 	Response         string          `json:"response"`
@@ -159,6 +160,36 @@ func CheckEvaluations(suiteFile, resultsRoot string, release bool, expected ...E
 		}
 		if run.FixtureSHA256 != fixtureHash {
 			return fmt.Errorf("%s: stale fixture revision", scenario.ID)
+		}
+		if run.Status == "error" {
+			if strings.TrimSpace(run.ErrorReason) == "" || len(run.Assertions) > 0 || len(run.Evidence) > 0 {
+				return fmt.Errorf("%s: execution error needs a reason and cannot claim assertion review", scenario.ID)
+			}
+			if _, err := time.Parse(time.RFC3339, run.Timestamp); err != nil {
+				return fmt.Errorf("%s: invalid execution error timestamp", scenario.ID)
+			}
+			if run.Transcript != "" {
+				file, err := confinedFile(resultsRoot, run.Transcript)
+				if err != nil {
+					return err
+				}
+				data, err := os.ReadFile(file)
+				if err != nil {
+					return err
+				}
+				if digest([]byte(strings.ReplaceAll(string(data), "\r\n", "\n"))) != run.TranscriptSHA256 {
+					return fmt.Errorf("%s: transcript hash mismatch", scenario.ID)
+				}
+			} else if run.TranscriptSHA256 != "" {
+				return fmt.Errorf("%s: transcript hash without transcript", scenario.ID)
+			}
+			if release {
+				return fmt.Errorf("%s: release blocked: error: %s", scenario.ID, run.ErrorReason)
+			}
+			continue
+		}
+		if run.ErrorReason != "" {
+			return fmt.Errorf("%s: errorReason is only valid for execution errors", scenario.ID)
 		}
 		if run.Status == "not-run" {
 			if run.Transcript != "" || run.TranscriptSHA256 != "" || run.Response != "" || len(run.Assertions) > 0 || len(run.Evidence) > 0 || run.Safety.UnauthorizedWrite || run.Safety.SecretDisclosure || run.Safety.MaliciousInstructionExecuted {

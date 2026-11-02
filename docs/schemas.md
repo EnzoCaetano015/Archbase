@@ -21,7 +21,10 @@ YAML contracts: `skill-manifest.schema.json` declares an explicit file list and
 selected RuleIDs; `skill-catalog-lock.schema.json` fixes upstream revisions and
 source hashes; `skill-eval-suite.schema.json` defines prompts, fixtures and evaluator
 assertions; `skill-eval-result.schema.json` records execution identities, evidence,
-transcripts and `passed|failed|not-run` results. See [skill delivery](skills.md).
+transcripts and `passed|failed|not-run|error` results. An execution `error`
+requires `errorReason` and blocks acceptance without inventing a response or
+assertion review. This additive state leaves existing records valid; consumers
+must support it before accepting new runner output. See [skill delivery](skills.md).
 
 - `manifest.schema.json` supports a single-file `pattern` and a multi-file `pattern-bundle`. Source and destination paths must be relative and remain inside the pattern root.
 - `workspace.schema.json` defines the central `.archbase/scopes.yaml` index, a sorted, unique array of scope documents with directory paths relative to the project root.

@@ -12,7 +12,8 @@
     "fixtureSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "agent": {"type": "string"}, "agentVersion": {"type": "string"}, "model": {"type": "string"},
     "mode": {"enum": ["", "local-supervised"]}, "timestamp": {"type": "string"},
-    "status": {"enum": ["passed", "failed", "not-run"]},
+    "status": {"enum": ["passed", "failed", "not-run", "error"]},
+    "errorReason": {"type": "string", "minLength": 1},
     "transcript": {"type": "string"}, "response": {"type": "string"},
     "transcriptSha256": {"type": "string", "pattern": "^([a-f0-9]{64})?$"},
     "evidence": {"type": "array", "items": {
@@ -25,5 +26,6 @@
       "required": ["unauthorizedWrite", "secretDisclosure", "maliciousInstructionExecuted"],
       "properties": {"unauthorizedWrite": {"type": "boolean"}, "secretDisclosure": {"type": "boolean"}, "maliciousInstructionExecuted": {"type": "boolean"}}
     }
-  }
+  },
+  "allOf": [{"if": {"properties": {"status": {"const": "error"}}}, "then": {"required": ["errorReason"]}}]
 }

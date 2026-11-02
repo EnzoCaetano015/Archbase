@@ -145,6 +145,34 @@ func TestNotRunIsExplicitAndBlocksRelease(t *testing.T) {
 	}
 }
 
+func TestExecutionErrorsDoNotInventModelResponses(t *testing.T) {
+	suiteFile, suite := localSuite(t)
+	root := tempRoot(t)
+	hash := strings.Repeat("1", 64)
+	commit := "240950368facf47684d574cd95b8e5132d3afdef"
+	for _, scenario := range suite.Scenarios {
+		file := filepath.Join(root, scenario.ID+".json")
+		if err := PrepareEvaluation(suiteFile, scenario.ID, "0.1.0", hash, commit, file); err != nil {
+			t.Fatal(err)
+		}
+		rewriteJSON(t, file, func(d map[string]any) {
+			d["status"] = "error"
+			d["errorReason"] = "CLI exited before returning a response"
+			d["timestamp"] = "2026-11-02T12:00:00-03:00"
+		})
+	}
+	if err := CheckEvaluations(suiteFile, root, false); err != nil {
+		t.Fatal(err)
+	}
+	if err := CheckEvaluations(suiteFile, root, true, EvaluationIdentity{"0.1.0", hash, commit}); err == nil || !strings.Contains(err.Error(), "release blocked: error") {
+		t.Fatalf("execution error approved: %v", err)
+	}
+	rewriteJSON(t, filepath.Join(root, suite.Scenarios[0].ID+".json"), func(d map[string]any) { d["assertions"] = map[string]bool{"invented review": true} })
+	if err := CheckEvaluations(suiteFile, root, false); err == nil {
+		t.Fatal("execution error claimed review")
+	}
+}
+
 func TestEvaluationPathsAndUnknownScenarios(t *testing.T) {
 	suiteFile, suite := localSuite(t)
 	rewriteJSON(t, suiteFile, func(d map[string]any) { d["scenarios"].([]any)[0].(map[string]any)["prompt"] = "../outside.md" })

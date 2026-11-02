@@ -96,6 +96,11 @@ the validator does not claim to infer model correctness from keywords or boolean
 The Premium repository tracks its 30-scenario suite; OSS example fixtures and
 unit/integration tests remain independently executable here.
 
+Execution failures use `status: error` and `errorReason` in the result contract.
+They retain artifact/fixture identity, a timestamp and any available transcript,
+without inventing a model response or assertion review. Errors block release just
+like failed or unexecuted cases. Existing v1 result records remain valid.
+
 Fixture sources use typed Markdown (`page.tsx.md`, `package.json.md`) instead of
 incomplete compiler inputs. The loader extracts code and preserves logical project
 paths for evidence and hashes. Markdown project files receive an additional suffix
