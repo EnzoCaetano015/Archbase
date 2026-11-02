@@ -17,6 +17,10 @@ On Windows, run the binary with `.\arc.exe help`. Source builds report `arc dev`
 
 ## Contribute
 
+Skill delivery tooling lives under `internal/skillbundle`, separately from `arc`.
+See [Architecture Starter and skill delivery](skills.md) for versioned JSON
+contracts, catalog locking, deterministic ZIPs and local evaluation records.
+
 Run the built binary without arguments in a terminal to test the interactive UI. `--plain` keeps the non-interactive presentation. CLI and TUI share typed operations under `internal/cli`; rendering must never parse command output or launch another `arc` process. The UI uses the pinned Bubble Tea, Bubbles, and Lip Gloss v2 dependencies.
 
 When changing the terminal UI, check navigation, forms, and scrolling at 60, 80, and 120 columns. Verify terminal restoration after exit and failure on Linux and Windows, along with the existing build matrix. Automated model tests cover state transitions, cancellation, stale results, review-before-write, content preservation, and layout bounds.

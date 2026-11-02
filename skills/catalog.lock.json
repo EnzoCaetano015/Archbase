@@ -1,0 +1,1237 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/EnzoCaetano015/Archbase",
+  "tag": "v0.8.0",
+  "commit": "240950368facf47684d574cd95b8e5132d3afdef",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "1f0b5c36da9b38e0869f92759c401a5ef355c478dfd709e3fa694ccf15ead2e0"
+    },
+    {
+      "path": "registry/astro/component/3148/Example.astro.md",
+      "sha256": "e26cd0ee2c3e69db70e0a3381e0565491141a88e957e60d0d243653ffdcebaf8"
+    },
+    {
+      "path": "registry/astro/component/3148/manifest.yaml",
+      "sha256": "856105c168751582fe75bdb2ba03d7f270b9c92e6b640f4041f115e827721626"
+    },
+    {
+      "path": "registry/astro/content-collection/4720/content/config.ts.md",
+      "sha256": "70e18f091f8db6ee010d3d122a8ea806ce4749ca4e16a71689a8d25e1d20395e"
+    },
+    {
+      "path": "registry/astro/content-collection/4720/content/examples/example.yaml.md",
+      "sha256": "388582d7ba9605e4dee3d20811e752927948970d36ed3dabfce0a09417d30ed9"
+    },
+    {
+      "path": "registry/astro/content-collection/4720/manifest.yaml",
+      "sha256": "0156422698c79e5a2b72b4520009f9488781acea9a950e08b1a739d4bdd35c99"
+    },
+    {
+      "path": "registry/astro/layout/6813/BaseLayout.astro.md",
+      "sha256": "ad12ba2c9bc930c861e6989729f924ca10385427f10019bfb6f825ad108f96e2"
+    },
+    {
+      "path": "registry/astro/layout/6813/manifest.yaml",
+      "sha256": "75e54f5036faa48e712fae3c309436944f6f6a92edf1893b3468bca465480b6d"
+    },
+    {
+      "path": "registry/astro/page/5904/Example.astro.md",
+      "sha256": "efaba5208b72bd612ef409f164f4a0e5bf0135d8e190b43782bfc34aa4870991"
+    },
+    {
+      "path": "registry/astro/page/5904/manifest.yaml",
+      "sha256": "e91b396b7feddf9461b9242bfd18cfa0f9601f56bc3b1bb71405086edd4024d4"
+    },
+    {
+      "path": "registry/astro/util/2386/manifest.yaml",
+      "sha256": "e9ccbf6e42222ff3ea624d376a3707fadaa37d7ab8664d16cd21ea5219adb881"
+    },
+    {
+      "path": "registry/astro/util/2386/utils.ts.md",
+      "sha256": "cbac3b8aebf812af0ecf5c7f0e7568d61ba8145212da1dc3ec16256e04f29daa"
+    },
+    {
+      "path": "registry/discordjs/bootstrap/1683/index.js.md",
+      "sha256": "4abea091a60686c521b4e6bdfb989b485047056cb7190b5be9a69bfb9274a07a"
+    },
+    {
+      "path": "registry/discordjs/bootstrap/1683/manifest.yaml",
+      "sha256": "afb929d12965927eec73fc399bbacbfbb64eb4b246bdd639b7a383696900d6d6"
+    },
+    {
+      "path": "registry/discordjs/command-deploy/2794/deploy.js.md",
+      "sha256": "9613df2052c173b93b0cc5a6b4db3f7dd83ae45d6b8c8af0de901fd33c7dc2e8"
+    },
+    {
+      "path": "registry/discordjs/command-deploy/2794/manifest.yaml",
+      "sha256": "41db1e482becf315651b949aeed0184f1e1ed1516c9f5ded1e62fc7bdb5331ea"
+    },
+    {
+      "path": "registry/discordjs/lyrics-command/5187/lyrics.js.md",
+      "sha256": "0ecfa70a515d7327976a8c2f71086d0d916871d42734c190cde5d99d245119ba"
+    },
+    {
+      "path": "registry/discordjs/lyrics-command/5187/manifest.yaml",
+      "sha256": "1d4c2258a79ef3184e188c0a60a3ded5ab143ddc9a29f6f3fcf517b8afcb1186"
+    },
+    {
+      "path": "registry/discordjs/music-command/4976/manifest.yaml",
+      "sha256": "f4b3237018b625e9c723c2c1355d7933f0921229a55982b5d888ce75163169ef"
+    },
+    {
+      "path": "registry/discordjs/music-command/4976/play.js.md",
+      "sha256": "565c1c2da7e0baafd8ba79a6c5ddb34b187883f827a6dcae9089311bcd47d1c2"
+    },
+    {
+      "path": "registry/discordjs/player-events/6298/manifest.yaml",
+      "sha256": "60b0175505a6951403f6873d99ae4ffe889b9d50595ae476c104e4c4f402c90b"
+    },
+    {
+      "path": "registry/discordjs/player-events/6298/player.js.md",
+      "sha256": "abe17f0551cd55365a2786291cc0778fdfbd51e5f59d8dc401a3c40a41362db7"
+    },
+    {
+      "path": "registry/discordjs/slash-command/3865/example.js.md",
+      "sha256": "f9e07783f80b92421998139d3af50c69ec7ac1443093ce8acaf483f1bfefb386"
+    },
+    {
+      "path": "registry/discordjs/slash-command/3865/manifest.yaml",
+      "sha256": "edb44e67e714fcd1708b706d017b71ff16542d67469ef7f21f3eef3b35023ff8"
+    },
+    {
+      "path": "registry/dotnet-efcore/bootstrap/1837/Program.cs.md",
+      "sha256": "4e6e74b61bb276da619139657325de3853431a6876f5b31bad94ea7f50cd48b8"
+    },
+    {
+      "path": "registry/dotnet-efcore/bootstrap/1837/manifest.yaml",
+      "sha256": "bbc7c0d3d6a68d51c9f891ebd9dfbeefcc518b4815c93f1fe64f5c87ac92bbfb"
+    },
+    {
+      "path": "registry/dotnet-efcore/controller/2614/ItemController.cs.md",
+      "sha256": "30ed969633e94028b27f660f0ec561086d96d4fa0c1a57659918d94deee98c9a"
+    },
+    {
+      "path": "registry/dotnet-efcore/controller/2614/manifest.yaml",
+      "sha256": "8fe189d54415973414ffe6201f495a967e2dd5018aadabc0f566a9516c6ad90e"
+    },
+    {
+      "path": "registry/dotnet-efcore/db-context/3725/ApplicationDbContext.cs.md",
+      "sha256": "9ee7deeb979b65ef9c380b1234ef40adc9da4f492728ab8d6818af78d462e682"
+    },
+    {
+      "path": "registry/dotnet-efcore/db-context/3725/manifest.yaml",
+      "sha256": "e43adbd10d911d80c4b8c9e6ddea94c7cb4dcf338fb253943df1038dcfcbe8a1"
+    },
+    {
+      "path": "registry/dotnet-efcore/dto/5947/ItemResumoDTO.cs.md",
+      "sha256": "47154ceaab6c7956f4339d1e386603b524cb67521e6a1aaaa49766c5862fd111"
+    },
+    {
+      "path": "registry/dotnet-efcore/dto/5947/manifest.yaml",
+      "sha256": "b7e383e88a115880108e77b160625f361a1ed4c7c41504992435ef930656bc41"
+    },
+    {
+      "path": "registry/dotnet-efcore/enum/6158/TipoUsuarioEnum.cs.md",
+      "sha256": "48628a9150438ad4f02fab2d128da967fe4aa0f5575b4d372fe31b685c01c271"
+    },
+    {
+      "path": "registry/dotnet-efcore/enum/6158/manifest.yaml",
+      "sha256": "c748350a467746ef0a58415ca301d1ba141112ddeee54df32b1c71baaa9b1433"
+    },
+    {
+      "path": "registry/dotnet-efcore/http-client/5716/AnaliseExternoService.cs.md",
+      "sha256": "54d4e40d5b059054a4aa9415a02a4085208b1806786d0b237b02633c0b52b60d"
+    },
+    {
+      "path": "registry/dotnet-efcore/http-client/5716/IAnaliseExternoService.cs.md",
+      "sha256": "36186266952d0e0ade72a4a4ca0a3287704ab1d88ed4bad8611e6ff0e25489b7"
+    },
+    {
+      "path": "registry/dotnet-efcore/http-client/5716/manifest.yaml",
+      "sha256": "60c85b57a391d6f358c1cc77e3fbe7377e90d6b399e475686d117a464e5413dc"
+    },
+    {
+      "path": "registry/dotnet-efcore/model/4836/Item.cs.md",
+      "sha256": "4a73a929db1372163b76605ee0ef34b79d577940615d64128a68e156aaa37fb4"
+    },
+    {
+      "path": "registry/dotnet-efcore/model/4836/manifest.yaml",
+      "sha256": "baab97c8e2cf9e6b8634f1cef84806cf9d5ec2c1546949f8d11399e3ad62a1f3"
+    },
+    {
+      "path": "registry/dotnet-efcore/repository/9482/IItemRepository.cs.md",
+      "sha256": "255ac278101aed2a892263e4fdef0a217888a1a15a36d419cad83e4ca04e65b8"
+    },
+    {
+      "path": "registry/dotnet-efcore/repository/9482/ItemRepository.cs.md",
+      "sha256": "9959779995780a4c2088e569b6b6052054a0f49e8601222a498c8487174fad47"
+    },
+    {
+      "path": "registry/dotnet-efcore/repository/9482/manifest.yaml",
+      "sha256": "2ca93831f12a26a3c029a86c4cdd07eba89bafc66ae3c63954338eef1f712ea1"
+    },
+    {
+      "path": "registry/dotnet-efcore/request/7269/CriarItemRequest.cs.md",
+      "sha256": "783984cc74c61649affdb1af5a358dac1b41613db4eba52ff179a334dbc83b84"
+    },
+    {
+      "path": "registry/dotnet-efcore/request/7269/Request.cs.md",
+      "sha256": "8e9ba6187c34749e0a2229d5c367706a0df95af7d9bd925f10257ef5062360c6"
+    },
+    {
+      "path": "registry/dotnet-efcore/request/7269/manifest.yaml",
+      "sha256": "ee2429af0ae38a329cbbc054afc2e5b1484381716961823fbfd1dbc8fde1f189"
+    },
+    {
+      "path": "registry/dotnet-efcore/response/8371/Response.cs.md",
+      "sha256": "85321b0046ad1429430eaf2fb7c2092662eb1511fe760ef6dfdf9426ed25a5e9"
+    },
+    {
+      "path": "registry/dotnet-efcore/response/8371/manifest.yaml",
+      "sha256": "2fbd7914d9e95142db20cd397fe5e55c85d33584a5be85e278dc96c9fbf40b4e"
+    },
+    {
+      "path": "registry/dotnet-efcore/service/1594/IItemService.cs.md",
+      "sha256": "daa95b36f247bec5d53ee92654fafcb3aa078ca6fdaa59c21f4126a76fb267de"
+    },
+    {
+      "path": "registry/dotnet-efcore/service/1594/ItemService.cs.md",
+      "sha256": "ded771eb48e44a30ae582e12d4a2b803e14d546eedf7f3ce5fa9d0077812c506"
+    },
+    {
+      "path": "registry/dotnet-efcore/service/1594/manifest.yaml",
+      "sha256": "6e0e3de82c7813916cdeb28c1a5f3127df1f4923768f877a41251aedd45061c7"
+    },
+    {
+      "path": "registry/dotnet-multiproject/application-service/5279/ExampleService.cs.md",
+      "sha256": "c9051dc207fd61e654816409901db55df4f233ef55f2440ca1216037b470ef2e"
+    },
+    {
+      "path": "registry/dotnet-multiproject/application-service/5279/IExampleService.cs.md",
+      "sha256": "6464f84e74e40ecc33794f514263259f80a536183b38dcbb636805aaa741288e"
+    },
+    {
+      "path": "registry/dotnet-multiproject/application-service/5279/manifest.yaml",
+      "sha256": "0cae3d4d8cdae9baf442d6fc2c35f32c43f1046e483c3bf58488155f90d08eaf"
+    },
+    {
+      "path": "registry/dotnet-multiproject/background-job/8094/ExampleJob.cs.md",
+      "sha256": "4a1bb283a485cdb27288669111846050c9b3fbf9cac83652c2f99890ec10914b"
+    },
+    {
+      "path": "registry/dotnet-multiproject/background-job/8094/IJob.cs.md",
+      "sha256": "00120283cc2c3a7487d25cfba387164e495e469338da4ff0a4b22312bdf34f66"
+    },
+    {
+      "path": "registry/dotnet-multiproject/background-job/8094/JobAttribute.cs.md",
+      "sha256": "e937bc3247dad7f938b54014cbb7f681f97c713cd67ff1083d831fc10f5e275d"
+    },
+    {
+      "path": "registry/dotnet-multiproject/background-job/8094/manifest.yaml",
+      "sha256": "14e644c611694cef0b4dea76f4a3b03b0da81d1f35ef5ff79badfdb03e8aabf5"
+    },
+    {
+      "path": "registry/dotnet-multiproject/bootstrap/1624/Program.cs.md",
+      "sha256": "bf50089425a7f8cb727916005957df1624d899bf76a8e9ee8b8f601cc0203dc7"
+    },
+    {
+      "path": "registry/dotnet-multiproject/bootstrap/1624/manifest.yaml",
+      "sha256": "b0cb2f960d0a730aa625fda615dcb49b20c11ffd6358f6f3ad54608cd157bd63"
+    },
+    {
+      "path": "registry/dotnet-multiproject/contracts/4716/CreateExampleRequest.cs.md",
+      "sha256": "02b770634bae4dcef3869fc5e3817baaf1097d535d4ca4cdbdab2b13369afd99"
+    },
+    {
+      "path": "registry/dotnet-multiproject/contracts/4716/Example.cs.md",
+      "sha256": "70b9d39355089669afd47f3cc2d9520f3d6a1fd162eb60aa3073ee5808fab5f4"
+    },
+    {
+      "path": "registry/dotnet-multiproject/contracts/4716/ResponseEnvelope.cs.md",
+      "sha256": "e422584b30e2db1dad06ee10431ea983f704c4b37b8c76ad8dce23c622c45dbb"
+    },
+    {
+      "path": "registry/dotnet-multiproject/contracts/4716/manifest.yaml",
+      "sha256": "3fa8f9414f95f45b106cf6d840cd5d122917d23b0912f288dc1b82a74560c093"
+    },
+    {
+      "path": "registry/dotnet-multiproject/controller/2947/ExampleController.cs.md",
+      "sha256": "27674f2fc9be00a16fe6d1e5afd7559ad1c9d033da4dcde26353aa442c3e0c47"
+    },
+    {
+      "path": "registry/dotnet-multiproject/controller/2947/manifest.yaml",
+      "sha256": "a3f36b90b2a7594397246eb5308f02af4f3da8eb281334a17383c88759b172e8"
+    },
+    {
+      "path": "registry/dotnet-multiproject/di-composition/7138/DependencyInjection.cs.md",
+      "sha256": "18528c517029dee8588bc0884128eb89deac548320ffa07136f9f64f103ecd8e"
+    },
+    {
+      "path": "registry/dotnet-multiproject/di-composition/7138/manifest.yaml",
+      "sha256": "d665149de39c389d99136b50edddd4f11887bf8391617bf67f4f1b6e938286c5"
+    },
+    {
+      "path": "registry/dotnet-multiproject/exception-handler/8463/ApiExceptionHandler.cs.md",
+      "sha256": "df814754dc3a0a8a495abe1c1bbabb47d6b8c59d89afbca2ca6f8fad4c3d1f8e"
+    },
+    {
+      "path": "registry/dotnet-multiproject/exception-handler/8463/manifest.yaml",
+      "sha256": "d65d354ae5a446ec2bf100df4b586ecc8006b72b2b49bfba4c6775bfac0340b2"
+    },
+    {
+      "path": "registry/dotnet-multiproject/repository/6485/ExampleRepository.cs.md",
+      "sha256": "60c9baf9e7eb978f9e0d50201235ef746546d58ef650a01e45f8fa90fd3abf27"
+    },
+    {
+      "path": "registry/dotnet-multiproject/repository/6485/IExampleRepository.cs.md",
+      "sha256": "c431394e90f73f93fa6341346049eb30355a73617a4701d2ac028eeb541e323b"
+    },
+    {
+      "path": "registry/dotnet-multiproject/repository/6485/manifest.yaml",
+      "sha256": "cfd64e371e0d8591c190d90b2dd7bcd4ea97571dab8067f2f5d51ce359d20a7f"
+    },
+    {
+      "path": "registry/dotnet/controller/7743/ExampleController.cs.md",
+      "sha256": "053f5cfeb56dafc72efc6a6b14a5ce41e9006a5b58aaf089f7f7eb45ed31f6e3"
+    },
+    {
+      "path": "registry/dotnet/controller/7743/manifest.yaml",
+      "sha256": "c7ea8384327ba56ad2cbbaa29079e78fe88bdcb753474d27e1451719ddb1dd3e"
+    },
+    {
+      "path": "registry/dotnet/repository/5532/IExampleRepository.cs.md",
+      "sha256": "379fc640c32d7a27c2052e6c3d21aab778fc94ee43cbb7f5ba749eb3ebba4a61"
+    },
+    {
+      "path": "registry/dotnet/repository/5532/manifest.yaml",
+      "sha256": "5793c73dfdf8500d8c844169a346b739b7ba64258e7fde69c815e68d50d56149"
+    },
+    {
+      "path": "registry/dotnet/service/1172/ExampleService.cs.md",
+      "sha256": "c94b6d2b16dd1ff86e8f5573856b76fbe4481f9e29d7614f150fd34491eb278f"
+    },
+    {
+      "path": "registry/dotnet/service/1172/manifest.yaml",
+      "sha256": "5a364ca7feec8a509cfac971e339a228faec0cf739988ea19ccccfca484255ad"
+    },
+    {
+      "path": "registry/flutter/api-client/7361/api_service.dart.md",
+      "sha256": "cc5ffc2703db0e2998040b756a483fe04ad63f0fbfe44ae70d77708810cb7495"
+    },
+    {
+      "path": "registry/flutter/api-client/7361/manifest.yaml",
+      "sha256": "4276e92b7a4f0ec549293f68555c51bbe3134b1f63e84d45fade7a5c8eb8dd96"
+    },
+    {
+      "path": "registry/flutter/auth-guard/2584/auth_guard.dart.md",
+      "sha256": "0123f6ac473c9272125074d19f48ecdac6ad2bc33bb41e336cb61a929680529e"
+    },
+    {
+      "path": "registry/flutter/auth-guard/2584/manifest.yaml",
+      "sha256": "f22519ec7d00970d11f480c084b95ef393f3226c2d5a42ae2f9d559b8cdc7ddf"
+    },
+    {
+      "path": "registry/flutter/auth-provider/1473/manifest.yaml",
+      "sha256": "8d8ae48d039e19c3413da9c31924dfc9d0f3a90dfa3d68abe7b14471b7edd748"
+    },
+    {
+      "path": "registry/flutter/auth-provider/1473/notificacao_provider.dart.md",
+      "sha256": "2b4ff15c0ac4fe45442e16306099dcf0ec2c84eb86385264976723c8fbe4cc30"
+    },
+    {
+      "path": "registry/flutter/bootstrap/1695/main.dart.md",
+      "sha256": "0616d8f3bfac3427313a542b19da19e0201ee70d0d7e1f6aff15a5e6e0ee441c"
+    },
+    {
+      "path": "registry/flutter/bootstrap/1695/manifest.yaml",
+      "sha256": "f6f2439e938ab1b391aeface3edbfe6177ea36188b9de34fa8cc47ddd5d10a0e"
+    },
+    {
+      "path": "registry/flutter/dto/9536/item_statusDTO.model.dart.md",
+      "sha256": "80bcc5630cd34c4a1b8f002b0f4a2c1dba310388b8fd2eee6da7d62a0e2f601a"
+    },
+    {
+      "path": "registry/flutter/dto/9536/manifest.yaml",
+      "sha256": "fdc13fdfb6413f45333bd6853b3733685d8cb205f6c3c62581157a9d5e6b81e1"
+    },
+    {
+      "path": "registry/flutter/enum/5182/manifest.yaml",
+      "sha256": "ffac2b8e2c5cad5540cb951042e6976089c0800e9969b5b34ab55047e967c679"
+    },
+    {
+      "path": "registry/flutter/enum/5182/role_enum.dart.md",
+      "sha256": "49129b49df934b3c7cf0a052ce779a336337b6166290697181347cce4a2399a2"
+    },
+    {
+      "path": "registry/flutter/model/4328/item.model.dart.md",
+      "sha256": "ed07124c53794d46d07c1843f61164d392d3b29bcd96f8565ea773be7ff95f38"
+    },
+    {
+      "path": "registry/flutter/model/4328/manifest.yaml",
+      "sha256": "1bc431fc5b93c7e63824c1405fff51e6d05a538443df1c231a2d9971e1f3d025"
+    },
+    {
+      "path": "registry/flutter/page/2964/items_page.dart.md",
+      "sha256": "27fc80296f402037ac9802a1a4b4b1feb22d2f69487a520bcf889a3f10807dbe"
+    },
+    {
+      "path": "registry/flutter/page/2964/manifest.yaml",
+      "sha256": "2cbbca06caeced3458ee14bddb0bb9945f8a19602d362c0c1817e01d4f773382"
+    },
+    {
+      "path": "registry/flutter/request/8647/create_item_request.dart.md",
+      "sha256": "5c27690ffcee5f8505d9abc90c59ea1034f2805e3fba8ba0e749b3dbedc6382e"
+    },
+    {
+      "path": "registry/flutter/request/8647/manifest.yaml",
+      "sha256": "64552da8d7bc775059bda604c705849e534f724386976e161b57ab4ce366fd4a"
+    },
+    {
+      "path": "registry/flutter/routes/3875/manifest.yaml",
+      "sha256": "bde3b453d5050c002f4425cc97bed8d1f5b3b30dd472d883e1837ce2fbad17be"
+    },
+    {
+      "path": "registry/flutter/routes/3875/routes.dart.md",
+      "sha256": "9750eb6a98a4e6febc8e441fe49e68d5a32462fb2947cb73b67f2ce856899cfe"
+    },
+    {
+      "path": "registry/flutter/service/6258/items_service.dart.md",
+      "sha256": "7669c77e36e7c19a2a74f0cebe51723b2424e9e7e77454051a0a19502c951dba"
+    },
+    {
+      "path": "registry/flutter/service/6258/manifest.yaml",
+      "sha256": "443c14ceeb672b115351303609b8f0af00f72b3aa12412f0585846d75babebfd"
+    },
+    {
+      "path": "registry/flutter/theme/7846/manifest.yaml",
+      "sha256": "cf2ea4d5655877cfe42a452deba9bd20568116aa786c4cc013ac8000b9836f4a"
+    },
+    {
+      "path": "registry/flutter/theme/7846/themes.dart.md",
+      "sha256": "b597971bbd56d6a051ba521fd0c8588d26d5f3cf0e563e90aea3f69253beddc0"
+    },
+    {
+      "path": "registry/flutter/widget/6759/item_card.dart.md",
+      "sha256": "22610ec507fdb810863674d9617df70da9197d9fa2fd96987dbb19f6e6794ec1"
+    },
+    {
+      "path": "registry/flutter/widget/6759/manifest.yaml",
+      "sha256": "0ce263f0b32bc2c060932ffab149e9e8edd169c344ae1e00d23d71042b56bd41"
+    },
+    {
+      "path": "registry/index.yaml",
+      "sha256": "0bf8611275350c49a45a9d46922def2b2453956e8b8efd4b6fead8c8615e98cf"
+    },
+    {
+      "path": "registry/nestjs/bootstrap/1437/main.ts.md",
+      "sha256": "beac41d87524038ec8f623a57807164540a589ecdaaa8c0df88ff6dd1ab6bd46"
+    },
+    {
+      "path": "registry/nestjs/bootstrap/1437/manifest.yaml",
+      "sha256": "c3db0ad019c828f9fc14cba5e6b24e2ab5142b8c304c127d7f600c016785bd43"
+    },
+    {
+      "path": "registry/nestjs/controller/2864/example.controller.ts.md",
+      "sha256": "92dcca58fac97eba0818c7e4da614c5b9b7153abd6175c980606af9b9ff6e0b3"
+    },
+    {
+      "path": "registry/nestjs/controller/2864/manifest.yaml",
+      "sha256": "dae094cbba1c6cc79ed3d881d4cc52ada52ecfe8511dcb2236b8e68549b38021"
+    },
+    {
+      "path": "registry/nestjs/dto/9175/example.dto.ts.md",
+      "sha256": "3c665f285d6efd7159818d986312058aca9a0a218e7a6e86e96711d1c11269bd"
+    },
+    {
+      "path": "registry/nestjs/dto/9175/manifest.yaml",
+      "sha256": "f8462ee86137d5e4a319e73762b4d4cc05a3dd5506ff74787c34ac3db0e3d483"
+    },
+    {
+      "path": "registry/nestjs/guard/3642/auth.guard.ts.md",
+      "sha256": "7eaf807174355b36f60e603a9be057f6d811346c6c4e876f182e3945c3b2435e"
+    },
+    {
+      "path": "registry/nestjs/guard/3642/manifest.yaml",
+      "sha256": "ab1ea98c80cf2f8fc0daac2fda2c16d113b1658af417846644cbde01c951784f"
+    },
+    {
+      "path": "registry/nestjs/http-client/7528/example-client.module.ts.md",
+      "sha256": "4a70def8712a76e98a614280cc2f2f9072f21101fce0cede4a452a6d97159b84"
+    },
+    {
+      "path": "registry/nestjs/http-client/7528/example-client.service.ts.md",
+      "sha256": "5e08250a8ec3d85d80dd3314fe9a2ec101cf066288f87c8f7154c3d005d01700"
+    },
+    {
+      "path": "registry/nestjs/http-client/7528/manifest.yaml",
+      "sha256": "ea56deb6b35f40d21f9c49284a1a1e284f226bc12e84170053fa4229dfe5bbcf"
+    },
+    {
+      "path": "registry/nestjs/http-envelope/5281/api-exception.filter.ts.md",
+      "sha256": "301fabeb67a73f41f1a45f171cf459ed9a7787fbd3bc9cde8b94493cd9de2924"
+    },
+    {
+      "path": "registry/nestjs/http-envelope/5281/manifest.yaml",
+      "sha256": "773cf4ec3ac8de3e697e54285980ed429e86532b88f99aad537b01091fc284a6"
+    },
+    {
+      "path": "registry/nestjs/http-envelope/5281/response-envelope.interceptor.ts.md",
+      "sha256": "d22378fb0f4ce62e5dbe0bc7026f4813321baf013a6c54cb3e4359fecfec4b91"
+    },
+    {
+      "path": "registry/nestjs/module/6419/example.module.ts.md",
+      "sha256": "0fe2f88311627897e04fbd37fe32ae11efa9d588fe6aba9fb61cce1ab979d699"
+    },
+    {
+      "path": "registry/nestjs/module/6419/manifest.yaml",
+      "sha256": "29642be59f077b6e3ee10f5998892a6fd5ec8dab42025d524b33a51cf2bf4801"
+    },
+    {
+      "path": "registry/nestjs/prisma-service/8356/manifest.yaml",
+      "sha256": "8be6fc45a71c90f642683def29d190c0cab36fd4d1019b8f0a78a2594cc4785b"
+    },
+    {
+      "path": "registry/nestjs/prisma-service/8356/prisma.module.ts.md",
+      "sha256": "528b0e30df423ea07dabb4281ce73baad7ee82dbbb084b4a7af430ac5a136642"
+    },
+    {
+      "path": "registry/nestjs/prisma-service/8356/prisma.service.ts.md",
+      "sha256": "fe25d27404d60ad4df0a4b30d04a80bb966275fc6e6e69db180411c0afdf96b5"
+    },
+    {
+      "path": "registry/nestjs/service/4793/example.service.ts.md",
+      "sha256": "3af4056b64191191595715afa6056793e33f5404293c5e9d6c436d0d4a3a250f"
+    },
+    {
+      "path": "registry/nestjs/service/4793/manifest.yaml",
+      "sha256": "b31d319fb5f0124b9ac4f7ba85166774537379a941ba7f5c556752b5c1d49a08"
+    },
+    {
+      "path": "registry/next-feature/application-service/3527/application.ts.md",
+      "sha256": "1bc005f1ad75970e7960dfc44e1ea2115c38caa127d8bf3d4723e5dfc9b297c3"
+    },
+    {
+      "path": "registry/next-feature/application-service/3527/manifest.yaml",
+      "sha256": "94e8a445ad0f3ce88d036d235a5d2de7521fc75851a9dee027b93d18878c51b0"
+    },
+    {
+      "path": "registry/next-feature/component/5086/item-action-button.tsx.md",
+      "sha256": "7383b0e6c40a7fbbf258954b07305cc0a99595551121aaa988d422ab8fd1ddb0"
+    },
+    {
+      "path": "registry/next-feature/component/5086/item-details.tsx.md",
+      "sha256": "2964adeecfcd213295894da6247a9f8578506abd0cce2f9513c065fcd55e914e"
+    },
+    {
+      "path": "registry/next-feature/component/5086/manifest.yaml",
+      "sha256": "93192be5846ac5857a7dda5ea06b4c5eda80f944d2d6da33842faac606a383d6"
+    },
+    {
+      "path": "registry/next-feature/data-access/8164/data.ts.md",
+      "sha256": "e92729c9ef45b89eaef517795394130f590380e69cd538739102d63dc3b09c3f"
+    },
+    {
+      "path": "registry/next-feature/data-access/8164/manifest.yaml",
+      "sha256": "d8be21d2980aa8403d7d2e495a7de372dfacfd5414fecdb991af73f86c18d222"
+    },
+    {
+      "path": "registry/next-feature/layout/2673/layout.tsx.md",
+      "sha256": "573bbf4d265faba8ce2d7448128cf48da6c864a07301c9b40aad38fead8a9853"
+    },
+    {
+      "path": "registry/next-feature/layout/2673/manifest.yaml",
+      "sha256": "4fbdb4a026f910fdb69672be8b65d9a0f767070f35e91fcf435f4789aa563308"
+    },
+    {
+      "path": "registry/next-feature/model/4739/manifest.yaml",
+      "sha256": "9f5ba98e189973dc36849c390f04083a56e86012de81c07b1813483a21855246"
+    },
+    {
+      "path": "registry/next-feature/model/4739/model.ts.md",
+      "sha256": "33a3a2b40070ab16e594b0420e1fa78c99dff0c8d3e52be4f54391149ca8ef0e"
+    },
+    {
+      "path": "registry/next-feature/page/1846/manifest.yaml",
+      "sha256": "aa6029a49f676e7624d5a8492c74d98f2e6fea3089d3dc2b6879eead6e3cb4ae"
+    },
+    {
+      "path": "registry/next-feature/page/1846/page.tsx.md",
+      "sha256": "d81716f342eeddce77026da2a3c9de82d6a74abb9b8827f4e21dacff3a267db0"
+    },
+    {
+      "path": "registry/next-feature/route-handler/7318/manifest.yaml",
+      "sha256": "e97e6f58f3e3e5ddb79851defc62c6576701d3229ff8f760af0ebb4e4474a16b"
+    },
+    {
+      "path": "registry/next-feature/route-handler/7318/route.ts.md",
+      "sha256": "78ce375e9a6ad5930dcefba165ccfd05bee7560dc1e6b5122bfb37869748c189"
+    },
+    {
+      "path": "registry/next-feature/schema/9251/manifest.yaml",
+      "sha256": "15f5b6156c67f8415f6aec2e74cc372fd01e8da14f05cde432d9495906cc83f2"
+    },
+    {
+      "path": "registry/next-feature/schema/9251/schema.ts.md",
+      "sha256": "5daa24175d620e4206ed40d8d4f300ead00571270ffb720922777ec26933d778"
+    },
+    {
+      "path": "registry/next-feature/server-action/6492/actions.ts.md",
+      "sha256": "e3707ab7e9cd8035c5720dc93982cc392dd997aed0c6f1d566ed7d275954cb5d"
+    },
+    {
+      "path": "registry/next-feature/server-action/6492/manifest.yaml",
+      "sha256": "87171ec799db77e9173ad46695bb8ca41d11c848d1b69887db8a9da54d564c4f"
+    },
+    {
+      "path": "registry/next/component/4821/Example.tsx.md",
+      "sha256": "03a2a56c6e0bfeb93d4aa78222434b1f4c37b76017987648630628eed708d95c"
+    },
+    {
+      "path": "registry/next/component/4821/manifest.yaml",
+      "sha256": "4d09c7cda1c30a66387425685d77ab03733ba9d91358e0fc4ca2f673ac8a9b51"
+    },
+    {
+      "path": "registry/next/hook/9214/Example.hook.ts.md",
+      "sha256": "686ca5d081922cf4efe7a97f989611f09393de8f375d7adbad8e4757a5dfa3f3"
+    },
+    {
+      "path": "registry/next/hook/9214/manifest.yaml",
+      "sha256": "cf28b056c26489d32d58869b8effda10e2be7252d0b6299cf0f60b7aceb9ee08"
+    },
+    {
+      "path": "registry/next/page/1234/Example/Example.hook.ts.md",
+      "sha256": "40eb77a488da07c19e76d9b55767e31afa0e91489043ecca25ef570637fed8cc"
+    },
+    {
+      "path": "registry/next/page/1234/Example/Example.tsx.md",
+      "sha256": "10acc6a064b60dc01782fce9e98f52e16cfc6a1afa177fbd28be52e349d075a6"
+    },
+    {
+      "path": "registry/next/page/1234/Example/Example.utils.ts.md",
+      "sha256": "d5249e0eadd89160929c9b3f6b80be6a3f66470d650eb82f1ec3ca72c4ea66a3"
+    },
+    {
+      "path": "registry/next/page/1234/manifest.yaml",
+      "sha256": "0ff1c7b0238462d6dcb3555bfac5e733ef4be52a73dbf34ae4bd946a01d080de"
+    },
+    {
+      "path": "registry/next/util/3378/Example.utils.ts.md",
+      "sha256": "9cdef2b97f849573edbf8f1ee4837da2bbf3d6311e85ea5d73551baa6d4b59f0"
+    },
+    {
+      "path": "registry/next/util/3378/manifest.yaml",
+      "sha256": "86698a1fcab296f91601c3e6f1643bbef12b1f07207706f8c9921113d71f76c8"
+    },
+    {
+      "path": "registry/python/repository/8462/manifest.yaml",
+      "sha256": "fbc616db4dce27d9fd137797ea205ea82cf586cc13172cad7a8edf44af427591"
+    },
+    {
+      "path": "registry/python/repository/8462/repository.py.md",
+      "sha256": "b80870ad4ba02e2705a696afab65f213158930892912b58e8b332677068866ef"
+    },
+    {
+      "path": "registry/python/router/2784/manifest.yaml",
+      "sha256": "7826fd8ef138591d894d9408047fed804de5c813e2ee7e91fdb5e0a185cf3731"
+    },
+    {
+      "path": "registry/python/router/2784/router.py.md",
+      "sha256": "2b2d7ae7c3c343404a459db43f023bda68f074c00809ec63f8216c0db897a132"
+    },
+    {
+      "path": "registry/python/schemas/3950/manifest.yaml",
+      "sha256": "3a4f946b8699f4f1d61d6f0e1b85e689c5e173488e5d3289e78d378a9335134b"
+    },
+    {
+      "path": "registry/python/schemas/3950/schemas.py.md",
+      "sha256": "e4a658841141f1a048e3e3d97480f9325b976d590c8099a18006d1cf0c055c9d"
+    },
+    {
+      "path": "registry/python/service/7315/manifest.yaml",
+      "sha256": "27679a075b9a6afe6b5005b3409ba11b16fdcb4f0e13e0cb0317ac77f8f41ff0"
+    },
+    {
+      "path": "registry/python/service/7315/service.py.md",
+      "sha256": "01855964a0b07fb6754435c132ac1d9e547e5cdc93eab21be13d413026cf56b7"
+    },
+    {
+      "path": "registry/react-tailwind/api-controller/7251/example.ts.md",
+      "sha256": "7a442f316a8d7fb8e34608298a00d1e6a89f0223eb42add86cd5677a7a39d1db"
+    },
+    {
+      "path": "registry/react-tailwind/api-controller/7251/manifest.yaml",
+      "sha256": "cd76ce8893d4ddefd838ee2229fbbe457fc76e73d43b6202405561d237144326"
+    },
+    {
+      "path": "registry/react-tailwind/api-model/4380/example.types.ts.md",
+      "sha256": "aa9b929f44b13fff2917e3721100a6b2fa44b0ad8761d27d18ff9eef15150dd2"
+    },
+    {
+      "path": "registry/react-tailwind/api-model/4380/manifest.yaml",
+      "sha256": "e201fbdd5c050f520826fbfd6cc7c266be0d8ea81ffa73206dca384cd41c7a4a"
+    },
+    {
+      "path": "registry/react-tailwind/api-routes/2648/manifest.yaml",
+      "sha256": "30c314e1214f4d963dfbc35df05f3f4b4356d151cc8e3594f4d9224eee436dd2"
+    },
+    {
+      "path": "registry/react-tailwind/api-routes/2648/routes.ts.md",
+      "sha256": "8f6b1871106b7426bdb7eec4fccd96f4a3c3183e35f4b92c75df7904b7346ef0"
+    },
+    {
+      "path": "registry/react-tailwind/component/5463/Example/Example.tsx.md",
+      "sha256": "bf85b61befff94bfade7b139fb66b4149765f7da738bd0a7918ae149f06b0c60"
+    },
+    {
+      "path": "registry/react-tailwind/component/5463/Example/Example.types.ts.md",
+      "sha256": "bd375f9a413e759b6079dd46c74485bfb5d10b023cc84a59b2b241a8eb27f8cf"
+    },
+    {
+      "path": "registry/react-tailwind/component/5463/manifest.yaml",
+      "sha256": "eb980029d182e6cf53648b497c8ffe9186e015149180fcbb4d06cad450fbc79d"
+    },
+    {
+      "path": "registry/react-tailwind/page/6592/Example/Example.hook.ts.md",
+      "sha256": "0a206c77bcfeb4c5e9d6e125d40b718e5f731274cd923bd56545a44014c30750"
+    },
+    {
+      "path": "registry/react-tailwind/page/6592/Example/Example.schema.ts.md",
+      "sha256": "74ada2ee3a783825d882d65b0368c86238d3b4f1cbe07231a3cdf4851c2822ae"
+    },
+    {
+      "path": "registry/react-tailwind/page/6592/Example/Example.tsx.md",
+      "sha256": "a9ba66cef43368451d4aef7787230995ceb3e9694518d9723a47fd17b8714a10"
+    },
+    {
+      "path": "registry/react-tailwind/page/6592/Example/Example.utils.ts.md",
+      "sha256": "c1709c1ee916d5b41201f95e0ae0e9d30c53f377c54a750d7e2e92b2cd313c30"
+    },
+    {
+      "path": "registry/react-tailwind/page/6592/manifest.yaml",
+      "sha256": "abe3b4d5c891142606c2af231d95fbe05c3bd8e3dc0785ed59df5a53bc460258"
+    },
+    {
+      "path": "registry/react-tailwind/routes/2159/manifest.yaml",
+      "sha256": "01f624d50e390eb3bb7e2dfb13192ce4e0924a431bca03564f4a617b601c1b33"
+    },
+    {
+      "path": "registry/react-tailwind/routes/2159/routes/index.tsx.md",
+      "sha256": "a276a3111f2579c3dd739b8ffb8078462bd8627b81909347cfb328853ffc0dcc"
+    },
+    {
+      "path": "registry/react-tailwind/routes/2159/routes/pages.ts.md",
+      "sha256": "a8199ca9d8b25bcd4f1d6ee1e5b647b6185fbb14ea870ae4b16a912cf46f5a02"
+    },
+    {
+      "path": "registry/react-tailwind/ui-primitive/7924/button.tsx.md",
+      "sha256": "0f5aa07a868bfbd0e4fa460a56c26f0c525e44b1668302a6685647a25a36b330"
+    },
+    {
+      "path": "registry/react-tailwind/ui-primitive/7924/manifest.yaml",
+      "sha256": "53bee33c7e6c1bfe29a295f17061924b1feefd4c8572b5d2ec078c1ae7ce9261"
+    },
+    {
+      "path": "registry/react/api-controller/6142/example.ts.md",
+      "sha256": "beb0925704e5975cf42551d13b55834cfc659a177a8f3496fa8585d0154d471d"
+    },
+    {
+      "path": "registry/react/api-controller/6142/manifest.yaml",
+      "sha256": "b27884e3e581b94fbe2159770147d5b6ab1c5cdeedd30adb9743784054803c25"
+    },
+    {
+      "path": "registry/react/api-model/4086/example.types.ts.md",
+      "sha256": "6ac946bc5db61d9ccc29c18e4d000828c188f7c74466b414fdeb5c5d68213447"
+    },
+    {
+      "path": "registry/react/api-model/4086/manifest.yaml",
+      "sha256": "d7f1a7210367baaa4314c724c254aa209daa9de40be315a5b40503a4c49b73fd"
+    },
+    {
+      "path": "registry/react/component/5217/Example/Example.styles.ts.md",
+      "sha256": "49e3dcc919c2f749b759ca6d60ec85324903be7c4dc8e55d342963e4274df461"
+    },
+    {
+      "path": "registry/react/component/5217/Example/Example.tsx.md",
+      "sha256": "c00a9b564b48832bf4caff7e2c86b8e6cf47adabe42c8881df02bdebd08882d5"
+    },
+    {
+      "path": "registry/react/component/5217/Example/Example.types.ts.md",
+      "sha256": "f7a671c443ca80d3345f69af1661204c9736c150c2a5c7af69e2782023316e30"
+    },
+    {
+      "path": "registry/react/component/5217/Example/index.ts.md",
+      "sha256": "fbab052f22d0771854a3726ed9d04fa27d34e1002d45be6d2af94696f6ba47e3"
+    },
+    {
+      "path": "registry/react/component/5217/manifest.yaml",
+      "sha256": "490e6517c8082e0a81970522c71a17dcaa1d106c9f160491626a7af23e56de92"
+    },
+    {
+      "path": "registry/react/hook/8534/manifest.yaml",
+      "sha256": "4c84e4308a72600657211d08ea25887bee3055de80ea5f45da2fd96f912b928c"
+    },
+    {
+      "path": "registry/react/hook/8534/useExample.ts.md",
+      "sha256": "76462529adc8cb7b60a882bc60a656f4bb818777eddced6b33e24eb68480a69b"
+    },
+    {
+      "path": "registry/react/page/6325/Example/Example.hook.ts.md",
+      "sha256": "6c8ffe14ae20537d38798a749d53d9573d8fcd9df291ca7a15afff058ba445e6"
+    },
+    {
+      "path": "registry/react/page/6325/Example/Example.schema.ts.md",
+      "sha256": "74ada2ee3a783825d882d65b0368c86238d3b4f1cbe07231a3cdf4851c2822ae"
+    },
+    {
+      "path": "registry/react/page/6325/Example/Example.styles.ts.md",
+      "sha256": "32dfaed5c182426ac827e67b4e5af5ee8894f8e3ee22b4a38bb2e7ce1476da0d"
+    },
+    {
+      "path": "registry/react/page/6325/Example/Example.tsx.md",
+      "sha256": "e83ab05a287527ab4e7d7e3fdb1804f00a308996df12d0b0b1a4529859eb02d6"
+    },
+    {
+      "path": "registry/react/page/6325/manifest.yaml",
+      "sha256": "b03083a633226c3a698403863ffed630162b37c541ee63ab12522f499cf8a0ba"
+    },
+    {
+      "path": "registry/react/routes/1973/index.tsx.md",
+      "sha256": "3e9fb0d0bebf75c69597b59e6d793e2bbf0551605d6b9297d51111f79fcda835"
+    },
+    {
+      "path": "registry/react/routes/1973/manifest.yaml",
+      "sha256": "929bd0521c28a20d476e500d8c481681577da3a63d59c303fff19851f16bd74a"
+    },
+    {
+      "path": "registry/react/util/3469/example.ts.md",
+      "sha256": "9a1daa5b6d82fdc69b1a3ccbcda6ee541015e9dbbfdbe9f36f5b1f564e365654"
+    },
+    {
+      "path": "registry/react/util/3469/manifest.yaml",
+      "sha256": "0a909c0efc1506cce80f9a34c710e2cae2a712d711195bd50a0a0a5441e46ede"
+    },
+    {
+      "path": "registry/rules/architecture/astro-content-site/1/rule.yaml",
+      "sha256": "66e5ca96bb5604568a32c23b4f9df0ae8059d0f163c7a70101ad93824c89cb18"
+    },
+    {
+      "path": "registry/rules/architecture/discordjs-music-bot/1/rule.yaml",
+      "sha256": "3f63d56cea3239f2f4c27a820374d4e37c50bd5efb6ba41a29adfdc97504208c"
+    },
+    {
+      "path": "registry/rules/architecture/dotnet-efcore-layered/1/rule.yaml",
+      "sha256": "78c319ef61b7509a8b45c4051c9fe257c42a9137b2eb683f90ac4cf10ba93c40"
+    },
+    {
+      "path": "registry/rules/architecture/dotnet-layered/1/rule.yaml",
+      "sha256": "01e8920b1705620fe4464e5bd2340544404e0755f603cd1174f628adc1de9518"
+    },
+    {
+      "path": "registry/rules/architecture/dotnet-multiproject/1/rule.yaml",
+      "sha256": "e92312967b1df289b4d513063e8eac9dedfd7635138b837270c80b59ef027bee"
+    },
+    {
+      "path": "registry/rules/architecture/flutter-provider-layered/1/rule.yaml",
+      "sha256": "c51b6faa36d7c27b865244e958406afb0916676a3b999cd4c8f03daad60898da"
+    },
+    {
+      "path": "registry/rules/architecture/nestjs-prisma-modular/1/rule.yaml",
+      "sha256": "259824e08de7c3b05b1313b805f8a65c948ec42b4712afe55424b84992453000"
+    },
+    {
+      "path": "registry/rules/architecture/next-feature-app-router/1/rule.yaml",
+      "sha256": "9312980d98e10a5deae11300d8a505b80dd7165b512322bebf6e0717d07f01b7"
+    },
+    {
+      "path": "registry/rules/architecture/next-modular/1/rule.yaml",
+      "sha256": "7371f1488ee81cf52f85e30979cf344170059f13c873efdc3eb3689f02ff78a2"
+    },
+    {
+      "path": "registry/rules/architecture/python-fastapi-modular/1/rule.yaml",
+      "sha256": "b2217a876f8238dcc7117e5fcba69054832fa338a10e1fa233f5abb65ae325b8"
+    },
+    {
+      "path": "registry/rules/architecture/react-tailwind-modular/1/rule.yaml",
+      "sha256": "8fe6ce5cc1b3d0b3be726ad5ad77d9ec4640e73b78dcad7ea28ffbcd8ad8eb68"
+    },
+    {
+      "path": "registry/rules/architecture/react-vite-modular/1/rule.yaml",
+      "sha256": "2ef9aa77b354cb335f41533b1e15a329530077af08b0b183874903285c57bab1"
+    },
+    {
+      "path": "registry/rules/architecture/spring-boot-layered/1/rule.yaml",
+      "sha256": "9f3b337d3e5234e8d8e734a3b2068e908b411597aa374fbf6f7e9d72f217660e"
+    },
+    {
+      "path": "registry/rules/architecture/spring-boot-reactive-mongo/1/rule.yaml",
+      "sha256": "8fdca165e0116cb52dadf0b01a0ea26d6bcf38d4d3c4999a73c9e556a848a000"
+    },
+    {
+      "path": "registry/rules/index.yaml",
+      "sha256": "b2eb1080de8a242b2777a091c77596214a85eb1d35148e2af95ca410d9231d24"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/bootstrap/1562/ExampleApplication.java.md",
+      "sha256": "75a0a2f9358560c73908046847a9c7d9143a7bf2e6bb6ca8e857210c0251d07a"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/bootstrap/1562/manifest.yaml",
+      "sha256": "e22214479f0cb7482ec768de44f7be9defb1260392199eb6b784fe29dee40abc"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/controller/2938/ItemController.java.md",
+      "sha256": "1ca4c18e6b8964496c3dc1322210759ab8d51588d4fb9b9e4dd489921fb99866"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/controller/2938/manifest.yaml",
+      "sha256": "81ce23d9c3ead9c799ee3c37248187284fc9c7ec101f6246ac07dcd8ea12fa80"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/document/4261/Item.java.md",
+      "sha256": "7c1dd8087edcef82d889a3a15b8c951c7dc8f5ccef4d3d84ca9d2edaa7e037ce"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/document/4261/manifest.yaml",
+      "sha256": "0fe467cb98b962829a289fb3f67074d70091d8eeb346a549c729c52728e57852"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/exception/7842/ItemNotFoundException.java.md",
+      "sha256": "e1a9480627e80fcad052386c96483c78a823d0791fd1148a029d920c8bee28ef"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/exception/7842/manifest.yaml",
+      "sha256": "65eb5ade13c735ee71eb586ca7b343f979df1178764d751e0bbfcc4344027bdb"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/repository/5384/ItemRepository.java.md",
+      "sha256": "3896acec10be4eb6503a918c60395d665cb0bdb85fba2b5576817e476588905c"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/repository/5384/manifest.yaml",
+      "sha256": "a1105452eb30fa95a89e70c3947a5c198cee4b201850ae22357f56faad1183b1"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/request/9153/UpdateItemRequest.java.md",
+      "sha256": "a34884aab4625fd937848a3c762a924ac4b9a9d7e3ed86ce7f1f7350fe9d4ee5"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/request/9153/manifest.yaml",
+      "sha256": "a16098f0ee4ba81db41e7f439c4b3ffea27376f04345b02e94bb14b8f153d8e1"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/response/6472/GetItemResponse.java.md",
+      "sha256": "b717a55ad3b851441c84f8e175c7e9e4ff585dffbd13e6e26a705a2063ef5708"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/response/6472/manifest.yaml",
+      "sha256": "2092a98a4d2bb604e906e0e63c7bfb18c722116e6fec8c6e0fa0d4dc4bd77bd2"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/service/3726/ItemService.java.md",
+      "sha256": "fc739f7a0b2f4b35eafe5c33b44e0c4be34285df078ebe3eb9456e704691f457"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/service/3726/ItemServiceImpl.java.md",
+      "sha256": "39252b00db28974f7644080dc6397a5133b0d52f7cd4ebb2109ee507468c19e3"
+    },
+    {
+      "path": "registry/spring-boot-reactive-mongo/service/3726/manifest.yaml",
+      "sha256": "27e410a54232439f778344dec2598fdfcf751eec4620ca9aaacde703e7361626"
+    },
+    {
+      "path": "registry/spring-boot/api-advice/7634/ApiResponse.java.md",
+      "sha256": "ff90bf0947c19578d867d92555e0cd494c08a996a4a1d69bd424d6217ff52ea2"
+    },
+    {
+      "path": "registry/spring-boot/api-advice/7634/GlobalExceptionHandler.java.md",
+      "sha256": "ea2458ecad111d55ca98a48b0e64ad76c05c85346983a038b30bb4315fe9527a"
+    },
+    {
+      "path": "registry/spring-boot/api-advice/7634/ResponseEnvelopeAdvice.java.md",
+      "sha256": "7071e0b8687bcf4b2c20406e726c992709f8b9c10d10e7393e960ec8a701027b"
+    },
+    {
+      "path": "registry/spring-boot/api-advice/7634/manifest.yaml",
+      "sha256": "0b1a94e3c30ca0ebf3d1ba13191f70febe194d0ded7f8b63956fb71d09b1463e"
+    },
+    {
+      "path": "registry/spring-boot/bootstrap/1258/ExampleApplication.java.md",
+      "sha256": "199620553a670f776176c0f5aeead17d71b9f3c0f50d0bf169fc2e04316989d7"
+    },
+    {
+      "path": "registry/spring-boot/bootstrap/1258/manifest.yaml",
+      "sha256": "96920a1e629b6d0b76c12f81393125cae6faa556e6cd469418d7dfc9b6869202"
+    },
+    {
+      "path": "registry/spring-boot/controller/2841/ExampleController.java.md",
+      "sha256": "afdc0cd8ace2f54366f7eedc98a3c7bdad0d3c340d720390f3865ad6c9a97b03"
+    },
+    {
+      "path": "registry/spring-boot/controller/2841/manifest.yaml",
+      "sha256": "dd6a1028a747487856912274b9b2976fee4c32c9435af854b77caff12c01618c"
+    },
+    {
+      "path": "registry/spring-boot/dto/9365/ExampleRequest.java.md",
+      "sha256": "da6a7dd90e5ae424ea8977df7aab41c4eb7ccedb01fa32e8ec006c47d609d454"
+    },
+    {
+      "path": "registry/spring-boot/dto/9365/manifest.yaml",
+      "sha256": "d68c4167748f5a422f53fcdf40c9145145a306527ce11e1aac81d9d9760c0d3a"
+    },
+    {
+      "path": "registry/spring-boot/entity/4172/Auditable.java.md",
+      "sha256": "19b5fa0de36027bca93a45e379012fab5601bf23e8a68240dea2e9b427e46862"
+    },
+    {
+      "path": "registry/spring-boot/entity/4172/Example.java.md",
+      "sha256": "1af3e11486d96e4f43157297f2703b3562a92c00b82d68c1096b3b1990c3d22c"
+    },
+    {
+      "path": "registry/spring-boot/entity/4172/manifest.yaml",
+      "sha256": "c7efe4e99bcc678ab8afc684081094f99fa0d5282bc801952b534cb516f03fea"
+    },
+    {
+      "path": "registry/spring-boot/mapper/6583/ExampleMapper.java.md",
+      "sha256": "62db4a51eea388d4fc49492cffc2514dfc1c16c601bf92fcfafb28b2e071f7f2"
+    },
+    {
+      "path": "registry/spring-boot/mapper/6583/manifest.yaml",
+      "sha256": "33e193aa6b62d521b60783ca8b0763afbbeb35628cbb6bdccff447d39f473037"
+    },
+    {
+      "path": "registry/spring-boot/repository/5427/ExampleRepository.java.md",
+      "sha256": "debb486dbcdb6745f93d20e002adc02e6faf5a4b0f845827096543a689611d9e"
+    },
+    {
+      "path": "registry/spring-boot/repository/5427/manifest.yaml",
+      "sha256": "ad1d4576c3c8e7aa484f4525091af337fbdf396313736c452114c21a6a8f41db"
+    },
+    {
+      "path": "registry/spring-boot/security/8196/SecurityConfig.java.md",
+      "sha256": "67250ed13c41d36df98462543666cc45be0aa97388db848fb47f422a54bcf578"
+    },
+    {
+      "path": "registry/spring-boot/security/8196/TokenAuthenticationFilter.java.md",
+      "sha256": "ef881b654d169917274aeb88af7beafcb3d6699762e89ab4d8707ae9a36d9a57"
+    },
+    {
+      "path": "registry/spring-boot/security/8196/manifest.yaml",
+      "sha256": "0fcd5373fbcf89c4589cef448cf5d6bb9a92acbfef31562a8cd90862c1922228"
+    },
+    {
+      "path": "registry/spring-boot/service/3714/ExampleService.java.md",
+      "sha256": "85ad2d60f3d4bc2e07054d3314e768f3a8f840c72f1aefb1f7f64df65a7bb7f9"
+    },
+    {
+      "path": "registry/spring-boot/service/3714/manifest.yaml",
+      "sha256": "2ef8d77dbb2979f143dfd98d802db9a53407b9a0f4132f5bcc9d22dc051e0b34"
+    }
+  ],
+  "rules": [
+    {
+      "id": "architecture/astro-content-site@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/astro-content-site/1/rule.yaml",
+      "patterns": [
+        "astro/component@3148",
+        "astro/content-collection@4720",
+        "astro/layout@6813",
+        "astro/page@5904",
+        "astro/util@2386"
+      ]
+    },
+    {
+      "id": "architecture/discordjs-music-bot@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/discordjs-music-bot/1/rule.yaml",
+      "patterns": [
+        "discordjs/bootstrap@1683",
+        "discordjs/command-deploy@2794",
+        "discordjs/lyrics-command@5187",
+        "discordjs/music-command@4976",
+        "discordjs/player-events@6298",
+        "discordjs/slash-command@3865"
+      ]
+    },
+    {
+      "id": "architecture/dotnet-efcore-layered@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/dotnet-efcore-layered/1/rule.yaml",
+      "patterns": [
+        "dotnet-efcore/bootstrap@1837",
+        "dotnet-efcore/controller@2614",
+        "dotnet-efcore/db-context@3725",
+        "dotnet-efcore/dto@5947",
+        "dotnet-efcore/enum@6158",
+        "dotnet-efcore/http-client@5716",
+        "dotnet-efcore/model@4836",
+        "dotnet-efcore/repository@9482",
+        "dotnet-efcore/request@7269",
+        "dotnet-efcore/response@8371",
+        "dotnet-efcore/service@1594"
+      ]
+    },
+    {
+      "id": "architecture/dotnet-layered@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/dotnet-layered/1/rule.yaml",
+      "patterns": [
+        "dotnet/controller@7743",
+        "dotnet/repository@5532",
+        "dotnet/service@1172"
+      ]
+    },
+    {
+      "id": "architecture/dotnet-multiproject@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/dotnet-multiproject/1/rule.yaml",
+      "patterns": [
+        "dotnet-multiproject/application-service@5279",
+        "dotnet-multiproject/background-job@8094",
+        "dotnet-multiproject/bootstrap@1624",
+        "dotnet-multiproject/contracts@4716",
+        "dotnet-multiproject/controller@2947",
+        "dotnet-multiproject/di-composition@7138",
+        "dotnet-multiproject/exception-handler@8463",
+        "dotnet-multiproject/repository@6485"
+      ]
+    },
+    {
+      "id": "architecture/flutter-provider-layered@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/flutter-provider-layered/1/rule.yaml",
+      "patterns": [
+        "flutter/api-client@7361",
+        "flutter/auth-guard@2584",
+        "flutter/auth-provider@1473",
+        "flutter/bootstrap@1695",
+        "flutter/dto@9536",
+        "flutter/enum@5182",
+        "flutter/model@4328",
+        "flutter/page@2964",
+        "flutter/request@8647",
+        "flutter/routes@3875",
+        "flutter/service@6258",
+        "flutter/theme@7846",
+        "flutter/widget@6759"
+      ]
+    },
+    {
+      "id": "architecture/nestjs-prisma-modular@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/nestjs-prisma-modular/1/rule.yaml",
+      "patterns": [
+        "nestjs/bootstrap@1437",
+        "nestjs/controller@2864",
+        "nestjs/dto@9175",
+        "nestjs/guard@3642",
+        "nestjs/http-client@7528",
+        "nestjs/http-envelope@5281",
+        "nestjs/module@6419",
+        "nestjs/prisma-service@8356",
+        "nestjs/service@4793"
+      ]
+    },
+    {
+      "id": "architecture/next-feature-app-router@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/next-feature-app-router/1/rule.yaml",
+      "patterns": [
+        "next-feature/application-service@3527",
+        "next-feature/component@5086",
+        "next-feature/data-access@8164",
+        "next-feature/layout@2673",
+        "next-feature/model@4739",
+        "next-feature/page@1846",
+        "next-feature/route-handler@7318",
+        "next-feature/schema@9251",
+        "next-feature/server-action@6492"
+      ]
+    },
+    {
+      "id": "architecture/next-modular@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/next-modular/1/rule.yaml",
+      "patterns": [
+        "next/component@4821",
+        "next/hook@9214",
+        "next/page@1234",
+        "next/util@3378"
+      ]
+    },
+    {
+      "id": "architecture/python-fastapi-modular@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/python-fastapi-modular/1/rule.yaml",
+      "patterns": [
+        "python/repository@8462",
+        "python/router@2784",
+        "python/schemas@3950",
+        "python/service@7315"
+      ]
+    },
+    {
+      "id": "architecture/react-tailwind-modular@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/react-tailwind-modular/1/rule.yaml",
+      "patterns": [
+        "react-tailwind/api-controller@7251",
+        "react-tailwind/api-model@4380",
+        "react-tailwind/api-routes@2648",
+        "react-tailwind/component@5463",
+        "react-tailwind/page@6592",
+        "react-tailwind/routes@2159",
+        "react-tailwind/ui-primitive@7924",
+        "react/hook@8534",
+        "react/util@3469"
+      ]
+    },
+    {
+      "id": "architecture/react-vite-modular@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/react-vite-modular/1/rule.yaml",
+      "patterns": [
+        "react/api-controller@6142",
+        "react/api-model@4086",
+        "react/component@5217",
+        "react/hook@8534",
+        "react/page@6325",
+        "react/routes@1973",
+        "react/util@3469"
+      ]
+    },
+    {
+      "id": "architecture/spring-boot-layered@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/spring-boot-layered/1/rule.yaml",
+      "patterns": [
+        "spring-boot/api-advice@7634",
+        "spring-boot/bootstrap@1258",
+        "spring-boot/controller@2841",
+        "spring-boot/dto@9365",
+        "spring-boot/entity@4172",
+        "spring-boot/mapper@6583",
+        "spring-boot/repository@5427",
+        "spring-boot/security@8196",
+        "spring-boot/service@3714"
+      ]
+    },
+    {
+      "id": "architecture/spring-boot-reactive-mongo@1",
+      "version": "1.0.0",
+      "path": "registry/rules/architecture/spring-boot-reactive-mongo/1/rule.yaml",
+      "patterns": [
+        "spring-boot-reactive-mongo/bootstrap@1562",
+        "spring-boot-reactive-mongo/controller@2938",
+        "spring-boot-reactive-mongo/document@4261",
+        "spring-boot-reactive-mongo/exception@7842",
+        "spring-boot-reactive-mongo/repository@5384",
+        "spring-boot-reactive-mongo/request@9153",
+        "spring-boot-reactive-mongo/response@6472",
+        "spring-boot-reactive-mongo/service@3726"
+      ]
+    }
+  ]
+}

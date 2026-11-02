@@ -1,0 +1,47 @@
+name: Skills
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.0'
+      - name: Validate, package twice and inspect extracted text
+        shell: pwsh
+        run: ./scripts/verify-skills.ps1 -Output (Join-Path $env:RUNNER_TEMP 'skill-delivery')
+      - uses: actions/upload-artifact@v7
+        with:
+          name: starter-${{ matrix.os }}
+          path: ${{ runner.temp }}/skill-delivery/first/*
+      - name: Record cross-platform digest
+        shell: pwsh
+        run: Copy-Item (Join-Path $env:RUNNER_TEMP 'skill-delivery/first/SHA256SUMS') (Join-Path $env:RUNNER_TEMP '${{ matrix.os }}.sha256')
+      - uses: actions/upload-artifact@v7
+        with:
+          name: digest-${{ matrix.os }}
+          path: ${{ runner.temp }}/${{ matrix.os }}.sha256
+  compare-platforms:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: digest-*
+          merge-multiple: true
+      - run: cmp ubuntu-latest.sha256 windows-latest.sha256

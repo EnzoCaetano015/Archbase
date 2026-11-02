@@ -1,0 +1,9 @@
+```json
+{
+  "private": true,
+  "dependencies": {
+    "next": "16.0.0",
+    "react": "19.0.0"
+  }
+}
+```

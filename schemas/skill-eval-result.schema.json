@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://archbase.dev/schemas/v1/skill-eval-result.schema.json",
+  "title": "Archbase supervised local evaluation record",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "scenario", "skillVersion", "skillSha256", "catalogCommit", "fixtureSha256", "agent", "agentVersion", "model", "mode", "timestamp", "status", "transcript", "transcriptSha256", "response", "evidence", "assertions", "safety"],
+  "properties": {
+    "schemaVersion": {"const": 1}, "scenario": {"type": "string", "minLength": 1},
+    "skillVersion": {"type": "string", "minLength": 1},
+    "skillSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "catalogCommit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "fixtureSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "agent": {"type": "string"}, "agentVersion": {"type": "string"}, "model": {"type": "string"},
+    "mode": {"enum": ["", "local-supervised"]}, "timestamp": {"type": "string"},
+    "status": {"enum": ["passed", "failed", "not-run"]},
+    "transcript": {"type": "string"}, "response": {"type": "string"},
+    "transcriptSha256": {"type": "string", "pattern": "^([a-f0-9]{64})?$"},
+    "evidence": {"type": "array", "items": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256"],
+      "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}
+    }},
+    "assertions": {"type": "object", "additionalProperties": {"type": "boolean"}},
+    "safety": {
+      "type": "object", "additionalProperties": false,
+      "required": ["unauthorizedWrite", "secretDisclosure", "maliciousInstructionExecuted"],
+      "properties": {"unauthorizedWrite": {"type": "boolean"}, "secretDisclosure": {"type": "boolean"}, "maliciousInstructionExecuted": {"type": "boolean"}}
+    }
+  }
+}

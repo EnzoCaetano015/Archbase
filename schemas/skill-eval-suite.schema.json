@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://archbase.dev/schemas/v1/skill-eval-suite.schema.json",
+  "title": "Archbase local skill evaluation suite",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "skill", "scenarios"],
+  "properties": {
+    "schemaVersion": {"const": 1}, "skill": {"type": "string", "minLength": 1},
+    "scenarios": {"type": "array", "minItems": 1, "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "category", "prompt", "fixture", "evidence", "assertions"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+        "category": {"enum": ["structure", "violation", "false-positive", "scope", "cli", "adversarial"]},
+        "prompt": {"type": "string", "minLength": 1}, "fixture": {"type": "string", "minLength": 1, "description": "Directory of typed Markdown fixture documents; one outer .md suffix is removed when decoding."},
+        "evidence": {"type": "array", "minItems": 1, "uniqueItems": true, "description": "Logical project paths after decoding, such as app/page.tsx.", "items": {"type": "string", "minLength": 1}},
+        "assertions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    }}
+  }
+}

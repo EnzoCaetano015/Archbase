@@ -59,6 +59,10 @@ Rules live once in `.archbase/rules`. Use `--format agents|claude|cursor|copilot
 
 ## Documentation
 
+The free [Architecture Starter skill](docs/skills.md) helps agents explain a
+project's architecture and suggest applicable conventions, with or without `arc`.
+It remains MIT licensed alongside the CLI, MCP, patterns and official rules.
+
 | Guide | Contents |
 | --- | --- |
 | [Installation](docs/installation.md) | Installers, supported platforms, checksums, and uninstall. |
