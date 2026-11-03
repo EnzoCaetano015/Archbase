@@ -7,6 +7,16 @@ not require `arc`, Go, network access or an Archbase MCP server at runtime.
 
 ## Install and use
 
+The free [Archbase Architecture Starter listing on Agensi](https://www.agensi.io/skills/archbase-architecture-starter)
+is approved and live. For that delivery method, connect your agent through
+[Agensi's sign-in flow](https://www.agensi.io/docs/mcp-setup), then ask it to use
+Archbase Architecture Starter for a bounded project or supplied snapshot.
+Instructions and requested references are delivered as text through Agensi MCP;
+this does not install the CLI or a persistent skill directory. Publication alone
+does not certify every agent or replace end-to-end delivery testing.
+
+For a separate local MIT installation:
+
 Use the versioned Starter ZIP produced by the **Skills** workflow. Verify its
 SHA-256 against `SHA256SUMS`, inspect its text, and extract it into a folder named
 `archbase-architecture-starter` in your agent's supported skills directory. Agent
@@ -37,9 +47,10 @@ These recipes do not certify those agents. Extract the generated ZIP with SKILL.
 directly inside the named directory; preserve existing files until replacement
 is explicitly chosen. No runtime script or binary is shipped.
 
-Agensi listing/submission is a separate publication step; this repository does
-not claim an approved live listing. When delivered through Agensi, references are
-loaded as text on demand via its MCP rather than installed on disk. See its
+The approved listing describes skill content version **0.2.0**. Local ZIPs retain
+their independent version and checksum verification. Agensi's account, connection
+and provider requirements are separate from this text-only skill, which needs no
+Python runtime or scripts. See the platform's
 [packaging guide](https://www.agensi.io/docs/packaging).
 
 ## Build locally

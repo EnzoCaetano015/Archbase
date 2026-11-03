@@ -63,7 +63,7 @@ Agent workflows complement the open-source CLI, rules and patterns:
 
 | Skill | Purpose | Availability |
 | --- | --- | --- |
-| [Architecture Starter](docs/skills.md) | Initial architecture orientation and evidence-based next steps | Free / MIT; generated ZIPs in the [Skills workflow](https://github.com/EnzoCaetano015/Archbase/actions/workflows/skills.yml) |
+| [Architecture Starter](docs/skills.md) | Initial architecture orientation and evidence-based next steps | Free / MIT; [published on Agensi](https://www.agensi.io/skills/archbase-architecture-starter), with local ZIPs in the [Skills workflow](https://github.com/EnzoCaetano015/Archbase/actions/workflows/skills.yml) |
 | [Next.js Architecture Auditor](docs/premium-skills.md) | Architecture findings and prioritized Markdown reports | Premium; Agensi publication pending |
 
 Explore [Archbase Skills](https://archbase.caetanodev.com/skills/). The CLI, MCP,
