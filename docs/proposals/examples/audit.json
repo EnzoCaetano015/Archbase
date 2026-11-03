@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "command": "audit",
+  "toolVersion": "dev-proposal",
+  "projectRoot": ".",
+  "state": "partial",
+  "baseline": [
+    {
+      "ruleId": "architecture/next-feature-app-router@1",
+      "version": "1.0.0",
+      "source": "local",
+      "sha256": "57d059c66ee8b4be6f3378c4dd591f7f065612ad88e3021c111177715855a35d",
+      "adoption": "managed-document"
+    }
+  ],
+  "findings": [
+    {
+      "checkId": "next.client-server-import",
+      "kind": "architecture",
+      "severity": "medium",
+      "ruleId": "architecture/next-feature-app-router@1",
+      "message": "Synthetic contract illustration: client import reaches inspected server-only module. This checker is not implemented.",
+      "recommendation": "Remove the client dependency and read through an application query on the server.",
+      "evidence": [
+        {
+          "path": "features/items/components/button.tsx",
+          "sha256": "b2a5ce4fa952eac4169705f6cfbe8865d1a7149bd3909416186aa9f8297054a3",
+          "startLine": 1,
+          "endLine": 3
+        }
+      ]
+    }
+  ],
+  "unassessed": [
+    {
+      "checkId": "next.resolve-alias",
+      "path": "features/items/components/view.tsx",
+      "reason": "Alias target unavailable; no finding inferred."
+    }
+  ],
+  "errors": [],
+  "coverage": {
+    "inspectedFiles": 3,
+    "excludedFiles": 1
+  }
+}

@@ -1,0 +1,289 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Planning-only Archbase audit result (not implemented)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "command",
+    "toolVersion",
+    "projectRoot",
+    "state",
+    "baseline",
+    "findings",
+    "unassessed",
+    "errors",
+    "coverage"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "command": {
+      "const": "audit"
+    },
+    "toolVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "projectRoot": {
+      "const": "."
+    },
+    "state": {
+      "enum": [
+        "complete",
+        "partial",
+        "not-applicable",
+        "error"
+      ]
+    },
+    "baseline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ruleId",
+          "version",
+          "source",
+          "sha256",
+          "adoption"
+        ],
+        "properties": {
+          "ruleId": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*/[a-z][a-z0-9-]*@[1-9][0-9]*$"
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source": {
+            "enum": [
+              "local",
+              "official-embedded"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "adoption": {
+            "enum": [
+              "managed-document",
+              "verified-scope-origin"
+            ]
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "checkId",
+          "kind",
+          "severity",
+          "ruleId",
+          "message",
+          "recommendation",
+          "evidence"
+        ],
+        "properties": {
+          "checkId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "architecture",
+              "integrity"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "ruleId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*/[a-z][a-z0-9-]*@[1-9][0-9]*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "recommendation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "sha256",
+                "startLine",
+                "endLine"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^(?!/)(?!.*[:\\\\])(?!.*//)(?!.*\\/\\.{1,2}(?:/|$))(?!\\.{1,2}(?:/|$))(?!.*\\/$)[^\\x00-\\x1f]+$"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "startLine": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "endLine": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            "minItems": 1
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "architecture"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "ruleId": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9-]*/[a-z][a-z0-9-]*@[1-9][0-9]*$"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "integrity"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "ruleId": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "unassessed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "checkId",
+          "path",
+          "reason"
+        ],
+        "properties": {
+          "checkId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*[:\\\\])(?!.*//)(?!.*\\/\\.{1,2}(?:/|$))(?!\\.{1,2}(?:/|$))(?!.*\\/$)[^\\x00-\\x1f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "path",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*[:\\\\])(?!.*//)(?!.*\\/\\.{1,2}(?:/|$))(?!\\.{1,2}(?:/|$))(?!.*\\/$)[^\\x00-\\x1f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inspectedFiles",
+        "excludedFiles"
+      ],
+      "properties": {
+        "inspectedFiles": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excludedFiles": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

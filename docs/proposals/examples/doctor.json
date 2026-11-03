@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "command": "doctor",
+  "toolVersion": "dev-proposal",
+  "projectRoot": ".",
+  "state": "partial",
+  "checks": [
+    {
+      "id": "doctor.cli-version",
+      "status": "passed",
+      "path": null,
+      "message": "Synthetic contract example, not an executed diagnostic."
+    },
+    {
+      "id": "doctor.workspace-index",
+      "status": "error",
+      "path": ".archbase/scopes.yaml",
+      "message": "Malformed workspace index.",
+      "reason": "Synthetic invalid YAML.",
+      "recommendation": "Review the index in a separately authorized edit."
+    },
+    {
+      "id": "doctor.local-bundles",
+      "status": "not-run",
+      "path": ".archbase/scopes.yaml",
+      "message": "Bundle checks blocked.",
+      "reason": "Workspace could not be loaded."
+    }
+  ]
+}
