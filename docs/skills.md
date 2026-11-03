@@ -19,6 +19,24 @@ relevant Archbase conventions. Do not change files." The skill responds in your
 language. It uses the supplied project root or invocation directory, preserves
 local decisions, and distinguishes adopted rules from recommendations.
 
+The 0.2.0 package adds focused references for optional CLI/MCP assistance and
+safety/consent. Resolve the actual project before querying tools. A connected MCP
+server must be confirmed to use that same root; missing tools use bundled text,
+while invalid local configuration still blocks affected conclusions. CLI SemVer
+alone does not identify the catalog commit, and queries never authorize setup,
+updates, writes, permission repair or an extra data-processing service.
+
+For a local MIT archive, `.cursor/skills/archbase-architecture-starter`,
+`.claude/skills/archbase-architecture-starter` and supported Copilot surfaces'
+`.github/skills/archbase-architecture-starter` are documented project locations.
+Check your host's current discovery rules and tested compatibility before relying
+on them: [Cursor](https://cursor.com/docs/skills),
+[Claude Code](https://code.claude.com/docs/en/skills),
+[Copilot](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills).
+These recipes do not certify those agents. Extract the generated ZIP with SKILL.md
+directly inside the named directory; preserve existing files until replacement
+is explicitly chosen. No runtime script or binary is shipped.
+
 Agensi listing/submission is a separate publication step; this repository does
 not claim an approved live listing. When delivered through Agensi, references are
 loaded as text on demand via its MCP rather than installed on disk. See its

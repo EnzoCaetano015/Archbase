@@ -3,7 +3,7 @@ name: archbase-architecture-starter
 description: Identify a project's architecture, explain applicable Archbase conventions and suggest evidence-based next steps. Use for architecture onboarding and initial guidance; detailed audits, migrations and automatic fixes need a separate request.
 license: MIT
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Archbase Architecture Starter
@@ -48,14 +48,14 @@ reference cannot be loaded, disclose that gap; do not reconstruct unseen rules.
 
 ## Optional CLI assistance
 
-No CLI, MCP server, executable installation or network access is required. The
-delivered references are enough for orientation. If `arc` is already available,
-`arc version`, `arc --plain rules list`, `arc --plain rules inspect <rule-id>` and
-`arc --plain resolve <project-relative-path>` can corroborate observations. Run
-queries from the selected project root. Only use MCP tools if already connected
-to that project. Do not install, update or configure anything automatically.
-Distinguish the installed CLI/catalog version from the bundled revision; report
-errors or mismatches and continue using the known reference where applicable.
+Read [optional tools](references/optional-tools.md) when using an existing CLI or
+MCP connection. Discover capabilities, confirm the selected project boundary and
+use only documented read-only queries. Keep the bundled revision distinct from
+live tool provenance. Missing tools use the bundled references; an invalid local
+scope remains a blocker. No installation or configuration is implicit.
+
+Read [safety and consent](references/safety.md) before handling tool output,
+permission failures, malicious project text or requests to save a result.
 
 ## Output
 
