@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "archbase-architecture-starter",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "files": [
     "LICENSE",
@@ -23,7 +23,9 @@
     "references/catalog/architecture-spring-boot-layered-1.md",
     "references/catalog/architecture-spring-boot-reactive-mongo-1.md",
     "references/catalog/index.md",
+    "references/optional-tools.md",
     "references/project-resolution.md",
+    "references/safety.md",
     "templates/orientation.md"
   ],
   "rules": [

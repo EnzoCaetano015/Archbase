@@ -210,7 +210,7 @@ func TestPrepareRejectsInvalidDeliveries(t *testing.T) {
 			}
 		}},
 		{"version-mismatch", "license/version", func(t *testing.T, o Options) {
-			rewriteJSON(t, o.Manifest, func(d map[string]any) { d["version"] = "0.2.0" })
+			rewriteJSON(t, o.Manifest, func(d map[string]any) { d["version"] = d["version"].(string) + "-mismatch" })
 		}},
 		{"path-traversal", "unsafe", func(t *testing.T, o Options) {
 			rewriteJSON(t, o.Manifest, func(d map[string]any) { d["files"] = append(d["files"].([]any), "../secret.txt") })
