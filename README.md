@@ -57,6 +57,19 @@ Already installed? Run `arc update` to install the latest stable release, or `ar
 
 Rules live once in `.archbase/rules`. Use `--format agents|claude|cursor|copilot` to activate a native entry point; later additions synchronize every activated format. Index updates preserve framework/user instructions. Identical documents are reused; changed owned documents require `--overwrite`.
 
+## Archbase Skills
+
+Agent workflows complement the open-source CLI, rules and patterns:
+
+| Skill | Purpose | Availability |
+| --- | --- | --- |
+| [Architecture Starter](docs/skills.md) | Initial architecture orientation and evidence-based next steps | Free / MIT; generated ZIPs in the [Skills workflow](https://github.com/EnzoCaetano015/Archbase/actions/workflows/skills.yml) |
+| [Next.js Architecture Auditor](docs/premium-skills.md) | Architecture findings and prioritized Markdown reports | Premium; Agensi publication pending |
+
+Explore [Archbase Skills](https://archbase.caetanodev.com/skills/). The CLI, MCP,
+official catalog and Starter remain public/MIT. Installation and documentation
+remain freely accessible. No paid listing is available from this repository yet.
+
 ## Documentation
 
 The free [Architecture Starter skill](docs/skills.md) helps agents explain a

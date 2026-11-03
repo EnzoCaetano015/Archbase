@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d10">
+  <meta name="description" content="Explore Archbase's free Architecture Starter and upcoming Premium Next.js Auditor. The CLI, MCP, rules and patterns remain open source.">
+  <title>Archbase Skills — Architecture workflows for coding agents</title>
+  <style>
+    :root { color-scheme:dark; --bg:#0b0d10; --card:#13171c; --line:#272d34; --text:#edf0f3; --muted:#a0a9b4; --accent:#a5f3d7 }
+    * { box-sizing:border-box } body { margin:0; background:var(--bg); color:var(--text); font:16px/1.7 Inter,"Segoe UI",Arial,sans-serif }
+    a { color:var(--accent); text-underline-offset:4px } a:hover { color:#fff } a:focus-visible { outline:2px solid var(--accent); outline-offset:5px }
+    .container { width:min(1120px,calc(100% - 48px)); margin:auto } header { border-bottom:1px solid var(--line) }
+    nav { min-height:80px; display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; padding:16px 0 }
+    .brand { color:var(--text); font-size:24px; font-weight:700; text-decoration:none; letter-spacing:-1px } .brand span { color:var(--accent) }
+    .links { display:flex; gap:24px; flex-wrap:wrap } .links a { color:var(--text); font-size:14px }
+    .skip { position:absolute; top:-80px; padding:12px; background:var(--bg) } .skip:focus { top:0 }
+    main { padding:72px 0 } .eyebrow { font:12px/1.5 Consolas,monospace; color:var(--accent); text-transform:uppercase; letter-spacing:.18em }
+    h1 { font-size:clamp(38px,6vw,68px); line-height:1.1; letter-spacing:-.05em; max-width:850px; margin:20px 0 24px }
+    h2 { line-height:1.25; letter-spacing:-.03em } p { margin:16px 0 } .intro { color:var(--muted); max-width:750px; font-size:19px }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; margin:48px 0 }
+    article { border:1px solid var(--line); border-radius:12px; background:linear-gradient(145deg,#181d23,var(--card)); padding:30px; display:flex; flex-direction:column }
+    article h2 { font-size:28px; margin:20px 0 0 } article p,li { color:var(--muted) } ul { padding-left:22px }
+    .badge { align-self:flex-start; border:1px solid var(--line); border-radius:30px; padding:3px 12px; font:12px/1.8 Consolas,monospace; color:var(--accent) }
+    .actions { display:flex; gap:18px; align-items:center; flex-wrap:wrap; margin-top:auto; padding-top:20px }
+    .button { display:inline-block; padding:10px 18px; border:1px solid var(--accent); border-radius:7px; text-decoration:none; color:var(--bg); background:var(--accent); font-weight:600 }
+    .button:hover { background:#c7f9e7; color:var(--bg) } .notice { border-left:2px solid var(--accent); padding-left:16px; color:var(--text); font-size:14px }
+    section { margin-top:48px; max-width:850px } section h2 { font-size:28px } section p { color:var(--muted) }
+    footer { border-top:1px solid var(--line); padding:28px 0; color:var(--muted); font-size:14px } footer .container { display:flex; gap:24px; justify-content:space-between; flex-wrap:wrap }
+    @media(max-width:640px) { .container { width:calc(100% - 36px) } main { padding:40px 0 } .grid { grid-template-columns:1fr; margin:32px 0 } article { padding:24px } .links { gap:16px } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header><nav class="container" aria-label="Main navigation">
+    <a class="brand" href="/" aria-label="Archbase home">ArchBase<span>.</span></a>
+    <div class="links"><a href="/#quick-start">Install CLI</a><a href="https://github.com/EnzoCaetano015/Archbase#documentation">Documentation</a><a href="https://github.com/EnzoCaetano015/Archbase">GitHub ↗</a></div>
+  </nav></header>
+  <main id="main" class="container">
+    <div class="eyebrow">Archbase Skills</div>
+    <h1>From architecture context<br>to evidence-based reviews.</h1>
+    <p class="intro">Give your coding agent a focused workflow. Start with free architecture orientation, or explore the upcoming Premium audit. Your local conventions stay in control.</p>
+    <div class="grid">
+      <article aria-labelledby="starter-title">
+        <span class="badge">Free · MIT</span><h2 id="starter-title">Architecture Starter</h2>
+        <p>Understand the stack, router and organization already in your project. Explain applicable conventions and choose practical next steps with file evidence.</p>
+        <ul><li>Initial orientation, without an exhaustive audit claim.</li><li>Included catalog references; no CLI installation required.</li><li>Read-only guidance in your language.</li></ul>
+        <p class="notice">Available as generated ZIPs with checksums in GitHub Actions. Artifact downloads may require GitHub sign-in. Agensi publication is pending.</p>
+        <div class="actions"><a class="button" href="https://github.com/EnzoCaetano015/Archbase/blob/main/docs/skills.md">Install free Starter</a><a href="https://github.com/EnzoCaetano015/Archbase/actions/workflows/skills.yml">Builds &amp; checksums ↗</a></div>
+      </article>
+      <article aria-labelledby="auditor-title">
+        <span class="badge">Premium · Publication pending</span><h2 id="auditor-title">Next.js Architecture Auditor</h2>
+        <p>Review App Router boundaries, imports and layer responsibilities. Get a Markdown report that distinguishes confirmed findings, suspicions and checks lacking evidence.</p>
+        <ul><li>RuleIDs, real code evidence and justified severity.</li><li>Prioritized recommendations that respect local decisions.</li><li>Original proprietary workflow; public references retain MIT.</li></ul>
+        <p class="notice">The initial workflow is implemented. The paid Agensi listing is not published yet. Purchasing is not available from this page.</p>
+        <div class="actions"><a class="button" href="https://github.com/EnzoCaetano015/Archbase/blob/main/docs/premium-skills.md">Explore the Auditor</a></div>
+      </article>
+    </div>
+    <section aria-labelledby="open-title"><h2 id="open-title">An open foundation.</h2>
+      <p>The Go CLI, read-only MCP server, official rules, patterns, core fixes and Architecture Starter remain public and MIT licensed. Premium adds original workflows and report templates. CLI installation and documentation remain freely accessible.</p>
+      <p><a href="/#quick-start">Install the open-source CLI</a> · <a href="https://github.com/EnzoCaetano015/Archbase/blob/main/LICENSE">Read the MIT license</a></p>
+    </section>
+    <section aria-labelledby="limits-title"><h2 id="limits-title">Know the scope before you start.</h2>
+      <p>Both skills provide read-only guidance and can use included references without <code>arc</code>. Existing CLI/MCP tools are optional. These workflows do not automatically fix files or certify security, runtime behavior or framework compatibility.</p>
+      <p>Version 0.2.0 of each skill passed 30 reviewed Codex supplied-snapshot scenarios. Cursor, Claude Code and Copilot runtime behavior has not been verified. Your agent/provider processes supplied context under its own policies; do not supply secrets.</p>
+    </section>
+  </main>
+  <footer><div class="container"><span>ArchBase · Architecture &amp; Code Standards</span><a href="/">Back to Archbase</a></div></footer>
+</body>
+</html>
