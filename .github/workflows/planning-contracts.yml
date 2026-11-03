@@ -1,0 +1,23 @@
+name: Planning contracts
+
+on:
+  pull_request:
+    paths: ['docs/proposals/**', 'docs/development.md', '.github/workflows/planning-contracts.yml']
+  push:
+    branches: [main]
+    paths: ['docs/proposals/**', 'docs/development.md', '.github/workflows/planning-contracts.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Validate planning schemas and rejection cases (not runtime commands)
+        shell: pwsh
+        run: ./docs/proposals/verify-contracts.ps1

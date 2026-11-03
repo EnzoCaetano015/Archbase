@@ -17,6 +17,10 @@ On Windows, run the binary with `.\arc.exe help`. Source builds report `arc dev`
 
 ## Contribute
 
+Future diagnostics are specified separately in the planning-only proposals for
+[`arc audit --json`](proposals/audit-json.md) and [`arc doctor`](proposals/doctor.md).
+These commands are not implemented; draft schemas are not stable runtime contracts.
+
 Skill delivery tooling lives under `internal/skillbundle`, separately from `arc`.
 See [Architecture Starter and skill delivery](skills.md) for versioned JSON
 contracts, catalog locking, deterministic ZIPs and local evaluation records.

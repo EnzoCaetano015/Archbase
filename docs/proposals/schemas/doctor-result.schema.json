@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Planning-only Archbase doctor result (not implemented)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "command",
+    "toolVersion",
+    "projectRoot",
+    "state",
+    "checks"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "command": {
+      "const": "doctor"
+    },
+    "toolVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "projectRoot": {
+      "const": "."
+    },
+    "state": {
+      "enum": [
+        "complete",
+        "partial",
+        "error"
+      ]
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "path",
+          "message"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "warning",
+              "error",
+              "not-applicable",
+              "not-run"
+            ]
+          },
+          "path": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^(?!/)(?!.*[:\\\\])(?!.*//)(?!.*\\/\\.{1,2}(?:/|$))(?!\\.{1,2}(?:/|$))(?!.*\\/$)[^\\x00-\\x1f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "recommendation": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "enum": [
+                    "warning",
+                    "error",
+                    "not-run",
+                    "not-applicable"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "reason"
+              ]
+            }
+          }
+        ]
+      },
+      "minItems": 1
+    }
+  }
+}
