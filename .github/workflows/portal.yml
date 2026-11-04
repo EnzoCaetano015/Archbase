@@ -1,0 +1,30 @@
+name: Documentation portal
+
+on:
+  pull_request:
+    paths:
+      - 'site/**'
+      - 'registry/**'
+      - '.github/workflows/portal.yml'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Build and check documentation
+        working-directory: site
+        run: |
+          npm ci
+          npm run build
+          npm run check

@@ -1,0 +1,32 @@
+{
+  "name": "archbase-docs",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "catalog": "node scripts/generate-catalog.mjs",
+    "build": "npm run catalog && tsc --noEmit && vite build && node scripts/build-routes.mjs",
+    "preview": "vite preview --host 127.0.0.1",
+    "check": "node scripts/check-content.mjs",
+    "predev": "npm run catalog"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.0.0",
+    "tailwindcss": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "typescript": "^5.7.0",
+    "vite": "^8.0.5",
+    "yaml": "^2.8.0"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

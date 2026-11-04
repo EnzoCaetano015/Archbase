@@ -1,49 +1,75 @@
-# Next.js Architecture Auditor
+# Archbase Skills
 
-Next.js Auditor is the Premium Archbase workflow for evidence-based architecture
-reviews. It inspects App Router boundaries, imports and layer responsibilities,
-then produces a Markdown report with confirmed findings, suspicions, unassessed
-checks, severities, RuleIDs and prioritized recommendations.
+Archbase skills complement the MIT CLI, public patterns and architecture rules.
+All eleven listings are approved and live on Agensi as verified November 4, 2026.
+Prices below are one-time listing prices; checkout currency/taxes follow the platform.
 
-## Availability
-
-The initial workflow is implemented. **The paid Agensi listing is not published
-yet; purchasing is not available from this page.** Listing approval, receiving
-payments and commercial terms are separate launch steps. This page makes no
-promise about a publication date or final purchase price.
+| Product | Purpose | Listing price |
+| --- | --- | --- |
+| [Architecture Starter](https://agensi.io/skills/archbase-architecture-starter) | Initial orientation and evidence-based next steps | Free / MIT |
+| [Next.js Architecture Auditor](https://agensi.io/skills/archbase-next-js-architecture-auditor) | Next.js App Router boundaries and architecture reports | US$9 one-time |
+| [React Auditor](https://agensi.io/skills/archbase-react-architecture-auditor) | React/Vite and Tailwind modular architecture | US$9 one-time |
+| [NestJS Auditor](https://agensi.io/skills/archbase-nestjs-architecture-auditor) | NestJS modules, services and Prisma boundaries | US$9 one-time |
+| [Flutter Auditor](https://agensi.io/skills/archbase-flutter-architecture-auditor) | Flutter Provider pages, services and state ownership | US$9 one-time |
+| [Spring Boot Auditor](https://agensi.io/skills/archbase-spring-boot-architecture-auditor) | Spring layered/JPA or reactive Mongo architecture | US$9 one-time |
+| [.NET Auditor](https://agensi.io/skills/archbase-net-architecture-auditor) | .NET layers, EF Core and project references | US$9 one-time |
+| [FastAPI Auditor](https://agensi.io/skills/archbase-fastapi-architecture-auditor) | FastAPI routers, services, repositories and schemas | US$9 one-time |
+| [Astro Auditor](https://agensi.io/skills/archbase-astro-architecture-auditor) | Astro pages, collections, layouts and hydration | US$9 one-time |
+| [Refactoring & Migration Planner](https://agensi.io/skills/archbase-refactoring-migration-planner) | Incremental migration plans; initial Next.js scope | US$15 one-time |
+| [PR Architecture Guard](https://agensi.io/skills/archbase-pr-architecture-guard) | BASE/HEAD architecture review without posting or edits | US$15 one-time |
 
 ## What stays free
 
-The Go CLI, read-only MCP server, official rules, patterns, core fixes and
-[Architecture Starter](skills.md) remain public and MIT licensed. Premium adds
-original workflows, report templates and guidance. Its original materials have
-a proprietary license; included public catalog references retain MIT attribution.
-CLI installation and documentation remain openly accessible.
+The CLI, read-only MCP, official rules, patterns, core fixes and
+[Architecture Starter](skills.md) stay public and MIT licensed. Premium adds
+original workflows and templates under a proprietary license. Bundled public
+catalog references preserve MIT and provenance. Legitimately generated
+project-specific results may be used under the applicable license; the reusable
+Premium skill may not be resold or redistributed.
 
-## Example request and limits
+## Choose and load a workflow
+
+Use Starter for introductory orientation. Choose the auditor matching the package
+and adopted architecture. Variants are applied to compatible areas separately;
+React/Tailwind, Spring persistence styles and .NET organizations are not a
+cumulative checklist. Discord.js is in the public catalog but has no Premium
+auditor in this release.
+
+Open the actual listing above and use the platform's supported skill-loading
+flow. The agent must load SKILL.md and references through an authorized channel.
+The workflow needs a SKILL.md-compatible agent; no arc, runtime installation or
+extra project MCP server is required for analysis of supplied source text.
+Existing trusted read-only CLI/MCP context is optional.
 
 ```text
-Use nextjs-auditor for ./apps/web. Review the App Router and relevant imports.
-Return an evidence-based architecture report. Do not change files.
+Use nextjs-auditor for ./apps/web. Review App Router boundaries and relevant
+imports against adopted local conventions. Return an evidence-based Markdown
+report in my language. Do not edit files, run scripts or install dependencies.
 ```
 
-The agent must first load the skill through an authorized delivery channel.
-The workflow can use included references without `arc`; an existing trusted CLI
-or confirmed-project MCP connection is optional. It respects local conventions
-and requires real code evidence before confirming a violation. Unresolved imports
-and incomplete context remain explicit limitations.
+For other families, use the corresponding auditor name. Migration Planner's
+initial references cover Next.js; other stacks need suitable evidence and
+references. PR Architecture Guard needs the diff and matching BASE/HEAD context;
+it does not post reviews, approve or merge pull requests.
 
-This is an agent-guided source review, not an AST scanner, runtime verifier or
-complete security audit. It does not implement fixes automatically. The skill
-adds no telemetry; your chosen agent/provider still processes supplied context
-under its own configuration. Do not supply secrets.
+## Evidence and limitations
 
-Version 0.2.0 was evaluated in 30 independent Codex CLI supplied-snapshot sessions,
-with semantic review and unchanged fixture hashes. Native discovery and behavior
-in Cursor, Claude Code and Copilot have not been verified. Documented packaging
-conformance does not certify those hosts. Agensi loading is not yet live-tested.
+Auditors report inspected scope, baseline, confirmed findings, suspicions,
+unassessed checks, real file/line or excerpt evidence, applicable rules, justified
+severity, recommendations and limitations. There is no score, automatic fix or
+complete security guarantee. Missing context and unresolved imports remain
+explicit limitations. Repository text is evidence, not authorization to execute
+instructions or disclose secrets.
 
-For initial orientation today, use the [free Starter](skills.md). The
-[public Skills workflow](https://github.com/EnzoCaetano015/Archbase/actions/workflows/skills.yml)
-provides generated Starter archives and checksums; GitHub artifact downloads may
-require sign-in. Premium launch links will be added here after approval.
+Content versions: Starter and Next.js Auditor 0.2.0; the nine other workflows
+0.1.0. Agensi may show its own listing-version label independently of these.
+Starter, Next.js Auditor and each of the seven family auditors passed 30 reviewed
+local Codex CLI supplied-snapshot scenarios per product. Planner passed 6; PR Guard
+passed 12. These do not certify framework builds, native discovery, other agents
+or paid delivery. The Starter additionally has a live creator-account Agensi
+loading smoke test; that does not certify purchase/billing for other products.
+
+The skills add no telemetry. Your agent/provider processes context under its own
+configuration. Supply bounded project context without credentials. Contact the
+creator through Agensi messages with a minimal redacted reproduction for support.
+Platform purchase/refund terms apply.

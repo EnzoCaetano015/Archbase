@@ -1,1 +1,2 @@
 site/install.sh text eol=lf
+site/public/install.sh text eol=lf

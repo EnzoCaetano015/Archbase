@@ -11,6 +11,7 @@
 <p align="center">
   <a href="https://github.com/EnzoCaetano015/Archbase/releases/latest"><img src="https://img.shields.io/github/v/release/EnzoCaetano015/Archbase?logo=github" alt="Latest stable release"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/EnzoCaetano015/Archbase" alt="MIT license"></a>
+  <a href="https://www.agensi.io/creators/enzo-rodrigues"><img src="https://img.shields.io/badge/Agensi-11%20published%20skills-147d5a" alt="Archbase skills on Agensi"></a>
   <a href="https://hub.xerj.org/contributors/EnzoCaetano015"><img src="https://hub.xerj.org/contributors/EnzoCaetano015/badge.svg" alt="XERJ Corpus Hub contributor"></a>
 </p>
 
@@ -63,12 +64,22 @@ Agent workflows complement the open-source CLI, rules and patterns:
 
 | Skill | Purpose | Availability |
 | --- | --- | --- |
-| [Architecture Starter](docs/skills.md) | Initial architecture orientation and evidence-based next steps | Free / MIT; [published on Agensi](https://www.agensi.io/skills/archbase-architecture-starter), with local ZIPs in the [Skills workflow](https://github.com/EnzoCaetano015/Archbase/actions/workflows/skills.yml) |
-| [Next.js Architecture Auditor](docs/premium-skills.md) | Architecture findings and prioritized Markdown reports | Premium; Agensi publication pending |
+| [Architecture Starter](https://agensi.io/skills/archbase-architecture-starter) | Initial orientation and evidence-based next steps | Published · Free / MIT |
+| [Next.js Architecture Auditor](https://agensi.io/skills/archbase-next-js-architecture-auditor) | Next.js App Router boundaries and architecture reports | Published · US$9 one-time |
+| [React Auditor](https://agensi.io/skills/archbase-react-architecture-auditor) | React/Vite and Tailwind modular architecture | Published · US$9 one-time |
+| [NestJS Auditor](https://agensi.io/skills/archbase-nestjs-architecture-auditor) | NestJS modules, services and Prisma boundaries | Published · US$9 one-time |
+| [Flutter Auditor](https://agensi.io/skills/archbase-flutter-architecture-auditor) | Flutter Provider pages, services and state ownership | Published · US$9 one-time |
+| [Spring Boot Auditor](https://agensi.io/skills/archbase-spring-boot-architecture-auditor) | Spring layered/JPA or reactive Mongo architecture | Published · US$9 one-time |
+| [.NET Auditor](https://agensi.io/skills/archbase-net-architecture-auditor) | .NET layers, EF Core and project references | Published · US$9 one-time |
+| [FastAPI Auditor](https://agensi.io/skills/archbase-fastapi-architecture-auditor) | FastAPI routers, services, repositories and schemas | Published · US$9 one-time |
+| [Astro Auditor](https://agensi.io/skills/archbase-astro-architecture-auditor) | Astro pages, collections, layouts and hydration | Published · US$9 one-time |
+| [Refactoring & Migration Planner](https://agensi.io/skills/archbase-refactoring-migration-planner) | Incremental migration plans; initial Next.js scope | Published · US$15 one-time |
+| [PR Architecture Guard](https://agensi.io/skills/archbase-pr-architecture-guard) | BASE/HEAD architecture review without posting or edits | Published · US$15 one-time |
 
-Explore [Archbase Skills](https://archbase.caetanodev.com/skills/). The CLI, MCP,
-official catalog and Starter remain public/MIT. Installation and documentation
-remain freely accessible. No paid listing is available from this repository yet.
+Explore [Archbase Skills](https://archbase.caetanodev.com/skills/) and the
+[workflow guide](docs/premium-skills.md). All eleven listings are published on
+Agensi (verified November 4, 2026). The CLI, MCP, official catalog, core fixes
+and Starter remain public/MIT; installation and documentation stay freely accessible.
 
 ## Documentation
 
