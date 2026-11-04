@@ -1,5 +1,12 @@
 # Archbase schemas
 
+`doctor-result.schema.json` is the runtime JSON contract for read-only local
+diagnostics. It requires all ten check IDs exactly once, explicit reasons for
+non-pass statuses, relative/null paths and consistent complete/partial/error
+states. See [doctor](doctor.md) for safety boundaries and exit codes. This does
+not change the existing public YAML contracts. Historical draft schemas under
+`docs/proposals/` remain planning records rather than runtime contracts.
+
 The public contracts live in `schemas/` and use JSON Schema Draft 2020-12. YAML documents are converted to their JSON data model before validation.
 
 ## Versioning

@@ -96,6 +96,7 @@ It remains MIT licensed alongside the CLI, MCP, patterns and official rules.
 | [Registry](docs/registry.md) | Pattern catalog, public Git sources, caching, and validation. |
 | [Architecture rules](docs/rules.md) | Shared rules and synchronized indices for AGENTS, Claude, Cursor, and Copilot. |
 | [MCP](docs/mcp.md) | Read-only tools, client configuration, and project boundaries. |
+| [Doctor](docs/doctor.md) | Offline, read-only configuration diagnostics, JSON results and exit codes; available in source and releases that include the command. |
 | [Schemas](docs/schemas.md) | Public YAML contracts and versioning. |
 | [Development](docs/development.md) | Build, validation, contributions, and release workflow. |
 | [Code signing](docs/code-signing-policy.md) | Current signing status and release integrity policy. |

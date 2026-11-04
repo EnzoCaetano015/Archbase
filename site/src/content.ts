@@ -205,7 +205,7 @@ const basePages: DocPage[] = [
             {
                 id: "boundaries",
                 title: "Command availability",
-                body: "The terminal exposes implemented CLI operations. arc audit and arc doctor are proposals and are not available commands.",
+                body: "The terminal exposes implemented CLI operations. arc audit remains a proposal. arc doctor is implemented in source; use a release that includes it.",
                 callout: "For exact flags, use the command help shipped with your installed release.",
             },
         ],
@@ -1089,6 +1089,8 @@ const cli = merge("cli", "CLI & registries", "Guides", "docs/terminal-ui.md", [
     "registry-configuration",
 ]);
 cli.sections = [
+    { id: "doctor", title: "Read-only configuration diagnostics", body: "arc doctor is implemented in source and in releases that include it. It checks workspace/scopes, local bundles, owned rules and active agent indices offline, without repairs or registry refresh. An unconfigured workspace is a warning; blocked checks remain explicit. arc audit is still a proposal.", code: "arc doctor\narc doctor --json\narc doctor --project-root /absolute/path/to/project --json", language: "bash", links: [{ label: "Doctor checks, safety and exit codes", href: sourceRoot + "docs/doctor.md" }] },
+
     {
         id: "terminal",
         title: "Interactive or plain",
@@ -1126,7 +1128,7 @@ cli.sections = [
     {
         id: "help",
         title: "Version-specific help",
-        body: "Use --help in your installed release for exact flags. arc audit and arc doctor remain proposals, not available commands. Updates are covered under Installation & updates.",
+        body: "Use --help in your installed release for exact flags. arc audit remains a proposal. arc doctor is available in source and requires a release containing it. Updates are covered under Installation & updates.",
     },
 ];
 const agents = merge("agents", "Agent instructions", "Guides", "docs/rules.md", ["agent-integrations"]);

@@ -31,6 +31,7 @@ Available commands:
   arc mcp serve  Start the project-scoped MCP server over stdio
   arc version    Show the CLI version
   arc update     Update Archbase to the latest stable release
+  arc doctor     Inspect local configuration offline, without changes
 
 Workspace: add/create use the current directory as the project root.
 Use --project-root to select another root. Scopes live in .archbase/scopes.yaml;
@@ -156,6 +157,7 @@ func NewRootCommand(cliVersion string, supplied ...Dependencies) *cobra.Command 
 	flags.DurationVar(&options.TTL, "registry-ttl", registry.DefaultGitCacheTTL, "registry cache time to live")
 	root.AddCommand(newAddCommand(dependencies, &options), newCreateCommand(dependencies, &options), newResolveCommand(dependencies, &options), newInspectCommand(dependencies, &options), newRulesCommand(dependencies, &options), newRemoveCommand(dependencies), newMCPCommand(dependencies, &options, cliVersion))
 	root.AddCommand(newUpdateCommand(dependencies, cliVersion))
+	root.AddCommand(newDoctorCommand(&options, cliVersion))
 	root.AddCommand(&cobra.Command{Use: "version", Short: "Show the CLI version", Args: cobra.NoArgs, Run: func(cmd *cobra.Command, _ []string) {
 		fmt.Fprintf(cmd.OutOrStdout(), "arc %s\n", cliVersion)
 	}})
@@ -363,12 +365,20 @@ func Execute(args []string, stdout, stderr io.Writer, cliVersion string, depende
 	cmd.SetArgs(args)
 	cmd.SetOut(stdout)
 	cmd.SetErr(stderr)
-	if err := cmd.Execute(); err != nil {
+	executed, err := cmd.ExecuteC()
+	if err != nil {
+		var diagnostic diagnosticExit
+		if errors.As(err, &diagnostic) {
+			return diagnostic.code
+		}
 		if !plainCommand(cmd) && terminalStream(stderr) {
 			t := newTheme(os.Getenv("NO_COLOR") == "")
 			fmt.Fprintln(stderr, t.danger.Render("Error  ")+safeText(err.Error()))
 		} else {
 			fmt.Fprintln(stderr, err)
+		}
+		if executed != nil && executed.Name() == "doctor" {
+			return 2
 		}
 		return 1
 	}
