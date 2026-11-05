@@ -278,7 +278,7 @@
 
 footer { max-width: none; padding: 60px max(30px, calc((100vw - 1120px)/2)) 28px; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 60px; border-top: 1px solid var(--line); background: var(--surface); }
 .footer-brand p { margin: 13px 0 0; color: var(--muted); font-size: 12px; }
-.footer-listings { margin-top: 20px; width: 200px; }
+.footer-listings { margin-top: 20px; width: 180px; }
 #toolindex-badge img { display: block; }
 #toolindex-footer:not(:has(#toolindex-badge)) { display: none; }
 footer > div:not(.footer-brand):not(.footer-bottom) { display: grid; align-content: start; gap: 9px; font-size: 11px; }
