@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { catalogFamilies, catalogRules, docAliases, navGroups, pageMap, pages, skills, sourceUrl, type DocPage, type Section, } from "./content";
 const GITHUB = "https://github.com/EnzoCaetano015/Archbase";
 const INSTALL = "curl -fsSL https://archbase.caetanodev.com/install.sh | sh";
@@ -67,12 +68,7 @@ function Logo() {
 }
 function navigate(path: string) {
     window.history.pushState({}, "", path);
-    window.dispatchEvent(new PopStateEvent("popstate"));
-    const hash = new URL(path, window.location.origin).hash.slice(1);
-    if (hash)
-        requestAnimationFrame(() => document.getElementById(decodeURIComponent(hash))?.scrollIntoView());
-    else
-        window.scrollTo({ top: 0 });
+    window.dispatchEvent(new Event("archbase:navigate"));
 }
 function Link({ href, children, className = "", onClick, ...rest }: {
     href: string;
@@ -924,14 +920,46 @@ function App() {
         setThemeState(value);
         localStorage.setItem("archbase-theme", value);
     };
+    const currentPath = useRef(path);
     useEffect(() => {
-        const listener = () => {
-            setPath(window.location.pathname);
-            setMenuOpen(false);
+        let transition: ViewTransition | undefined;
+        const listener = (event: Event) => {
+            const nextPath = window.location.pathname;
+            const isDoc = (value: string) => {
+                const slug = value.match(/^\/docs\/([^/]+)\/?$/)?.[1];
+                return !!slug && (pageMap.has(slug) || !!docAliases[slug]);
+            };
+            const animate = nextPath !== currentPath.current &&
+                isDoc(currentPath.current) && isDoc(nextPath) &&
+                !matchMedia("(prefers-reduced-motion: reduce)").matches &&
+                typeof document.startViewTransition === "function";
+            currentPath.current = nextPath;
+            const update = () => {
+                flushSync(() => { setPath(nextPath); setMenuOpen(false); });
+                if (event.type === "archbase:navigate") {
+                    const hash = window.location.hash.slice(1);
+                    if (hash) document.getElementById(decodeURIComponent(hash))?.scrollIntoView();
+                    else window.scrollTo({ top: 0, behavior: "instant" });
+                }
+            };
+            transition?.skipTransition();
+            if (animate) {
+                transition = document.startViewTransition(update);
+                // Rapid navigation can skip a snapshot without failing navigation.
+                void transition.ready.catch(() => {});
+            } else update();
         };
         window.addEventListener("popstate", listener);
-        return () => window.removeEventListener("popstate", listener);
+        window.addEventListener("archbase:navigate", listener);
+        return () => {
+            transition?.skipTransition();
+            window.removeEventListener("popstate", listener);
+            window.removeEventListener("archbase:navigate", listener);
+        };
     }, []);
+    useLayoutEffect(() => {
+        document.documentElement.dataset.docsRoute = String(path.startsWith("/docs/"));
+    }, [path]);
     useEffect(() => {
         document.documentElement.dataset.theme = theme;
     }, [theme]);

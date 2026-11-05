@@ -14,24 +14,39 @@ func newUpdateCommand(deps Dependencies, current string) *cobra.Command {
 	command := &cobra.Command{Use: "update", Short: "Update the running Archbase installation from a verified stable release", Args: cobra.NoArgs, RunE: func(cmd *cobra.Command, _ []string) error {
 		ctx, cancel := signal.NotifyContext(cmd.Context(), os.Interrupt)
 		defer cancel()
+		label := "Updating Archbase…"
+		if options.Check {
+			label = "Checking for updates…"
+		}
+		stop := startProgress(cmd, label)
+		defer stop()
 		result, err := deps.UpdateRunner(ctx, current, options)
+		stop()
 		for _, warning := range result.Warnings {
-			fmt.Fprintln(cmd.ErrOrStderr(), "warning: "+safeText(warning))
+			printCommandWarning(cmd, warning)
 		}
 		if err != nil {
 			return err
 		}
+		prefix := ""
+		if richCommand(cmd) {
+			status := "passed"
+			if result.Available && !result.Updated {
+				status = "warning"
+			}
+			prefix = statusSymbol(status, newTheme(os.Getenv("NO_COLOR") == "")) + " "
+		}
 		switch {
 		case result.Updated:
-			fmt.Fprintf(cmd.OutOrStdout(), "Updated Archbase: %s -> %s\nExecutable: %s\nRun arc version to verify. Restart running arc/MCP processes to use the new version.\n", safeText(result.Current), safeText(result.Latest), safeText(result.Executable))
+			fmt.Fprintf(cmd.OutOrStdout(), prefix+"Updated Archbase: %s -> %s\nExecutable: %s\nRun arc version to verify. Restart running arc/MCP processes to use the new version.\n", safeText(result.Current), safeText(result.Latest), safeText(result.Executable))
 		case result.Available:
 			hint := "arc update"
 			if options.Version != "" {
 				hint += " --version " + options.Version
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), "Update available: %s -> %s\nRun %s to install.\n", safeText(result.Current), safeText(result.Latest), safeText(hint))
+			fmt.Fprintf(cmd.OutOrStdout(), prefix+"Update available: %s -> %s\nRun %s to install.\n", safeText(result.Current), safeText(result.Latest), safeText(hint))
 		default:
-			fmt.Fprintf(cmd.OutOrStdout(), "Archbase %s is up to date (latest stable: %s).\n", safeText(result.Current), safeText(result.Latest))
+			fmt.Fprintf(cmd.OutOrStdout(), prefix+"Archbase %s is up to date (latest stable: %s).\n", safeText(result.Current), safeText(result.Latest))
 		}
 		return nil
 	}}

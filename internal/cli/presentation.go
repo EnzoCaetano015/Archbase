@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
 	"strings"
 	"text/tabwriter"
 	"unicode"
@@ -63,12 +64,16 @@ func commandWidth(cmd *cobra.Command) int {
 }
 
 func executeOperation(cmd *cobra.Command, deps Dependencies, options RegistryOptions, r request) error {
-	result, err := (operations{deps, options}).run(cmd.Context(), r)
+	ctx, cancel := signal.NotifyContext(cmd.Context(), os.Interrupt)
+	defer cancel()
+	stop := startProgress(cmd, operationLabel(r.Action))
+	defer stop()
+	result, err := (operations{deps, options}).run(ctx, r)
+	stop()
 	if richCommand(cmd) && terminalStream(cmd.ErrOrStderr()) {
-		t := newTheme(os.Getenv("NO_COLOR") == "")
 		for _, warning := range result.Warnings {
 			if warning != nil {
-				fmt.Fprintln(cmd.ErrOrStderr(), t.muted.Render("Warning  ")+safeText(warning.Error()))
+				printCommandWarning(cmd, warning.Error())
 			}
 		}
 	} else {
@@ -78,7 +83,7 @@ func executeOperation(cmd *cobra.Command, deps Dependencies, options RegistryOpt
 		return err
 	}
 	if richCommand(cmd) {
-		_, err = fmt.Fprintln(cmd.OutOrStdout(), "\n"+renderResult(result, newTheme(os.Getenv("NO_COLOR") == ""), commandWidth(cmd))+"\n")
+		_, err = fmt.Fprintln(cmd.OutOrStdout(), renderResult(result, newTheme(os.Getenv("NO_COLOR") == ""), commandWidth(cmd)))
 		return err
 	}
 	return printPlainResult(cmd.OutOrStdout(), result)
@@ -158,7 +163,7 @@ func renderResult(r operationResult, t theme, width int) string {
 		if description != "" {
 			line("\n" + safeText(description))
 		}
-		line(t.border.Render(strings.Repeat("─", max(1, min(width, 100)))))
+
 	}
 	switch r.Action {
 	case listRules:
@@ -218,8 +223,17 @@ func renderResult(r operationResult, t theme, width int) string {
 		}
 		line(t.section("Files", len(p.Bundle.Files)))
 		for _, f := range p.Bundle.Files {
-			line("  " + safeText(f.Spec.Source) + t.muted.Render("  →  ") + safeText(f.Spec.Destination))
-			line(t.muted.Render(fmt.Sprintf("    required=%t · present=%t", f.Spec.Required, f.Present)))
+			status, requirement := "passed", "optional"
+			if f.Spec.Required {
+				requirement = "required"
+			}
+			if !f.Present {
+				status = "not-applicable"
+				if f.Spec.Required {
+					status = "error"
+				}
+			}
+			line("  " + statusSymbol(status, t) + " " + safeText(f.Spec.Source) + t.muted.Render(" → ") + safeText(f.Spec.Destination) + t.muted.Render(" ("+requirement+")"))
 		}
 		line(t.section("Allowed changes", len(d.AllowedChanges)))
 		for _, value := range d.AllowedChanges {
@@ -234,12 +248,12 @@ func renderResult(r operationResult, t theme, width int) string {
 		if r.Action == createPattern {
 			verb = "Local pattern created"
 		}
-		line(t.success.Render("✓ " + verb))
+		line(t.success.Render("[✓] " + verb))
 		meta("Pattern", r.Installed.PatternID)
 		meta("Scope", r.Installed.ScopeDirectory)
 		meta("Pattern root", r.Installed.PatternDirectory)
 	case exportRule:
-		line(t.success.Render("✓ Architecture rule exported"))
+		line(t.success.Render("[✓] Architecture rule exported"))
 		meta("Rule", r.ID)
 		meta("Format", string(r.Exported.Format))
 		line(t.section("Files", len(r.Exported.Paths)))
@@ -251,7 +265,7 @@ func renderResult(r operationResult, t theme, width int) string {
 			line("No managed exports found.")
 			break
 		}
-		line(t.success.Render("✓ Managed rule exports removed"))
+		line(t.success.Render("[✓] Managed rule exports removed"))
 		for _, id := range r.Removed.RuleIDs {
 			meta("Rule", id)
 		}

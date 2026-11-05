@@ -7,6 +7,7 @@ This is a configuration diagnostic, not an application architecture auditor.
 
 ```bash
 arc doctor
+arc doctor --verbose
 arc doctor --json
 arc doctor --project-root /absolute/path/to/project --json
 ```
@@ -48,8 +49,12 @@ preserved; Cursor frontmatter is checked only for an active managed index.
 
 ## Human output, JSON and exit codes
 
-Human output prints statuses, check IDs, relative paths, explanations and safe
-next steps. `--json` instead writes exactly one versioned object to stdout; a
+Interactive human output shows ten friendly check names with status symbols,
+counts and coverage. Partial and cancelled runs remain explicitly incomplete.
+`--verbose` (`-v`) adds IDs, paths, full messages, reasons and recommendations.
+A delayed spinner indicates work in progress. Plain and redirected output retain
+the original detailed format. JSON takes precedence over verbose and never animates.
+`--json` writes exactly one versioned object to stdout; a
 diagnostic finding is not printed again as an error on stderr. Command/flag
 parsing failures may use stderr before the diagnostic starts.
 

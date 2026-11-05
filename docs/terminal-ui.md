@@ -62,3 +62,18 @@ Interactive command output uses the same visual hierarchy as the application but
 
 `arc version` retains its original single-line output. `arc mcp serve` remains a separate, read-only stdio process: the UI never takes over its protocol streams or starts a server in the background. The **MCP connection** screen provides a client configuration for your selected project. See the [MCP guide](mcp.md).
 The project directory shown on the home screen is the workspace root. All pattern installations share its single `.archbase/scopes.yaml`; changing the scope path does not create nested metadata directories. Session settings can change the root, and `arc --project-root <path>` selects it on startup. Edit the `.md` document at the pattern root printed by resolve/inspect, preserving its typed code fence.
+
+## Command progress and status
+
+Direct shell operations (`add`, `create`, `resolve`, `inspect`, `rules list`,
+`rules inspect`, `rules add`, `remove`, `doctor`, and `update`) show an
+operation-specific single-line spinner after 200 ms. Fast operations do not
+animate. Progress uses stderr only when both output streams are terminals and
+terminal control is supported, and clears before final output. It does not
+capture keyboard input or open an alternate screen. Help, version, JSON and MCP
+never animate. NO_COLOR removes color while retaining symbols and animation.
+
+Statuses use `[✓]` for success, `[!]` for warnings, `[✗]` for errors, `[-]` for
+not applicable and `[?]` for not run. File listings retain required/optional
+labels. Plain formats remain unchanged for redirection, --plain and TERM=dumb.
+`arc doctor -v` expands the compact diagnostic with technical details.

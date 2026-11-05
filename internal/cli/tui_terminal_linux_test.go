@@ -5,7 +5,9 @@ package cli
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
+	"github.com/EnzoCaetano015/Archbase/internal/update"
 	"io"
 	"os"
 	"os/exec"
@@ -21,7 +23,7 @@ import (
 // Exercise the actual entry point in a PTY, including raw-mode restoration.
 // Model-only tests cannot detect a broken TTY gate or leaked alternate screen.
 func TestInteractiveTerminalLifecycle(t *testing.T) {
-	for _, scenario := range []string{"navigation", "operation-failure"} {
+	for _, scenario := range []string{"navigation", "operation-failure", "shell-progress", "shell-failure", "shell-cancel", "shell-json"} {
 		t.Run(scenario, func(t *testing.T) { terminalLifecycle(t, scenario) })
 	}
 }
@@ -61,7 +63,7 @@ func terminalLifecycle(t *testing.T, scenario string) {
 			command.Env = append(command.Env, value)
 		}
 	}
-	command.Env = append(command.Env, "ARCHBASE_TUI_HELPER=1", "TERM=xterm-256color", "NO_COLOR=1")
+	command.Env = append(command.Env, "ARCHBASE_TUI_HELPER=1", "ARCHBASE_SHELL_SCENARIO="+scenario, "TERM=xterm-256color", "NO_COLOR=1")
 	command.Stdin, command.Stdout, command.Stderr = slave, slave, slave
 	command.Dir = t.TempDir()
 	command.SysProcAttr = &syscall.SysProcAttr{Setsid: true, Setctty: true, Ctty: 0}
@@ -99,6 +101,50 @@ func terminalLifecycle(t *testing.T, scenario string) {
 		mu.Lock()
 		defer mu.Unlock()
 		t.Fatalf("terminal did not display %q: %q", want, output.String())
+	}
+	if strings.HasPrefix(scenario, "shell-") {
+		if scenario != "shell-json" {
+			waitFor("Checking for updates")
+		}
+		if scenario == "shell-cancel" {
+			_, _ = io.WriteString(master, "\x03")
+		}
+		err := command.Wait()
+		if scenario == "shell-failure" || scenario == "shell-cancel" {
+			if err == nil {
+				t.Fatal("expected failure")
+			}
+		} else if err != nil {
+			t.Fatal(err)
+		}
+		if scenario == "shell-progress" {
+			waitFor("up to date")
+		}
+		if scenario == "shell-failure" {
+			waitFor("fixture failure")
+		}
+		if scenario == "shell-cancel" {
+			waitFor("context canceled")
+		}
+		if scenario == "shell-json" {
+			waitFor("schemaVersion")
+		} else {
+			waitFor("\r\x1b[2K")
+		}
+		mu.Lock()
+		text := output.String()
+		mu.Unlock()
+		if strings.Contains(text, "\x1b[?1049h") {
+			t.Fatal("shell command entered alternate screen")
+		}
+		if scenario == "shell-json" && strings.Contains(text, "\x1b") {
+			t.Fatal("JSON emitted animation")
+		}
+		after, err := unix.IoctlGetTermios(int(slave.Fd()), unix.TCGETS)
+		if err != nil || *before != *after {
+			t.Fatal("shell changed terminal mode")
+		}
+		return
 	}
 	waitFor("Home")
 	if scenario == "operation-failure" {
@@ -139,6 +185,23 @@ func terminalLifecycle(t *testing.T, scenario string) {
 func TestInteractiveTerminalHelper(t *testing.T) {
 	if os.Getenv("ARCHBASE_TUI_HELPER") != "1" {
 		return
+	}
+	if scenario := os.Getenv("ARCHBASE_SHELL_SCENARIO"); strings.HasPrefix(scenario, "shell-") {
+		if scenario == "shell-json" {
+			os.Exit(Execute([]string{"doctor", "--json", "-v"}, os.Stdout, os.Stderr, "test"))
+		}
+		deps := Dependencies{UpdateRunner: func(ctx context.Context, current string, _ update.Options) (update.Result, error) {
+			select {
+			case <-ctx.Done():
+				return update.Result{}, ctx.Err()
+			case <-time.After(500 * time.Millisecond):
+			}
+			if scenario == "shell-failure" {
+				return update.Result{}, errors.New("fixture failure")
+			}
+			return update.Result{Current: current, Latest: current}, nil
+		}}
+		os.Exit(Execute([]string{"update", "--check"}, os.Stdout, os.Stderr, "test", deps))
 	}
 	os.Exit(Execute(nil, os.Stdout, os.Stderr, "test"))
 }

@@ -373,7 +373,7 @@ func Execute(args []string, stdout, stderr io.Writer, cliVersion string, depende
 		}
 		if !plainCommand(cmd) && terminalStream(stderr) {
 			t := newTheme(os.Getenv("NO_COLOR") == "")
-			fmt.Fprintln(stderr, t.danger.Render("Error  ")+safeText(err.Error()))
+			fmt.Fprintln(stderr, statusSymbol("error", t)+" "+safeText(err.Error()))
 		} else {
 			fmt.Fprintln(stderr, err)
 		}

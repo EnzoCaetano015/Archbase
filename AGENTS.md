@@ -41,3 +41,9 @@
 - Pattern and rule writes share the project workspace lock with cancellation; document, indices, scopes initialization, and legacy cleanup must roll back together.
 - MCP tools are read-only, use stdio, and must keep protocol output isolated on stdout.
 - MCP project paths remain confined to the configured project root and must reject traversal and symlinks.
+
+## Command presentation
+
+- New potentially slow shell commands must use the shared delayed progress indicator in `internal/cli`, with an operation-specific label. Stop and join animation before printing results, warnings or errors; never detach work or bypass cancellation/rollback.
+- Use shared status symbols and concise summaries for interactive output. Keep full diagnostic details available through verbose output and preserve useful paths and identifiers.
+- Preserve plain output contracts for pipes, redirection, `--plain` and `TERM=dumb`. JSON and MCP protocol streams must never contain progress or decoration. Respect `NO_COLOR`; symbols must remain understandable without color or special fonts.

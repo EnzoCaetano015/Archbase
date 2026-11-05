@@ -367,3 +367,15 @@ footer a:hover { color: var(--accent-text); }
   html { scroll-behavior: auto; }
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
+
+/* Keep navigation chrome stable while documentation content crossfades. */
+.doc-main { view-transition-name: doc-content; }
+::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+::view-transition-group(doc-content) { animation-duration: 180ms; }
+::view-transition-old(doc-content), ::view-transition-new(doc-content) {
+  animation-duration: 180ms;
+  animation-timing-function: ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
