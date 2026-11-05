@@ -853,6 +853,15 @@ function SkillsPage() {
       <Footer />
     </main>);
 }
+// Keep the original static badge in view-source and place that same node in
+// the rendered footer. Restore it when navigating away from a page with one.
+function attachToolIndexBadge(host: HTMLDivElement) {
+    const badge = document.getElementById("toolindex-badge");
+    const fallback = document.getElementById("toolindex-footer");
+    if (!badge || !fallback) return;
+    host.append(badge);
+    return () => { fallback.append(badge); };
+}
 function Footer() {
     return (<footer>
       <div className="footer-brand">
@@ -861,6 +870,7 @@ function Footer() {
           <span>Archbase</span>
         </Link>
         <p>Architecture that AI coding agents can actually follow.</p>
+        <div className="footer-listings" ref={attachToolIndexBadge} />
       </div>
       <div>
         <strong>Documentation</strong>
