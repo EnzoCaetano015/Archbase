@@ -1,8 +1,10 @@
 # Proposal: local configuration diagnostics (`arc doctor`)
 
-Status: specification for Premium tracking issue #26. **Not implemented or an
-available command.** No automatic repairs, migration or updates are included.
-Implementation belongs in the public repository under `internal/`.
+Status: historical specification for Premium tracking issue #26. The read-only
+runtime is now implemented in the public source tree under `internal/diagnostics`.
+See [the runtime guide](../doctor.md) and [final v1 result schema](../../schemas/doctor-result.schema.json).
+The draft below is preserved as design history; it does not replace the final
+contract. Use a source build or a published release containing the command.
 
 Future runtime work is tracked separately in [OSS issue #5](https://github.com/EnzoCaetano015/Archbase/issues/5).
 

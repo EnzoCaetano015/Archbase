@@ -1,0 +1,331 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Archbase doctor result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "command",
+    "toolVersion",
+    "projectRoot",
+    "state",
+    "checks"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "command": {
+      "const": "doctor"
+    },
+    "toolVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "projectRoot": {
+      "const": "."
+    },
+    "state": {
+      "enum": [
+        "complete",
+        "partial",
+        "error"
+      ]
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "path",
+          "message"
+        ],
+        "properties": {
+          "id": {
+            "enum": [
+              "doctor.cli-version",
+              "doctor.project-root",
+              "doctor.workspace-index",
+              "doctor.scope-paths",
+              "doctor.local-bundles",
+              "doctor.scope-origin",
+              "doctor.rule-documents",
+              "doctor.managed-indices",
+              "doctor.legacy-indices",
+              "doctor.snapshot"
+            ]
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "warning",
+              "error",
+              "not-applicable",
+              "not-run"
+            ]
+          },
+          "path": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^/\\\\:\\x00-\\x1f\\x7f]+(/[^/\\\\:\\x00-\\x1f\\x7f]+)*$",
+                "allOf": [
+                  {
+                    "not": {
+                      "pattern": "(^|/)\\.{1,2}(/|$)"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "recommendation": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "enum": [
+                    "warning",
+                    "error",
+                    "not-run",
+                    "not-applicable"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "reason"
+              ]
+            }
+          }
+        ]
+      },
+      "minItems": 10,
+      "maxItems": 10,
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "id": {
+                "const": "doctor.cli-version"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "id": {
+                "const": "doctor.project-root"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "id": {
+                "const": "doctor.workspace-index"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "id": {
+                "const": "doctor.scope-paths"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "id": {
+                "const": "doctor.local-bundles"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "id": {
+                "const": "doctor.scope-origin"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "id": {
+                "const": "doctor.rule-documents"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "id": {
+                "const": "doctor.managed-indices"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "id": {
+                "const": "doctor.legacy-indices"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "id": {
+                "const": "doctor.snapshot"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "$id": "https://archbase.dev/schemas/v1/doctor-result.schema.json",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "complete"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "checks": {
+            "items": {
+              "properties": {
+                "status": {
+                  "not": {
+                    "const": "not-run"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "partial"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "checks": {
+            "contains": {
+              "properties": {
+                "status": {
+                  "const": "not-run"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "error"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "checks": {
+            "contains": {
+              "properties": {
+                "id": {
+                  "const": "doctor.project-root"
+                },
+                "status": {
+                  "const": "error"
+                }
+              },
+              "required": [
+                "id",
+                "status"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}
